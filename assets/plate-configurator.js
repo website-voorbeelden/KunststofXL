@@ -51,12 +51,9 @@
     var radiusInput = one('[data-pc-radius]');
     var letterInput = one('[data-pc-letter]');
     var holesToggle = one('[data-pc-holes]');
-    var holeCountInput = one('[data-pc-hole-count]');
     var holeDiameterInput = one('[data-pc-hole-diameter]');
     var cutoutToggle = one('[data-pc-cutout]');
     var cutoutSizeInput = one('[data-pc-cutout-size]');
-    var cutoutRadiusInput = one('[data-pc-cutout-radius]');
-    var cutoutTextInput = one('[data-pc-cutout-text]');
     var uploadInput = one('[data-pc-upload]');
 
     var svg = one('.pc-svg');
@@ -67,8 +64,6 @@
     var holesLayer = one('.pc-holes');
     var cutoutLayer = one('.pc-cutout-layer');
     var cutoutCircle = one('.pc-cutout-circle');
-    var cutoutRect = one('.pc-cutout-rect');
-    var cutoutText = one('.pc-cutout-text');
 
     if (!widthInput || !heightInput || !svg || !shapePath) return;
 
@@ -83,7 +78,6 @@
       thickness: 2,
       holes: false,
       cutout: false,
-      cutoutType: 'circle',
       finish: 'gezaagd',
       quantity: 1
     };
@@ -242,26 +236,28 @@
       while (holesLayer.firstChild) holesLayer.removeChild(holesLayer.firstChild);
       if (!state.holes) return;
 
-      var count = clamp(Math.round(num(holeCountInput.value, 4)), 1, 12);
-      var diameter = clamp(num(holeDiameterInput.value, 8), 3, 50);
-      holeCountInput.value = count;
+      var diameter = clamp(num(holeDiameterInput.value, 8), 3, 30);
       holeDiameterInput.value = Number(diameter.toFixed(1));
-
       var holeRadius = clamp((diameter / 10) * box.scale / 2, 1.5, 18);
-      var orbitX = box.width * 0.37;
-      var orbitY = box.height * 0.35;
+      var offsetX = box.width * 0.39;
+      var offsetY = box.height * 0.38;
+      var positions = [
+        [-offsetX, -offsetY],
+        [offsetX, -offsetY],
+        [offsetX, offsetY],
+        [-offsetX, offsetY]
+      ];
 
-      for (var index = 0; index < count; index += 1) {
-        var angle = index / count * Math.PI * 2 - Math.PI / 2;
+      positions.forEach(function (position) {
         var hole = document.createElementNS(SVG_NS, 'circle');
         hole.setAttribute('class', 'pc-hole');
         attrs(hole, {
-          cx: 350 + Math.cos(angle) * orbitX,
-          cy: 225 + Math.sin(angle) * orbitY,
+          cx: 350 + position[0],
+          cy: 225 + position[1],
           r: holeRadius
         });
         holesLayer.appendChild(hole);
-      }
+      });
     }
 
     function renderCutout(box, currentValues) {
@@ -272,28 +268,7 @@
       var sizeCm = clamp(num(cutoutSizeInput.value, 3), 1, maximumSize);
       cutoutSizeInput.value = Number(sizeCm.toFixed(1));
       var size = sizeCm * box.scale;
-
-      showSvg(cutoutCircle, state.cutoutType === 'circle');
-      showSvg(cutoutRect, state.cutoutType === 'rounded');
-      showSvg(cutoutText, state.cutoutType === 'text');
-
-      if (state.cutoutType === 'circle') {
-        attrs(cutoutCircle, { cx: 350, cy: 225, r: size / 2 });
-      } else if (state.cutoutType === 'rounded') {
-        var radiusCm = clamp(num(cutoutRadiusInput.value, 0.5), 0, sizeCm / 2);
-        cutoutRadiusInput.value = Number(radiusCm.toFixed(1));
-        attrs(cutoutRect, {
-          x: 350 - size / 2,
-          y: 225 - size / 2,
-          width: size,
-          height: size,
-          rx: radiusCm * box.scale
-        });
-      } else {
-        var text = letters(cutoutTextInput);
-        cutoutText.textContent = text;
-        attrs(cutoutText, { x: 350, y: 225, 'font-size': size });
-      }
+      attrs(cutoutCircle, { cx: 350, cy: 225, r: size / 2 });
     }
 
     function renderDimensions(box, currentValues) {
@@ -322,7 +297,7 @@
       var areaPart = currentValues.width * currentValues.height / (305 * 155);
       var thicknessPart = 0.82 + state.thickness * 0.09;
       var shapePart = state.shape === 'rectangle' ? 1 : state.shape === 'rounded' ? 1.08 : 1.12;
-      var extras = (state.holes ? clamp(Math.round(num(holeCountInput.value, 4)), 1, 12) * 65 : 0) +
+      var extras = (state.holes ? 4 * 65 : 0) +
         (state.cutout ? 425 : 0) +
         (state.finish === 'gefreesd' ? 550 : 0);
       return Math.max(basePrice, Math.round((basePrice + areaPart * 6100) * thicknessPart * shapePart + extras));
@@ -335,11 +310,11 @@
           ? currentValues.text + ' · ' + measure(currentValues.height) + ' cm hoog'
           : measure(currentValues.width) + ' × ' + measure(currentValues.height) + ' cm';
 
-      var holeCount = clamp(Math.round(num(holeCountInput.value, 4)), 1, 12);
-      var holeDiameter = clamp(num(holeDiameterInput.value, 8), 3, 50);
+      var holeDiameter = clamp(num(holeDiameterInput.value, 8), 3, 30);
+      var cutoutDiameter = clamp(num(cutoutSizeInput.value, 3), 1, Math.min(currentValues.width, currentValues.height) * 0.7);
       var compact = dimensionsText + ' · ' + state.thickness + ' mm' +
-        (state.holes ? ' · ' + holeCount + ' gaten Ø ' + measure(holeDiameter) + ' mm' : '') +
-        (state.cutout ? ' · uitsnede' : '');
+        (state.holes ? ' · 4 hoekgaten Ø ' + measure(holeDiameter) + ' mm' : '') +
+        (state.cutout ? ' · ronde uitsnede Ø ' + measure(cutoutDiameter) + ' cm' : '');
 
       var shapeSummary = one('[data-pc-shape-summary]');
       var thicknessSummary = one('[data-pc-thickness-summary]');
@@ -349,9 +324,9 @@
 
       if (shapeSummary) shapeSummary.textContent = shapeLabel(currentValues);
       if (thicknessSummary) thicknessSummary.textContent = state.thickness + ' mm';
-      if (holesSummary) holesSummary.textContent = state.holes ? holeCount + ' st. · Ø ' + measure(holeDiameter) + ' mm' : 'Geen';
+      if (holesSummary) holesSummary.textContent = state.holes ? '4 hoekgaten · Ø ' + measure(holeDiameter) + ' mm' : 'Geen';
       if (cutoutSummary) cutoutSummary.textContent = state.cutout
-        ? ({ circle: 'Rond', rounded: 'Vierkant + radius', text: 'Letters' }[state.cutoutType])
+        ? 'Rond · Ø ' + measure(cutoutDiameter) + ' cm'
         : 'Geen';
       if (finishSummary) finishSummary.textContent = state.finish === 'gefreesd' ? 'Gefreesd' : 'Gezaagd';
 
@@ -482,7 +457,6 @@
       state.view = 'dimensions';
       render();
     });
-    holeCountInput.addEventListener('input', function () { state.view = 'dimensions'; render(); });
     holeDiameterInput.addEventListener('input', function () { state.view = 'dimensions'; render(); });
 
     cutoutToggle.addEventListener('change', function () {
@@ -492,22 +466,9 @@
       render();
     });
 
-    all('[data-pc-cutout-type]').forEach(function (button) {
-      button.addEventListener('click', function () {
-        state.cutoutType = button.dataset.pcCutoutType;
-        all('[data-pc-cutout-type]').forEach(function (item) {
-          item.setAttribute('aria-pressed', String(item === button));
-        });
-        one('[data-pc-cutout-radius-field]').hidden = state.cutoutType !== 'rounded';
-        one('[data-pc-cutout-text-field]').hidden = state.cutoutType !== 'text';
-        one('[data-pc-cutout-size-field]').hidden = false;
-        state.view = 'dimensions';
-        render();
-      });
-    });
-
-    [cutoutSizeInput, cutoutRadiusInput, cutoutTextInput].forEach(function (input) {
-      input.addEventListener('input', function () { state.view = 'dimensions'; render(); });
+    cutoutSizeInput.addEventListener('input', function () {
+      state.view = 'dimensions';
+      render();
     });
 
     all('[data-pc-finish]').forEach(function (button) {
