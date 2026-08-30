@@ -10,7 +10,7 @@
     function draw(){
       var w=Math.min(Math.max(number(width.value)||100,1),sheetW),h=Math.min(Math.max(number(height.value)||100,1),sheetH);width.value=w;height.value=h;
       var svg=$('.pc-svg'),image=$('.pc-image'),rect=$('.pc-shape'),holesGroup=$('.pc-holes'),dimW=$('.pc-dim-w'),dimH=$('.pc-dim-h'),labelW=$('.pc-label-w'),labelH=$('.pc-label-h');
-      if(state.view==='image'){svg.hidden=true;image.hidden=false}else{svg.hidden=false;image.hidden=true}
+      if(state.view==='image'){svg.hidden=true;image.hidden=false;$('.pc-canvas').classList.add('is-image')}else{svg.hidden=false;image.hidden=true;$('.pc-canvas').classList.remove('is-image')}
       var scale=Math.min(410/w,250/h),rw=w*scale,rh=h*scale,x=320-rw/2,y=170-rh/2;
       if(state.shape==='round'){var r=Math.min(rw,rh)/2;rect.setAttribute('d','M '+(320-r)+' 170 a '+r+' '+r+' 0 1 0 '+(r*2)+' 0 a '+r+' '+r+' 0 1 0 -'+(r*2)+' 0')}else if(state.shape==='rounded'){rect.setAttribute('d','M '+(x+20)+' '+y+' H '+(x+rw-20)+' Q '+(x+rw)+' '+y+' '+(x+rw)+' '+(y+20)+' V '+(y+rh-20)+' Q '+(x+rw)+' '+(y+rh)+' '+(x+rw-20)+' '+(y+rh)+' H '+(x+20)+' Q '+x+' '+(y+rh)+' '+x+' '+(y+rh-20)+' V '+(y+20)+' Q '+x+' '+y+' '+(x+20)+' '+y)}else{rect.setAttribute('d','M '+x+' '+y+' H '+(x+rw)+' V '+(y+rh)+' H '+x+' Z')}
       holesGroup.innerHTML='';
