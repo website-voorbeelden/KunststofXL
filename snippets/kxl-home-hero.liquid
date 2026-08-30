@@ -15,7 +15,7 @@
         <h2>Kunststof platen op maat, passend voor ieder project</h2>
         <span class="kxl-home-hero__pill">
           Direct naar ons assortiment
-          <i aria-hidden="true">›</i>
+          <i aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M9 5l7 7-7 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></i>
         </span>
       </div>
     </a>
@@ -42,7 +42,7 @@
 
 <style>
   .kxl-home-hero,.kxl-home-hero *{box-sizing:border-box}
-  .kxl-home-hero{width:100%;max-width:1320px;margin:0 auto;padding:14px 20px 34px;font-family:inherit}
+  .kxl-home-hero{width:100%;max-width:1320px;margin:0 auto;padding:14px 20px 34px;font-family:"Mona Sans","Helvetica Neue",Helvetica,Arial,sans-serif}
   .kxl-home-hero__grid{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(300px,.85fr);gap:28px}
   .kxl-home-hero__card{position:relative;min-width:0;min-height:470px;overflow:hidden;border-radius:8px;color:#fff;text-decoration:none;isolation:isolate}
   .kxl-home-hero__card>img{position:absolute;inset:0;z-index:-2;display:block;width:100%;height:100%;object-fit:cover;transition:transform .45s ease}
@@ -53,12 +53,13 @@
   .kxl-home-hero__card--secondary .kxl-home-hero__shade{background:linear-gradient(180deg,rgba(5,15,25,.04) 20%,rgba(6,25,48,.82) 100%)}
   .kxl-home-hero__content{position:absolute;right:0;bottom:0;left:0}
   .kxl-home-hero__content--primary{display:flex;align-items:center;flex-direction:column;justify-content:flex-end;height:100%;padding:46px 38px;text-align:center}
-  .kxl-home-hero h2{max-width:620px;margin:0;color:#fff;font-size:clamp(44px,5.2vw,72px);font-weight:800;letter-spacing:-.045em;line-height:.98}
+  .kxl-home-hero h2{max-width:620px;margin:0;color:#fff;font-size:clamp(40px,4.4vw,56px);font-weight:900;letter-spacing:-.02em;line-height:.92}
   .kxl-home-hero__pill{display:flex;align-items:center;justify-content:space-between;gap:22px;width:min(560px,72%);min-height:62px;margin-top:34px;padding:0 25px 0 32px;border:1px solid rgba(255,255,255,.24);border-radius:999px;color:#fff;background:rgba(255,255,255,.29);backdrop-filter:blur(10px);font-size:16px;font-weight:750;text-align:left;transition:background .2s ease,transform .2s ease}
-  .kxl-home-hero__pill i{font-size:28px;font-style:normal;font-weight:300;line-height:1}
+  .kxl-home-hero__pill i{display:grid;width:26px;height:26px;place-items:center;flex:0 0 26px;font-style:normal;line-height:0}
+  .kxl-home-hero__pill i svg{display:block;width:23px;height:23px}
   .kxl-home-hero__content--secondary{display:grid;grid-template-columns:minmax(0,1fr) 74px;align-items:end;gap:22px;padding:34px}
-  .kxl-home-hero h3{margin:0;color:#fff;font-size:clamp(29px,2.8vw,40px);font-weight:780;letter-spacing:-.035em;line-height:1.02}
-  .kxl-home-hero__content--secondary p{max-width:300px;margin:12px 0 0;color:rgba(255,255,255,.88);font-size:15px;line-height:1.5}
+  .kxl-home-hero h3{margin:0;color:#fff;font-size:clamp(24px,2.2vw,30px);font-weight:900;letter-spacing:normal;line-height:1.1}
+  .kxl-home-hero__content--secondary p{max-width:300px;margin:12px 0 0;color:rgba(255,255,255,.88);font-size:16px;line-height:1.5}
   .kxl-home-hero__circle{display:grid;width:74px;height:74px;place-items:center;border:1px solid rgba(255,255,255,.2);border-radius:50%;color:#fff;background:rgba(255,255,255,.3);backdrop-filter:blur(10px);font-size:32px;font-weight:300;line-height:1;transition:background .2s ease,transform .2s ease}
   .kxl-home-hero__circle svg{display:block;width:25px;height:25px}
   .kxl-home-hero__card:hover>img{transform:scale(1.025)}
