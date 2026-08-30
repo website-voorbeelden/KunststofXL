@@ -228,19 +228,39 @@
         </div>
       </details>
 
-      <div class="pc-order-box">
-        <div class="pc-order-box__stock"><strong>Op voorraad</strong><span>Verwachte levering: 1–3 werkdagen</span></div>
-        <div class="pc-order-box__summary" data-pc-summary>10 × 10 cm · 2 mm</div>
-        <div class="pc-order-box__actions">
-          <div class="pc-total"><strong data-pc-price>{{ pc_base_price | money }}</strong><small>incl. btw</small></div>
-          <div class="pc-quantity">
-            <button type="button" data-pc-minus aria-label="Aantal verlagen">−</button>
-            <span data-pc-quantity>1</span>
-            <button type="button" data-pc-plus aria-label="Aantal verhogen">＋</button>
-          </div>
-          <button type="button" class="pc-cart" data-pc-cart>＋ <span>In winkelmand</span></button>
+      <section class="pc-order-box" aria-label="Bestelling afronden">
+        <div class="pc-order-box__availability">
+          <strong><span aria-hidden="true"></span> Op voorraad</strong>
+          <span>Verwachte levering <b>binnen 1–3 werkdagen</b></span>
         </div>
-      </div>
+        <div class="pc-order-box__selection">
+          <span>Jouw plaat</span>
+          <strong data-pc-summary>10 × 10 cm · 2 mm</strong>
+        </div>
+        <div class="pc-order-box__checkout">
+          <div class="pc-total">
+            <span>Totaal</span>
+            <strong data-pc-price>{{ pc_base_price | money }}</strong>
+            <small>incl. btw</small>
+          </div>
+          <div class="pc-quantity-field">
+            <span>Aantal</span>
+            <div class="pc-quantity">
+              <button type="button" data-pc-minus aria-label="Aantal verlagen">−</button>
+              <span data-pc-quantity>1</span>
+              <button type="button" data-pc-plus aria-label="Aantal verhogen">＋</button>
+            </div>
+          </div>
+          <button type="button" class="pc-cart" data-pc-cart>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h2l1.7 10.1a2 2 0 0 0 2 1.7h7.8a2 2 0 0 0 1.9-1.5L20 8H6.1M9.5 20a.8.8 0 1 1-1.6 0 .8.8 0 0 1 1.6 0Zm8 0a.8.8 0 1 1-1.6 0 .8.8 0 0 1 1.6 0Z"/></svg>
+            <span>In winkelmand</span>
+          </button>
+        </div>
+        <div class="pc-order-box__assurance">
+          <span>✓ Veilig betalen</span>
+          <span>✓ Op maat gemaakt in Nederland</span>
+        </div>
+      </section>
     </div>
   </div>
 
