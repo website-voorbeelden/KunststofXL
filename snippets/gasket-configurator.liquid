@@ -15,7 +15,7 @@
           {{ product.featured_image | image_url: width: 1200 | image_tag: class: 'pc-image', alt: product.title }}
         {% endif %}
         <svg class="pc-svg" viewBox="0 0 640 430" role="img" aria-label="Voorbeeld van jouw plaat">
-          <defs><marker id="{{ pc_id }}-arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#2583a5"/></marker></defs>
+          <defs><marker id="{{ pc_id }}-arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#2583a5"/></marker></defs>
           <path class="pc-shape"></path><g class="pc-holes"></g>
           <g class="pc-dimensions">
             <line class="pc-dim pc-ext pc-w-ext-a"></line><line class="pc-dim pc-ext pc-w-ext-b"></line>
@@ -51,8 +51,8 @@
               <button type="button" class="pc-choice" data-shape="round" aria-pressed="false"><svg viewBox="0 0 32 26"><circle cx="16" cy="13" r="10"/></svg>Rond</button>
             </div>
             <div class="pc-fields">
-              <label>Breedte <small>Max: {{ pc_sheet_width | divided_by: 10 }} cm</small><span class="pc-unit"><input data-pc-width type="number" value="500" min="50" max="{{ pc_sheet_width }}">cm</span></label>
-              <label>Hoogte <small>Max: {{ pc_sheet_height | divided_by: 10 }} cm</small><span class="pc-unit"><input data-pc-height type="number" value="500" min="50" max="{{ pc_sheet_height }}">cm</span></label>
+              <label>Breedte <small>Max: {{ pc_sheet_width | divided_by: 10 }} cm</small><span class="pc-unit"><input data-pc-width type="number" value="50" min="5" max="{{ pc_sheet_width | divided_by: 10 }}">cm</span></label>
+              <label>Hoogte <small>Max: {{ pc_sheet_height | divided_by: 10 }} cm</small><span class="pc-unit"><input data-pc-height type="number" value="50" min="5" max="{{ pc_sheet_height | divided_by: 10 }}">cm</span></label>
             </div>
           </div>
         </details>
