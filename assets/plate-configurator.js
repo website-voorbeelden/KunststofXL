@@ -247,7 +247,7 @@
       holeCountInput.value = count;
       holeDiameterInput.value = Number(diameter.toFixed(1));
 
-      var holeRadius = clamp((diameter / 10) * box.scale / 2, 3.3, 15);
+      var holeRadius = clamp((diameter / 10) * box.scale / 2, 1.5, 18);
       var orbitX = box.width * 0.37;
       var orbitY = box.height * 0.35;
 
