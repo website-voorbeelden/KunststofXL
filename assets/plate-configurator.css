@@ -601,3 +601,178 @@
   .pc-canvas{border-radius:5px}
   .pc-page__inner{gap:20px}
 }
+
+
+/* Supporting product content */
+.pc-product-content{
+  display:grid;
+  grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);
+  gap:22px;
+  width:100%;
+  max-width:1380px;
+  margin:44px auto 0;
+}
+.pc-description-card,.pc-machining-card{
+  overflow:hidden;
+  border:1px solid #dfe9ec;
+  border-radius:8px;
+}
+.pc-description-card{
+  padding:30px;
+  background:linear-gradient(145deg,#f2fafc 0%,#fbfefe 100%);
+}
+.pc-content-kicker{
+  margin-bottom:8px;
+  color:#1a94bd;
+  font-size:10px;
+  font-weight:800;
+  letter-spacing:.09em;
+  text-transform:uppercase;
+}
+.pc-content-heading{display:flex;align-items:center;justify-content:space-between;gap:16px}
+.pc-content-heading h2,.pc-machining-card h2{
+  margin:0;
+  color:#302532;
+  font-size:clamp(21px,1.7vw,26px);
+  line-height:1.15;
+  letter-spacing:-.02em;
+}
+.pc-content-heading>span{
+  flex:0 0 auto;
+  padding:5px 8px;
+  border:1px solid #d7e8ed;
+  border-radius:14px;
+  background:#fff;
+  color:#809097;
+  font-size:9px;
+  font-weight:750;
+}
+.pc-description-card>p{
+  max-width:62ch;
+  margin:18px 0 22px;
+  color:#63747c;
+  font-size:13px;
+  line-height:1.65;
+}
+.pc-feature-pills{display:flex;flex-wrap:wrap;gap:7px}
+.pc-feature-pills span{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  padding:7px 10px;
+  border:1px solid #d9e9ed;
+  border-radius:18px;
+  background:#fff;
+  color:#4d6570;
+  font-size:10px;
+  font-weight:700;
+}
+.pc-feature-pills i{width:6px;height:6px;border-radius:50%;background:#6ead31}
+
+.pc-machining-card{background:#fff}
+.pc-machining-card>header{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:24px;
+  padding:24px 26px 18px;
+  border-bottom:1px solid #e4ecee;
+}
+.pc-machining-card>header .pc-content-kicker{margin-bottom:6px}
+.pc-machining-card>header>p{
+  max-width:235px;
+  margin:0;
+  color:#7b8a91;
+  text-align:right;
+  font-size:10px;
+  line-height:1.45;
+}
+.pc-machining-columns{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:0;
+}
+.pc-machining-group{padding:20px 22px 22px}
+.pc-machining-group+ .pc-machining-group{border-left:1px solid #e4ecee}
+.pc-machining-group--yes{background:#fbfdf9}
+.pc-machining-group--no{background:#fdfbf9}
+.pc-machining-group h3{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin:0 0 13px;
+  color:#405159;
+  font-size:11px;
+}
+.pc-machining-group h3>span{
+  display:grid;
+  place-items:center;
+  width:19px;
+  height:19px;
+  border-radius:50%;
+  font-size:12px;
+}
+.pc-machining-group--yes h3>span{background:#eaf5e2;color:#5b9a24}
+.pc-machining-group--no h3>span{background:#f6ece5;color:#b06a3b}
+.pc-machining-group ul{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin:0;
+  padding:0;
+  list-style:none;
+}
+.pc-machining-group li{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  min-width:0;
+  padding:9px;
+  border:1px solid #e1e9eb;
+  border-radius:6px;
+  background:#fff;
+}
+.pc-process-icon{
+  display:grid;
+  place-items:center;
+  width:31px;
+  height:31px;
+  flex:0 0 auto;
+  border-radius:6px;
+  background:#edf8fb;
+  color:#258fb5;
+}
+.pc-machining-group--no .pc-process-icon{background:#f7f1ed;color:#a66a45}
+.pc-process-icon svg{
+  width:18px;
+  height:18px;
+  fill:none;
+  stroke:currentColor;
+  stroke-width:1.6;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+.pc-machining-group li>span:last-child{display:grid;min-width:0}
+.pc-machining-group li strong{color:#405159;font-size:10px}
+.pc-machining-group li small{
+  overflow:hidden;
+  color:#829097;
+  font-size:8px;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+@media(max-width:1050px){
+  .pc-product-content{grid-template-columns:1fr}
+}
+@media(max-width:680px){
+  .pc-product-content{margin-top:28px}
+  .pc-description-card{padding:23px 20px}
+  .pc-machining-card>header{align-items:flex-start;flex-direction:column;padding:21px 20px 16px}
+  .pc-machining-card>header>p{text-align:left}
+  .pc-machining-columns{grid-template-columns:1fr}
+  .pc-machining-group+ .pc-machining-group{border-top:1px solid #e4ecee;border-left:0}
+}
+@media(max-width:400px){
+  .pc-content-heading{align-items:flex-start;flex-direction:column}
+  .pc-machining-group ul{grid-template-columns:1fr}
+}
