@@ -16,7 +16,7 @@
         {% endif %}
         <svg class="pc-svg" viewBox="0 0 640 430" role="img" aria-label="Voorbeeld van jouw plaat">
           <defs><marker id="{{ pc_id }}-arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#2583a5"/></marker></defs>
-          <path class="pc-shape"></path><g class="pc-holes"></g>
+          <path class="pc-shape"></path><rect class="pc-cutout" hidden></rect><g class="pc-holes"></g>
           <g class="pc-dimensions">
             <line class="pc-dim pc-ext pc-w-ext-a"></line><line class="pc-dim pc-ext pc-w-ext-b"></line>
             <line class="pc-dim pc-dim-w" marker-start="url(#{{ pc_id }}-arrow)" marker-end="url(#{{ pc_id }}-arrow)"></line>
@@ -47,8 +47,17 @@
           <div class="pc-accord__body">
             <div class="pc-shape-tabs">
               <button type="button" class="pc-choice" data-shape="rectangle" aria-pressed="true"><svg viewBox="0 0 32 26"><rect x="3" y="5" width="26" height="16"/></svg>Rechthoek</button>
-              <button type="button" class="pc-choice" data-shape="rounded" aria-pressed="false"><svg viewBox="0 0 32 26"><path d="M5 19 L13 7 L20 17 L27 8"/></svg>Vormkiezer</button>
-              <button type="button" class="pc-choice" data-shape="round" aria-pressed="false"><svg viewBox="0 0 32 26"><path d="M6 8h12l8 8v5H14l-8-8z"/><path d="M11 12h5"/></svg>Vorm upload</button>
+              <button type="button" class="pc-choice" data-pc-open-shapes aria-pressed="false"><svg viewBox="0 0 32 26"><path d="M5 19 L13 7 L20 17 L27 8"/></svg>Vormkiezer</button>
+              <button type="button" class="pc-choice" data-pc-upload-trigger aria-pressed="false"><svg viewBox="0 0 32 26"><path d="M6 8h12l8 8v5H14l-8-8z"/><path d="M11 12h5"/></svg>Vorm upload</button>
+              <input data-pc-upload type="file" accept="image/*" hidden>
+            </div>
+            <div class="pc-shape-picker" data-pc-shape-picker hidden>
+              <button type="button" data-pc-shape-choice="rounded">Afgeronde rechthoek</button>
+              <button type="button" data-pc-shape-choice="round">Cirkel</button>
+              <button type="button" data-pc-shape-choice="triangle">Driehoek</button>
+            </div>
+            <p class="pc-upload-note" data-pc-upload-note hidden></p>
+            <div class="pc-fields">
             </div>
             <div class="pc-fields">
               <label>Breedte <small>Max: {{ pc_sheet_width | divided_by: 10 }} cm</small><span class="pc-unit"><input data-pc-width type="number" value="10" min="5" max="{{ pc_sheet_width | divided_by: 10 }}">cm</span></label>
