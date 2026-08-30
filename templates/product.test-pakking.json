@@ -351,9 +351,9 @@
       "settings": {
         "custom_liquid": "{% render 'gasket-configurator' %}",
         "color_scheme": "scheme-4",
-        "section_width": "page-width",
-        "padding_block_start": 0,
-        "padding_block_end": 32
+        "section_width": "full-width",
+        "padding-block-start": 0,
+        "padding-block-end": 0
       }
     }
   },
