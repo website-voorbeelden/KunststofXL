@@ -1,0 +1,386 @@
+{% capture submit_button %}
+  {% content_for 'block', type: 'contact-form-submit-button', id: 'submit-button' %}
+{% endcapture %}
+
+<div
+  class="
+    contact-form
+    spacing-style size-style
+    {% if block.settings.inherit_color_scheme == false %}color-{{ block.settings.color_scheme }}{% endif %}
+  "
+  style="
+    {% render 'spacing-style', settings: block.settings %}
+    {% render 'size-style', settings: block.settings %}
+  "
+  {{ block.shopify_attributes }}
+>
+  {% assign form_id = block.id | default: section.id | prepend: 'ContactForm-' %}
+
+  {%- form 'contact', id: form_id, class: 'contact-form__form' -%}
+    <input
+      name="contact[id]"
+      type="hidden"
+      value="{{ form_id }}"
+    >
+
+    {%- if form.errors and form.id == form_id -%}
+      <div
+        class="contact-form__error"
+        tabindex="-1"
+        autofocus
+      >
+        {{- 'icon-error.svg' | inline_asset_content -}}
+
+        {{- form.errors.translated_fields.email | capitalize }}
+        {{ form.errors.messages.email -}}
+      </div>
+    {%- endif -%}
+
+    {%- if form.posted_successfully? and form.id == form_id -%}
+      <div
+        class="contact-form__success"
+        tabindex="-1"
+        autofocus
+      >
+        {{- 'icon-checkmark.svg' | inline_asset_content -}}
+        {{- 'blocks.contact_form.post_success' | t -}}
+      </div>
+    {%- endif -%}
+
+    <div class="contact-form__form-row">
+      <label
+        class="visually-hidden"
+        for="ContactForm-name"
+      >
+        {{- 'blocks.contact_form.name' | t -}}
+      </label>
+      <input
+        type="text"
+        id="ContactForm-name"
+        class="contact-form__input"
+        autocomplete="name"
+        name="contact[name]"
+        value="{% if form.name %}{{ form.name }}{% elsif customer %}{{ customer.name }}{% endif %}"
+        placeholder="{{ 'blocks.contact_form.name' | t }}"
+      >
+
+      <label
+        class="visually-hidden"
+        for="ContactForm-email"
+      >
+        {{- 'blocks.contact_form.email' | t -}}
+        <span aria-hidden="true">*</span>
+      </label>
+      <input
+        type="email"
+        id="ContactForm-email"
+        class="contact-form__input"
+        autocomplete="email"
+        name="contact[email]"
+        spellcheck="false"
+        autocapitalize="off"
+        value="{% if form.email %}{{ form.email }}{% elsif customer %}{{ customer.email }}{% endif %}"
+        aria-required="true"
+        {% if form.errors contains 'email' and form.id == form_id %}
+          aria-invalid="true"
+          aria-describedby="ContactForm-email-error"
+        {% endif %}
+        placeholder="{{ 'blocks.contact_form.email' | t }}"
+      >
+    </div>
+
+    <label
+      class="visually-hidden"
+      for="ContactForm-phone"
+    >
+      {{- 'blocks.contact_form.phone' | t -}}
+    </label>
+    <input
+      type="tel"
+      id="ContactForm-phone"
+      class="contact-form__input"
+      autocomplete="tel"
+      name="contact[phone]"
+      pattern="[0-9\-]*"
+      value="{% if form.phone %}{{ form.phone }}{% elsif customer %}{{ customer.phone }}{% endif %}"
+      placeholder="{{ 'blocks.contact_form.phone' | t }}"
+    >
+
+    <label
+      class="visually-hidden"
+      for="ContactForm-body"
+    >
+      {{- 'blocks.contact_form.comment' | t -}}
+    </label>
+    <textarea
+      rows="10"
+      id="ContactForm-body"
+      class="contact-form__input contact-form__input--textarea"
+      name="contact[body]"
+      placeholder="{{ 'blocks.contact_form.comment' | t }}"
+    >
+      {{- form.body -}}
+    </textarea>
+
+    {%- comment -%}
+      Tracking velden:
+      - submit_url = exacte URL waar het formulier is verstuurd (huidige pagina)
+      - first_landing_url = eerste pagina die bezoeker zag (1x opgeslagen in localStorage)
+      - referrer + user_agent
+      - UTM/GCLID (first-touch via localStorage)
+    {%- endcomment -%}
+
+    <input type="hidden" name="contact[submit_url]"         id="ContactSubmitURL-{{ form_id }}">
+    <input type="hidden" name="contact[first_landing_url]"  id="ContactFirstLandingURL-{{ form_id }}">
+    <input type="hidden" name="contact[referrer]"           id="ContactReferrer-{{ form_id }}">
+    <input type="hidden" name="contact[user_agent]"         id="ContactUserAgent-{{ form_id }}">
+
+    <input type="hidden" name="contact[utm_source]"         id="ContactUtmSource-{{ form_id }}">
+    <input type="hidden" name="contact[utm_medium]"         id="ContactUtmMedium-{{ form_id }}">
+    <input type="hidden" name="contact[utm_campaign]"       id="ContactUtmCampaign-{{ form_id }}">
+    <input type="hidden" name="contact[utm_content]"        id="ContactUtmContent-{{ form_id }}">
+    <input type="hidden" name="contact[utm_term]"           id="ContactUtmTerm-{{ form_id }}">
+    <input type="hidden" name="contact[gclid]"              id="ContactGclid-{{ form_id }}">
+
+    <script>
+      (function() {
+        var form = document.getElementById({{ form_id | json }});
+        if (!form) return;
+
+        // voorkom dubbel initialiseren (voor het geval Horizon blocks re-renderen)
+        if (form.dataset.trackingInit === '1') return;
+        form.dataset.trackingInit = '1';
+
+        function getParam(name, url) {
+          var u = url || window.location.href;
+          name = name.replace(/[\\[\\]]/g, "\\$&");
+          var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)");
+          var results = regex.exec(u);
+          if (!results) return "";
+          if (!results[2]) return "";
+          return decodeURIComponent(results[2].replace(/\+/g, " "));
+        }
+
+        function setVal(id, val){
+          var el = form.querySelector('#' + id);
+          if (el) el.value = val || "";
+        }
+
+        // --- First landing URL (1x opslaan) ---
+        try {
+          if (!localStorage.getItem("sw_first_landing_url")) {
+            localStorage.setItem("sw_first_landing_url", window.location.href);
+          }
+        } catch(e) {}
+
+        var firstLanding = "";
+        try {
+          firstLanding = localStorage.getItem("sw_first_landing_url") || "";
+        } catch(e) {
+          firstLanding = "";
+        }
+
+        // --- UTM/GCLID opslaan en teruglezen (first-touch) ---
+        var keys = ["utm_source","utm_medium","utm_campaign","utm_content","utm_term","gclid"];
+
+        try {
+          keys.forEach(function(k){
+            var v = getParam(k);
+            if (v) localStorage.setItem("sw_"+k, v);
+          });
+        } catch(e) {}
+
+        var utm = {};
+        keys.forEach(function(k){
+          try {
+            utm[k] = getParam(k) || localStorage.getItem("sw_"+k) || "";
+          } catch(e) {
+            utm[k] = getParam(k) || "";
+          }
+        });
+
+        // --- Vullen velden ---
+        // submit_url = huidige URL (waar het form wordt verstuurd)
+        setVal("ContactSubmitURL-{{ form_id }}", window.location.href);
+
+        // first_landing_url = eerste URL die bezoeker zag
+        setVal("ContactFirstLandingURL-{{ form_id }}", firstLanding);
+
+        setVal("ContactReferrer-{{ form_id }}", document.referrer || "");
+        setVal("ContactUserAgent-{{ form_id }}", navigator.userAgent || "");
+
+        setVal("ContactUtmSource-{{ form_id }}",   utm.utm_source);
+        setVal("ContactUtmMedium-{{ form_id }}",   utm.utm_medium);
+        setVal("ContactUtmCampaign-{{ form_id }}", utm.utm_campaign);
+        setVal("ContactUtmContent-{{ form_id }}",  utm.utm_content);
+        setVal("ContactUtmTerm-{{ form_id }}",     utm.utm_term);
+        setVal("ContactGclid-{{ form_id }}",       utm.gclid);
+
+        // Optioneel: dataLayer event op submit (GTM custom event)
+        // form.addEventListener('submit', function() {
+        //   window.dataLayer = window.dataLayer || [];
+        //   window.dataLayer.push({ event: 'contact_form_submit', form_id: {{ form_id | json }} });
+        // }, true);
+      })();
+    </script>
+
+    {{ submit_button }}
+  {%- endform -%}
+</div>
+
+{% stylesheet %}
+  .contact-form__form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-md);
+  }
+
+  .contact-form__form-row {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-md);
+
+    @media screen and (min-width: 750px) {
+      flex-direction: row;
+      align-items: center;
+    }
+  }
+
+  .contact-form__input {
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: var(--color-input-text);
+    background-color: var(--color-input-background);
+    padding: var(--padding-lg) var(--padding-xl);
+    border-radius: var(--style-border-radius-inputs);
+    border: var(--style-border-width-inputs) solid var(--color-input-border);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .contact-form__input--textarea {
+    resize: vertical;
+    min-height: var(--input-textarea-min-height);
+  }
+
+  .contact-form__error,
+  .contact-form__success {
+    display: flex;
+    align-items: center;
+    gap: var(--gap-xs);
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:names.contact_form",
+  "tag": null,
+  "settings": [
+    {
+      "type": "select",
+      "id": "width",
+      "label": "t:settings.width_desktop",
+      "options": [
+        { "value": "fit-content", "label": "t:options.fit_content" },
+        { "value": "custom", "label": "t:options.custom" }
+      ],
+      "default": "fit-content"
+    },
+    {
+      "type": "range",
+      "id": "custom_width",
+      "label": "t:settings.width",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 100,
+      "visible_if": "{{ block.settings.width == 'custom' }}"
+    },
+    {
+      "type": "select",
+      "id": "width_mobile",
+      "label": "t:settings.width_mobile",
+      "options": [
+        { "value": "fit-content", "label": "t:options.fit_content" },
+        { "value": "custom", "label": "t:options.custom" }
+      ],
+      "default": "fit-content"
+    },
+    {
+      "type": "range",
+      "id": "custom_width_mobile",
+      "label": "t:settings.width",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 100,
+      "visible_if": "{{ block.settings.width_mobile == 'custom' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "inherit_color_scheme",
+      "label": "t:settings.inherit_color_scheme",
+      "default": true
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:settings.color_scheme",
+      "default": "scheme-1",
+      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+    },
+    {
+      "type": "header",
+      "content": "t:content.padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "t:settings.top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "t:settings.bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-inline-start",
+      "label": "t:settings.left",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-inline-end",
+      "label": "t:settings.right",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:names.contact_form",
+      "category": "t:categories.forms"
+    }
+  ]
+}
+{% endschema %}

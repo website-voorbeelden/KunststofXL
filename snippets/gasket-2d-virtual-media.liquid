@@ -1,0 +1,516 @@
+{%- comment -%}
+  2D Gasket schematic (product-level metafields, single-line text)
+
+  Update requested:
+  - ✅ PCD dotted line darker / more visible
+  - ✅ NO grey border around the box
+  - ✅ Render BIG (product image): use full width, no max-width clamp
+  - ✅ Keep the centered/frame approach + deterministic viewBox
+  - ✅ Thickness (H) exactly like your example
+{%- endcomment -%}
+
+{%- assign v = product.selected_or_first_available_variant -%}
+
+{%- assign od_val = v.metafields.custom.outer_diameter.value | default: product.metafields.custom.outer_diameter.value -%}
+{%- assign id_val = v.metafields.custom.inner_diameter.value | default: product.metafields.custom.inner_diameter.value -%}
+
+{%- if od_val != blank and id_val != blank -%}
+  {%- assign gasket_uid = 'gasket-2d-' | append: product.id -%}
+
+  {%- assign pcd_val = v.metafields.custom.pitch_circle.value | default: product.metafields.custom.pitch_circle.value -%}
+  {%- assign hole_dia_val = v.metafields.custom.bolt_holes_diameter.value | default: product.metafields.custom.bolt_holes_diameter.value -%}
+  {%- assign hole_count_val = v.metafields.custom.bolt_holes_count.value | default: product.metafields.custom.bolt_holes_count.value -%}
+  {%- assign thk_val = v.metafields.custom.thickness.value | default: product.metafields.custom.thickness.value -%}
+
+  <div id="{{ gasket_uid }}" class="gasket-2d">
+    <div class="gasket-2d__box">
+      <svg class="gasket-2d__svg"
+           viewBox="0 0 440 520"
+           preserveAspectRatio="xMidYMid meet"
+           role="img"
+           aria-label="2D gasket with dimensions">
+
+        <defs>
+          <marker id="{{ gasket_uid }}-arrow" viewBox="0 0 10 10" refX="5" refY="5"
+                  markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"></path>
+          </marker>
+
+          <pattern id="{{ gasket_uid }}-hatch" patternUnits="userSpaceOnUse" width="7" height="7" patternTransform="rotate(25)">
+            <line class="hatch-line" x1="0" y1="0" x2="0" y2="7"></line>
+          </pattern>
+
+          <mask id="{{ gasket_uid }}-ringmask">
+            <rect width="100%" height="100%" fill="black"></rect>
+            <circle class="mask-outer" cx="160" cy="170" r="0" fill="white"></circle>
+            <circle class="mask-inner" cx="160" cy="170" r="0" fill="black"></circle>
+            <g class="mask-holes"></g>
+          </mask>
+        </defs>
+
+        <!-- GASKET (first) -->
+        <g class="gasket-shape" aria-hidden="true">
+          <circle class="outer-circle" cx="160" cy="170" r="0"></circle>
+          <circle class="inner-circle" cx="160" cy="170" r="0"></circle>
+
+          <rect class="ring-fill" x="0" y="0" width="440" height="520" mask="url(#{{ gasket_uid }}-ringmask)"></rect>
+          <rect class="ring-hatch" x="0" y="0" width="440" height="520" fill="url(#{{ gasket_uid }}-hatch)" mask="url(#{{ gasket_uid }}-ringmask)"></rect>
+
+          <g class="hole-outlines"></g>
+          <circle class="pcd-circle" cx="160" cy="170" r="0"></circle>
+        </g>
+
+        <!-- DIMENSIONS (last) -->
+        <g class="gasket-dims" aria-hidden="true">
+          <!-- OD -->
+          <line class="dim-ext od-ext-l"></line>
+          <line class="dim-ext od-ext-r"></line>
+          <line class="dim-line od-line" marker-start="url(#{{ gasket_uid }}-arrow)" marker-end="url(#{{ gasket_uid }}-arrow)"></line>
+          <text class="dim-text od-text" text-anchor="middle"></text>
+
+          <!-- ID -->
+          <line class="dim-ext id-ext-l"></line>
+          <line class="dim-ext id-ext-r"></line>
+          <line class="dim-line id-line" marker-start="url(#{{ gasket_uid }}-arrow)" marker-end="url(#{{ gasket_uid }}-arrow)"></line>
+          <text class="dim-text id-text" text-anchor="middle"></text>
+
+          <!-- Hole Ø -->
+          <line class="dim-ext hole-ext-l"></line>
+          <line class="dim-ext hole-ext-r"></line>
+          <line class="dim-line hole-line" marker-start="url(#{{ gasket_uid }}-arrow)" marker-end="url(#{{ gasket_uid }}-arrow)"></line>
+          <text class="dim-text hole-text" text-anchor="middle"></text>
+
+          <!-- PCD -->
+          <line class="dim-ext pcd-ext-l"></line>
+          <line class="dim-ext pcd-ext-r"></line>
+          <line class="dim-line pcd-line" marker-start="url(#{{ gasket_uid }}-arrow)" marker-end="url(#{{ gasket_uid }}-arrow)"></line>
+          <text class="dim-text pcd-text" text-anchor="middle"></text>
+
+          <!-- Side view thickness (H) -->
+          <g class="thk" style="display:none">
+            <line class="thk-vert thk-left"></line>
+            <line class="thk-vert thk-right"></line>
+            <line class="thk-h thk-top"></line>
+            <line class="thk-h thk-bot"></line>
+
+            <line class="thk-id-top"></line>
+            <line class="thk-id-bot"></line>
+
+            <line class="dim-line thk-dim" marker-start="url(#{{ gasket_uid }}-arrow)" marker-end="url(#{{ gasket_uid }}-arrow)"></line>
+            <text class="dim-text thk-text" text-anchor="middle"></text>
+          </g>
+        </g>
+      </svg>
+    </div>
+  </div>
+
+  <style>
+    #{{ gasket_uid }}{
+      --rt-blue: #003878;
+      --rt-hatch: #A0B2C9;
+      --rt-fill:  #EDF0F2;
+
+      /* box AR switches in JS */
+      --rt-ar: 1 / 1;
+
+      /* BIG like product image */
+      width: 100%;
+      max-width: none;
+      margin: 0;
+      color: var(--rt-blue);
+    }
+
+    /* ✅ no border, just a centering frame */
+    #{{ gasket_uid }} .gasket-2d__box{
+      width: 100%;
+      aspect-ratio: var(--rt-ar);
+      background: #fff;
+      padding: 0;            /* product image: no extra margin */
+      box-sizing: border-box;
+      display: grid;
+      place-items: center;
+    }
+
+    #{{ gasket_uid }} .gasket-2d__svg{
+      width: 100%;
+      height: 100%;
+      display: block;
+      background: #fff;
+    }
+
+    /* ring hatch */
+    #{{ gasket_uid }} .ring-fill{ fill: var(--rt-fill); opacity: 1; }
+    #{{ gasket_uid }} .hatch-line{
+      stroke: var(--rt-hatch);
+      stroke-width: 1;
+      opacity: 1;
+      vector-effect: non-scaling-stroke;
+      shape-rendering: geometricPrecision;
+    }
+
+    /* dims */
+    #{{ gasket_uid }} .gasket-dims .dim-line,
+    #{{ gasket_uid }} .gasket-dims .dim-ext{
+      stroke: var(--rt-blue);
+      opacity: .60;
+      stroke-width: 1;
+      vector-effect: non-scaling-stroke;
+      shape-rendering: geometricPrecision;
+    }
+
+    /* keep labels readable on hatch */
+    #{{ gasket_uid }} .gasket-dims .dim-text{
+      fill: var(--rt-blue);
+      opacity: .92;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .2px;
+      font-family: ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial;
+      paint-order: stroke;
+      stroke: #ffffff;
+      stroke-width: 3px;
+      stroke-linejoin: round;
+    }
+
+    #{{ gasket_uid }} .outer-circle,
+    #{{ gasket_uid }} .inner-circle{
+      fill: none;
+      stroke: var(--rt-blue);
+      opacity: .72;
+      stroke-width: 2;
+      vector-effect: non-scaling-stroke;
+    }
+
+    #{{ gasket_uid }} .hole-outlines circle{
+      fill: #fff;
+      stroke: var(--rt-blue);
+      stroke-width: 1;
+      opacity: .60;
+      vector-effect: non-scaling-stroke;
+    }
+
+    /* ✅ PCD dotted line MORE visible */
+    #{{ gasket_uid }} .pcd-circle{
+      fill: none;
+      stroke: var(--rt-blue);
+      stroke-width: 1.25;     /* slightly thicker */
+      opacity: .55;           /* darker */
+      stroke-dasharray: 1 4;  /* a bit denser */
+      stroke-linecap: round;
+      vector-effect: non-scaling-stroke;
+    }
+
+    /* thickness strip lines */
+    #{{ gasket_uid }} .thk .thk-vert,
+    #{{ gasket_uid }} .thk .thk-h{
+      stroke: var(--rt-blue);
+      opacity: .62;
+      stroke-width: 1;
+      vector-effect: non-scaling-stroke;
+      shape-rendering: geometricPrecision;
+    }
+
+    /* ID indicator dotted lines inside strip */
+    #{{ gasket_uid }} .thk .thk-id-top,
+    #{{ gasket_uid }} .thk .thk-id-bot{
+      stroke: var(--rt-blue);
+      opacity: .45;           /* a touch darker too */
+      stroke-width: 1;
+      stroke-dasharray: 1 4;
+      stroke-linecap: round;
+      vector-effect: non-scaling-stroke;
+      shape-rendering: geometricPrecision;
+    }
+  </style>
+
+  <script>
+  (function () {
+    var uid = {{ product.id | json }};
+    window.__gasket2dRendered = window.__gasket2dRendered || {};
+    if (window.__gasket2dRendered[uid]) return;
+    window.__gasket2dRendered[uid] = true;
+
+    var el = document.getElementById({{ gasket_uid | json }});
+    if (!el) return;
+
+    var odRaw = {{ od_val | json }};
+    var idRaw = {{ id_val | json }};
+    var pcdRaw = {{ pcd_val | json }};
+    var holeDiaRaw = {{ hole_dia_val | json }};
+    var holeCountRaw = {{ hole_count_val | json }};
+    var thkRaw = {{ thk_val | json }};
+
+    function extractNumber(v){
+      if (v == null) return null;
+      if (typeof v === "object") {
+        if (v.value != null) v = v.value;
+        else if (v.amount != null) v = v.amount;
+        else if (v.number != null) v = v.number;
+        else return null;
+      }
+      if (typeof v === "number") return v;
+      var s = String(v).trim().replace(",", ".");
+      var m = s.match(/(\d+(\.\d+)?)/);
+      return m ? Number(m[1]) : null;
+    }
+
+    function fmt(n){
+      if (n == null) return "";
+      var r = Math.round(n * 10) / 10;
+      return String(r).replace(".", ",");
+    }
+
+    function qs(sel){ return el.querySelector(sel); }
+    function setA(node,a,v){ if(node) node.setAttribute(a, String(v)); }
+
+    var svg = qs("svg.gasket-2d__svg");
+    if(!svg) return;
+
+    var od = extractNumber(odRaw);
+    var id = extractNumber(idRaw);
+    var pcd = extractNumber(pcdRaw);
+    var holeDia = extractNumber(holeDiaRaw);
+    var holeCountNum = extractNumber(holeCountRaw);
+    var holeCount = (holeCountNum != null) ? Math.max(1, Math.round(holeCountNum)) : null;
+    var H = extractNumber(thkRaw);
+
+    if (!od || !id || id <= 0 || od <= 0 || id >= od) {
+      el.style.display = "none";
+      return;
+    }
+
+    var hasH = !!(H && H > 0);
+    var hasHoles = !!(pcd && holeDia && holeCount && holeCount > 0);
+
+    /* aspect ratio switch */
+    el.style.setProperty("--rt-ar", hasHoles ? "6 / 5" : "1 / 1");
+
+    // Center + sizing
+    var cx = hasH ? 160 : 220;
+    var cy = hasHoles ? 160 : 170;
+
+    // no holes: slightly smaller (as requested)
+    var rOuter = (!hasH && !hasHoles) ? 96 : 90;
+
+    var scale = rOuter / (od / 2);
+    var rInner = (id / 2) * scale;
+
+    // Update centers
+    var outer = qs(".outer-circle");
+    var inner = qs(".inner-circle");
+    var maskOuter = qs(".mask-outer");
+    var maskInner = qs(".mask-inner");
+    var pcdCircle = qs(".pcd-circle");
+
+    [outer, inner, maskOuter, maskInner, pcdCircle].forEach(function(node){
+      if(!node) return;
+      setA(node,"cx", cx);
+      setA(node,"cy", cy);
+    });
+
+    setA(outer, "r", rOuter);
+    setA(inner, "r", rInner);
+    setA(maskOuter, "r", rOuter);
+    setA(maskInner, "r", rInner);
+
+    // OD/ID dims
+    var yDimOD = 34, yDimID = 58;
+    var xOL = cx - rOuter, xOR = cx + rOuter;
+    var xIL = cx - rInner, xIR = cx + rInner;
+
+    // OD
+    setA(qs(".od-ext-l"), "x1", xOL); setA(qs(".od-ext-l"), "x2", xOL);
+    setA(qs(".od-ext-l"), "y1", yDimOD); setA(qs(".od-ext-l"), "y2", cy);
+
+    setA(qs(".od-ext-r"), "x1", xOR); setA(qs(".od-ext-r"), "x2", xOR);
+    setA(qs(".od-ext-r"), "y1", yDimOD); setA(qs(".od-ext-r"), "y2", cy);
+
+    setA(qs(".od-line"), "x1", xOL); setA(qs(".od-line"), "x2", xOR);
+    setA(qs(".od-line"), "y1", yDimOD); setA(qs(".od-line"), "y2", yDimOD);
+
+    setA(qs(".od-text"), "x", cx); setA(qs(".od-text"), "y", yDimOD - 8);
+    var odT = qs(".od-text"); if(odT) odT.textContent = fmt(od) + " mm";
+
+    // ID
+    setA(qs(".id-ext-l"), "x1", xIL); setA(qs(".id-ext-l"), "x2", xIL);
+    setA(qs(".id-ext-l"), "y1", yDimID); setA(qs(".id-ext-l"), "y2", cy);
+
+    setA(qs(".id-ext-r"), "x1", xIR); setA(qs(".id-ext-r"), "x2", xIR);
+    setA(qs(".id-ext-r"), "y1", yDimID); setA(qs(".id-ext-r"), "y2", cy);
+
+    setA(qs(".id-line"), "x1", xIL); setA(qs(".id-line"), "x2", xIR);
+    setA(qs(".id-line"), "y1", yDimID); setA(qs(".id-line"), "y2", yDimID);
+
+    setA(qs(".id-text"), "x", cx); setA(qs(".id-text"), "y", yDimID - 8);
+    var idT = qs(".id-text"); if(idT) idT.textContent = fmt(id) + " mm";
+
+    // Holes / PCD reset
+    var maskHolesGroup = qs(".mask-holes");
+    var holeOutlinesGroup = qs(".hole-outlines");
+    if (maskHolesGroup) maskHolesGroup.innerHTML = "";
+    if (holeOutlinesGroup) holeOutlinesGroup.innerHTML = "";
+    setA(pcdCircle, "r", 0);
+
+    ["pcd-ext-l","pcd-ext-r","pcd-line","pcd-text","hole-ext-l","hole-ext-r","hole-line","hole-text"].forEach(function(cls){
+      var n = qs("." + cls);
+      if (n) n.style.display = "none";
+    });
+
+    var yDimPCD = null;
+
+    if (hasHoles) {
+      ["pcd-ext-l","pcd-ext-r","pcd-line","pcd-text","hole-ext-l","hole-ext-r","hole-line","hole-text"].forEach(function(cls){
+        var n = qs("." + cls);
+        if (n) n.style.display = "";
+      });
+
+      var rPcd = (pcd / 2) * scale;
+      var rHole = (holeDia / 2) * scale;
+
+      setA(pcdCircle, "r", rPcd);
+
+      // create holes
+      var NS = "http://www.w3.org/2000/svg";
+      var fragMask = document.createDocumentFragment();
+      var fragOut = document.createDocumentFragment();
+      var step = (Math.PI * 2) / holeCount;
+      var rot = (90 * Math.PI) / 180;
+
+      for (var i = 0; i < holeCount; i++) {
+        var a = rot + i * step;
+        var x = cx + rPcd * Math.cos(a);
+        var y = cy + rPcd * Math.sin(a);
+
+        var cMask = document.createElementNS(NS, "circle");
+        setA(cMask, "cx", x); setA(cMask, "cy", y); setA(cMask, "r", rHole);
+        cMask.setAttribute("fill", "black");
+        fragMask.appendChild(cMask);
+
+        var cOut = document.createElementNS(NS, "circle");
+        setA(cOut, "cx", x); setA(cOut, "cy", y); setA(cOut, "r", rHole);
+        fragOut.appendChild(cOut);
+      }
+
+      if(maskHolesGroup) maskHolesGroup.appendChild(fragMask);
+      if(holeOutlinesGroup) holeOutlinesGroup.appendChild(fragOut);
+
+      var yDimHole = cy + rOuter + 42;
+      yDimPCD = yDimHole + 44;
+
+      // HOLE Ø
+      var holeCx = cx;
+      var holeCy = cy + rPcd;
+      var xHL = holeCx - rHole;
+      var xHR = holeCx + rHole;
+
+      setA(qs(".hole-ext-l"), "x1", xHL); setA(qs(".hole-ext-l"), "x2", xHL);
+      setA(qs(".hole-ext-l"), "y1", holeCy); setA(qs(".hole-ext-l"), "y2", yDimHole);
+
+      setA(qs(".hole-ext-r"), "x1", xHR); setA(qs(".hole-ext-r"), "x2", xHR);
+      setA(qs(".hole-ext-r"), "y1", holeCy); setA(qs(".hole-ext-r"), "y2", yDimHole);
+
+      setA(qs(".hole-line"), "x1", xHL); setA(qs(".hole-line"), "x2", xHR);
+      setA(qs(".hole-line"), "y1", yDimHole); setA(qs(".hole-line"), "y2", yDimHole);
+
+      setA(qs(".hole-text"), "x", holeCx); setA(qs(".hole-text"), "y", yDimHole + 16);
+      var hT = qs(".hole-text"); if(hT) hT.textContent = "Ø " + fmt(holeDia) + " mm";
+
+      // PCD
+      var xPL = cx - rPcd, xPR = cx + rPcd;
+
+      setA(qs(".pcd-ext-l"), "x1", xPL); setA(qs(".pcd-ext-l"), "x2", xPL);
+      setA(qs(".pcd-ext-l"), "y1", yDimPCD); setA(qs(".pcd-ext-l"), "y2", cy);
+
+      setA(qs(".pcd-ext-r"), "x1", xPR); setA(qs(".pcd-ext-r"), "x2", xPR);
+      setA(qs(".pcd-ext-r"), "y1", yDimPCD); setA(qs(".pcd-ext-r"), "y2", cy);
+
+      setA(qs(".pcd-line"), "x1", xPL); setA(qs(".pcd-line"), "x2", xPR);
+      setA(qs(".pcd-line"), "y1", yDimPCD); setA(qs(".pcd-line"), "y2", yDimPCD);
+
+      setA(qs(".pcd-text"), "x", cx); setA(qs(".pcd-text"), "y", yDimPCD + 16);
+      var pT = qs(".pcd-text"); if(pT) pT.textContent = "PCD " + fmt(pcd) + " mm";
+    }
+
+    // Thickness (H) EXACT like your example
+    var thkGroup = qs(".thk");
+    if (thkGroup) thkGroup.style.display = "none";
+
+    var thkRightEdge = null;
+    var thkBottomEdge = null;
+
+    if (hasH && thkGroup) {
+      thkGroup.style.display = "";
+
+      var yTopOD = cy - rOuter;
+      var yBotOD = cy + rOuter;
+
+      var yTopID = cy - rInner;
+      var yBotID = cy + rInner;
+
+      var gap = 45;
+      var stripW = 10;
+      var x1 = cx + rOuter + gap;
+      var x2 = x1 + stripW;
+
+      setA(qs(".thk-left"), "x1", x1); setA(qs(".thk-left"), "x2", x1);
+      setA(qs(".thk-left"), "y1", yTopOD); setA(qs(".thk-left"), "y2", yBotOD);
+
+      setA(qs(".thk-right"), "x1", x2); setA(qs(".thk-right"), "x2", x2);
+      setA(qs(".thk-right"), "y1", yTopOD); setA(qs(".thk-right"), "y2", yBotOD);
+
+      setA(qs(".thk-top"), "x1", x1); setA(qs(".thk-top"), "x2", x2);
+      setA(qs(".thk-top"), "y1", yTopOD); setA(qs(".thk-top"), "y2", yTopOD);
+
+      setA(qs(".thk-bot"), "x1", x1); setA(qs(".thk-bot"), "x2", x2);
+      setA(qs(".thk-bot"), "y1", yBotOD); setA(qs(".thk-bot"), "y2", yBotOD);
+
+      setA(qs(".thk-id-top"), "x1", x1); setA(qs(".thk-id-top"), "x2", x2);
+      setA(qs(".thk-id-top"), "y1", yTopID); setA(qs(".thk-id-top"), "y2", yTopID);
+
+      setA(qs(".thk-id-bot"), "x1", x1); setA(qs(".thk-id-bot"), "x2", x2);
+      setA(qs(".thk-id-bot"), "y1", yBotID); setA(qs(".thk-id-bot"), "y2", yBotID);
+
+      var yDim = yTopOD - 22;
+      setA(qs(".thk-dim"), "x1", x1); setA(qs(".thk-dim"), "x2", x2);
+      setA(qs(".thk-dim"), "y1", yDim); setA(qs(".thk-dim"), "y2", yDim);
+
+      setA(qs(".thk-text"), "x", (x1 + x2) / 2);
+      setA(qs(".thk-text"), "y", yDim - 8);
+      var tT = qs(".thk-text"); if(tT) tT.textContent = fmt(H) + " mm";
+
+      thkRightEdge = x2;
+      thkBottomEdge = yBotOD;
+    }
+
+    // Deterministic viewBox (no getBBox)
+    var padTop = 22;
+    var padBot = hasHoles ? 32 : 22;
+    var padLR  = hasH ? 30 : 22;
+
+    var xMin = (cx - rOuter) - padLR;
+    var xMax = (cx + rOuter) + padLR;
+
+    if(thkRightEdge != null){
+      xMax = Math.max(xMax, thkRightEdge + padLR);
+    }
+
+    var yMin = (yDimOD - padTop);
+
+    var yMax;
+    if(hasHoles){
+      yMax = (yDimPCD != null ? (yDimPCD + 26) : (cy + rOuter + 98)) + padBot;
+    } else {
+      yMax = (cy + rOuter) + padBot;
+    }
+
+    if(thkBottomEdge != null){
+      yMax = Math.max(yMax, thkBottomEdge + padBot);
+    }
+
+    var w = Math.max(10, xMax - xMin);
+    var h = Math.max(10, yMax - yMin);
+
+    svg.setAttribute("viewBox", [xMin, yMin, w, h].join(" "));
+  })();
+  </script>
+{%- endif -%}

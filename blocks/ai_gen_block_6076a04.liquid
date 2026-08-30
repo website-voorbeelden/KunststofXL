@@ -1,0 +1,600 @@
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-usp-bar-{{ ai_gen_id }} {
+    display: none;
+    width: 100%;
+  }
+
+  @media (min-width: 768px) {
+    .ai-usp-bar-{{ ai_gen_id }} {
+      display: block;
+      background-color: {{ block.settings.background_color }};
+      padding: {{ block.settings.vertical_padding }}px 0;
+    }
+
+    .ai-usp-bar-inner-{{ ai_gen_id }} {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      width: 100%;
+      max-width: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .ai-usp-bar-left-{{ ai_gen_id }} {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: {{ block.settings.usp_gap }}px;
+      min-width: 0;
+      flex: 1 1 auto;
+      overflow: hidden;
+    }
+
+    .ai-usp-bar-right-{{ ai_gen_id }} {
+      display: flex;
+      align-items: center;
+      gap: {{ block.settings.link_gap }}px;
+      flex: 0 0 auto;
+      white-space: nowrap;
+    }
+
+    .ai-usp-item-{{ ai_gen_id }} {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+      white-space: nowrap;
+    }
+
+    .ai-usp-link-{{ ai_gen_id }} {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: inherit;
+      white-space: nowrap;
+      transition: color 0.15s ease;
+    }
+
+    .ai-usp-check-{{ ai_gen_id }} {
+      width: {{ block.settings.icon_size }}px;
+      height: {{ block.settings.icon_size }}px;
+      flex: 0 0 auto;
+      color: {{ block.settings.icon_color }};
+    }
+
+    .ai-usp-check-{{ ai_gen_id }} svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .ai-usp-text-{{ ai_gen_id }} {
+      font-size: {{ block.settings.text_size }}px;
+      font-weight: {{ block.settings.text_weight }};
+      color: {{ block.settings.text_color }};
+      line-height: 1.2;
+      white-space: nowrap;
+      transition: color 0.15s ease;
+    }
+
+    .ai-usp-text-{{ ai_gen_id }} em,
+    .ai-usp-text-{{ ai_gen_id }} strong {
+      color: {{ block.settings.highlight_color }};
+      font-weight: {{ block.settings.highlight_weight }};
+      font-style: normal;
+    }
+
+    .ai-usp-link-{{ ai_gen_id }}:hover .ai-usp-text-{{ ai_gen_id }} {
+      color: {{ block.settings.link_hover_color }};
+    }
+
+    .ai-usp-link-{{ ai_gen_id }}:hover .ai-usp-text-{{ ai_gen_id }} em,
+    .ai-usp-link-{{ ai_gen_id }}:hover .ai-usp-text-{{ ai_gen_id }} strong {
+      color: {{ block.settings.highlight_color }};
+    }
+
+    .ai-usp-toplinks-{{ ai_gen_id }} {
+      display: inline-flex;
+      align-items: center;
+      gap: {{ block.settings.link_gap }}px;
+      font-size: {{ block.settings.link_text_size }}px;
+      font-weight: {{ block.settings.link_text_weight }};
+      line-height: 1.2;
+    }
+
+    .ai-usp-toplinks-link-{{ ai_gen_id }} {
+      color: {{ block.settings.link_text_color }};
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+
+    .ai-usp-toplinks-link-{{ ai_gen_id }}:hover {
+      color: {{ block.settings.link_text_hover_color }};
+    }
+
+    .ai-usp-bar-logo-{{ ai_gen_id }} {
+      display: flex;
+      align-items: center;
+      flex: 0 0 auto;
+    }
+
+    .ai-usp-bar-logo-{{ ai_gen_id }} img {
+      height: {{ block.settings.logo_height }}px;
+      width: auto;
+      display: block;
+      object-fit: contain;
+    }
+  }
+{% endstyle %}
+
+<div class="ai-usp-bar-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  <div class="ai-usp-bar-inner-{{ ai_gen_id }}">
+
+    <!-- LEFT: USPs -->
+    <div class="ai-usp-bar-left-{{ ai_gen_id }}" role="list" aria-label="USP's">
+      {% if block.settings.usp_1_enabled %}
+        <div class="ai-usp-item-{{ ai_gen_id }}" role="listitem">
+          {% if block.settings.usp_1_link != blank %}
+            <a class="ai-usp-link-{{ ai_gen_id }}" href="{{ block.settings.usp_1_link }}">
+              <span class="ai-usp-check-{{ ai_gen_id }}" aria-hidden="true">
+                <svg viewBox="0 0 20 20" focusable="false" aria-hidden="true"><path fill-rule="evenodd" clip-rule="evenodd" d="M19.358 2.981c.788.702.86 1.912.163 2.704L9.68 16.855a1.9 1.9 0 0 1-2.773.084l-6.35-6.383a1.92 1.92 0 0 1 0-2.708 1.9 1.9 0 0 1 2.695 0l5.081 5.043 8.336-9.746a1.9 1.9 0 0 1 2.69-.164Z" fill="currentColor"></path></svg>
+              </span>
+              <span class="ai-usp-text-{{ ai_gen_id }}">{{ block.settings.usp_1_text }}</span>
+            </a>
+          {% else %}
+            <span class="ai-usp-check-{{ ai_gen_id }}" aria-hidden="true">
+              <svg viewBox="0 0 20 20" focusable="false" aria-hidden="true"><path fill-rule="evenodd" clip-rule="evenodd" d="M19.358 2.981c.788.702.86 1.912.163 2.704L9.68 16.855a1.9 1.9 0 0 1-2.773.084l-6.35-6.383a1.92 1.92 0 0 1 0-2.708 1.9 1.9 0 0 1 2.695 0l5.081 5.043 8.336-9.746a1.9 1.9 0 0 1 2.69-.164Z" fill="currentColor"></path></svg>
+            </span>
+            <span class="ai-usp-text-{{ ai_gen_id }}">{{ block.settings.usp_1_text }}</span>
+          {% endif %}
+        </div>
+      {% endif %}
+
+      {% if block.settings.usp_2_enabled %}
+        <div class="ai-usp-item-{{ ai_gen_id }}" role="listitem">
+          {% if block.settings.usp_2_link != blank %}
+            <a class="ai-usp-link-{{ ai_gen_id }}" href="{{ block.settings.usp_2_link }}">
+              <span class="ai-usp-check-{{ ai_gen_id }}" aria-hidden="true">
+                <svg viewBox="0 0 20 20" focusable="false" aria-hidden="true"><path fill-rule="evenodd" clip-rule="evenodd" d="M19.358 2.981c.788.702.86 1.912.163 2.704L9.68 16.855a1.9 1.9 0 0 1-2.773.084l-6.35-6.383a1.92 1.92 0 0 1 0-2.708 1.9 1.9 0 0 1 2.695 0l5.081 5.043 8.336-9.746a1.9 1.9 0 0 1 2.69-.164Z" fill="currentColor"></path></svg>
+              </span>
+              <span class="ai-usp-text-{{ ai_gen_id }}">{{ block.settings.usp_2_text }}</span>
+            </a>
+          {% else %}
+            <span class="ai-usp-check-{{ ai_gen_id }}" aria-hidden="true">
+              <svg viewBox="0 0 20 20" focusable="false" aria-hidden="true"><path fill-rule="evenodd" clip-rule="evenodd" d="M19.358 2.981c.788.702.86 1.912.163 2.704L9.68 16.855a1.9 1.9 0 0 1-2.773.084l-6.35-6.383a1.92 1.92 0 0 1 0-2.708 1.9 1.9 0 0 1 2.695 0l5.081 5.043 8.336-9.746a1.9 1.9 0 0 1 2.69-.164Z" fill="currentColor"></path></svg>
+            </span>
+            <span class="ai-usp-text-{{ ai_gen_id }}">{{ block.settings.usp_2_text }}</span>
+          {% endif %}
+        </div>
+      {% endif %}
+
+      {% if block.settings.usp_3_enabled %}
+        <div class="ai-usp-item-{{ ai_gen_id }}" role="listitem">
+          {% if block.settings.usp_3_link != blank %}
+            <a class="ai-usp-link-{{ ai_gen_id }}" href="{{ block.settings.usp_3_link }}">
+              <span class="ai-usp-check-{{ ai_gen_id }}" aria-hidden="true">
+                <svg viewBox="0 0 20 20" focusable="false" aria-hidden="true"><path fill-rule="evenodd" clip-rule="evenodd" d="M19.358 2.981c.788.702.86 1.912.163 2.704L9.68 16.855a1.9 1.9 0 0 1-2.773.084l-6.35-6.383a1.92 1.92 0 0 1 0-2.708 1.9 1.9 0 0 1 2.695 0l5.081 5.043 8.336-9.746a1.9 1.9 0 0 1 2.69-.164Z" fill="currentColor"></path></svg>
+              </span>
+              <span class="ai-usp-text-{{ ai_gen_id }}">{{ block.settings.usp_3_text }}</span>
+            </a>
+          {% else %}
+            <span class="ai-usp-check-{{ ai_gen_id }}" aria-hidden="true">
+              <svg viewBox="0 0 20 20" focusable="false" aria-hidden="true"><path fill-rule="evenodd" clip-rule="evenodd" d="M19.358 2.981c.788.702.86 1.912.163 2.704L9.68 16.855a1.9 1.9 0 0 1-2.773.084l-6.35-6.383a1.92 1.92 0 0 1 0-2.708 1.9 1.9 0 0 1 2.695 0l5.081 5.043 8.336-9.746a1.9 1.9 0 0 1 2.69-.164Z" fill="currentColor"></path></svg>
+            </span>
+            <span class="ai-usp-text-{{ ai_gen_id }}">{{ block.settings.usp_3_text }}</span>
+          {% endif %}
+        </div>
+      {% endif %}
+
+      {% if block.settings.usp_4_enabled %}
+        <div class="ai-usp-item-{{ ai_gen_id }}" role="listitem">
+          {% if block.settings.usp_4_link != blank %}
+            <a class="ai-usp-link-{{ ai_gen_id }}" href="{{ block.settings.usp_4_link }}">
+              <span class="ai-usp-check-{{ ai_gen_id }}" aria-hidden="true">
+                <svg viewBox="0 0 20 20" focusable="false" aria-hidden="true"><path fill-rule="evenodd" clip-rule="evenodd" d="M19.358 2.981c.788.702.86 1.912.163 2.704L9.68 16.855a1.9 1.9 0 0 1-2.773.084l-6.35-6.383a1.92 1.92 0 0 1 0-2.708 1.9 1.9 0 0 1 2.695 0l5.081 5.043 8.336-9.746a1.9 1.9 0 0 1 2.69-.164Z" fill="currentColor"></path></svg>
+              </span>
+              <span class="ai-usp-text-{{ ai_gen_id }}">{{ block.settings.usp_4_text }}</span>
+            </a>
+          {% else %}
+            <span class="ai-usp-check-{{ ai_gen_id }}" aria-hidden="true">
+              <svg viewBox="0 0 20 20" focusable="false" aria-hidden="true"><path fill-rule="evenodd" clip-rule="evenodd" d="M19.358 2.981c.788.702.86 1.912.163 2.704L9.68 16.855a1.9 1.9 0 0 1-2.773.084l-6.35-6.383a1.92 1.92 0 0 1 0-2.708 1.9 1.9 0 0 1 2.695 0l5.081 5.043 8.336-9.746a1.9 1.9 0 0 1 2.69-.164Z" fill="currentColor"></path></svg>
+            </span>
+            <span class="ai-usp-text-{{ ai_gen_id }}">{{ block.settings.usp_4_text }}</span>
+          {% endif %}
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- RIGHT: logo + utility links -->
+    <div class="ai-usp-bar-right-{{ ai_gen_id }}">
+
+      {% if block.settings.logo_image != blank and block.settings.logo_position == 'left' %}
+        <div class="ai-usp-bar-logo-{{ ai_gen_id }}">
+          {% if block.settings.logo_link != blank %}
+            <a href="{{ block.settings.logo_link }}">
+              <img src="{{ block.settings.logo_image | image_url }}" alt="{{ block.settings.logo_alt | default: 'Logo' }}" loading="lazy">
+            </a>
+          {% else %}
+            <img src="{{ block.settings.logo_image | image_url }}" alt="{{ block.settings.logo_alt | default: 'Logo' }}" loading="lazy">
+          {% endif %}
+        </div>
+      {% endif %}
+
+      <nav class="ai-usp-toplinks-{{ ai_gen_id }}" aria-label="Utility links">
+        {% if block.settings.link_1_enabled and block.settings.link_1_text != blank %}
+          <a class="ai-usp-toplinks-link-{{ ai_gen_id }}" href="{{ block.settings.link_1_url }}">{{ block.settings.link_1_text }}</a>
+        {% endif %}
+        {% if block.settings.link_2_enabled and block.settings.link_2_text != blank %}
+          <a class="ai-usp-toplinks-link-{{ ai_gen_id }}" href="{{ block.settings.link_2_url }}">{{ block.settings.link_2_text }}</a>
+        {% endif %}
+        {% if block.settings.link_3_enabled and block.settings.link_3_text != blank %}
+          <a class="ai-usp-toplinks-link-{{ ai_gen_id }}" href="{{ block.settings.link_3_url }}">{{ block.settings.link_3_text }}</a>
+        {% endif %}
+      </nav>
+
+      {% if block.settings.logo_image != blank and block.settings.logo_position == 'right' %}
+        <div class="ai-usp-bar-logo-{{ ai_gen_id }}">
+          {% if block.settings.logo_link != blank %}
+            <a href="{{ block.settings.logo_link }}">
+              <img src="{{ block.settings.logo_image | image_url }}" alt="{{ block.settings.logo_alt | default: 'Logo' }}" loading="lazy">
+            </a>
+          {% else %}
+            <img src="{{ block.settings.logo_image | image_url }}" alt="{{ block.settings.logo_alt | default: 'Logo' }}" loading="lazy">
+          {% endif %}
+        </div>
+      {% endif %}
+
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "USP bar",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "vertical_padding",
+      "label": "Vertical padding",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 10
+    },
+    {
+      "type": "range",
+      "id": "usp_gap",
+      "label": "USP spacing",
+      "min": 8,
+      "max": 48,
+      "step": 4,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Logo / afbeelding"
+    },
+    {
+      "type": "image_picker",
+      "id": "logo_image",
+      "label": "Afbeelding"
+    },
+    {
+      "type": "select",
+      "id": "logo_position",
+      "label": "Positie (t.o.v. utility links)",
+      "options": [
+        { "value": "left",  "label": "Links van de links" },
+        { "value": "right", "label": "Rechts van de links" }
+      ],
+      "default": "right"
+    },
+    {
+      "type": "range",
+      "id": "logo_height",
+      "label": "Hoogte afbeelding",
+      "min": 16,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "text",
+      "id": "logo_alt",
+      "label": "Alt-tekst",
+      "default": "Logo"
+    },
+    {
+      "type": "url",
+      "id": "logo_link",
+      "label": "Link (optioneel)"
+    },
+    {
+      "type": "header",
+      "content": "USP 1"
+    },
+    {
+      "type": "checkbox",
+      "id": "usp_1_enabled",
+      "label": "Enable USP 1",
+      "default": true
+    },
+    {
+      "type": "richtext",
+      "id": "usp_1_text",
+      "label": "Text",
+      "info": "Use bold or italic to highlight text",
+      "default": "<p>Voor 17.00 besteld, <strong>zelfde werkdag</strong> verzonden</p>"
+    },
+    {
+      "type": "url",
+      "id": "usp_1_link",
+      "label": "Link"
+    },
+    {
+      "type": "header",
+      "content": "USP 2"
+    },
+    {
+      "type": "checkbox",
+      "id": "usp_2_enabled",
+      "label": "Enable USP 2",
+      "default": true
+    },
+    {
+      "type": "richtext",
+      "id": "usp_2_text",
+      "label": "Text",
+      "info": "Use bold or italic to highlight text",
+      "default": "<p>Altijd op <strong>voorraad</strong></p>"
+    },
+    {
+      "type": "url",
+      "id": "usp_2_link",
+      "label": "Link"
+    },
+    {
+      "type": "header",
+      "content": "USP 3"
+    },
+    {
+      "type": "checkbox",
+      "id": "usp_3_enabled",
+      "label": "Enable USP 3",
+      "default": true
+    },
+    {
+      "type": "richtext",
+      "id": "usp_3_text",
+      "label": "Text",
+      "info": "Use bold or italic to highlight text",
+      "default": "<p><strong>Scherpe</strong> prijzen</p>"
+    },
+    {
+      "type": "url",
+      "id": "usp_3_link",
+      "label": "Link"
+    },
+    {
+      "type": "header",
+      "content": "USP 4"
+    },
+    {
+      "type": "checkbox",
+      "id": "usp_4_enabled",
+      "label": "Enable USP 4",
+      "default": true
+    },
+    {
+      "type": "richtext",
+      "id": "usp_4_text",
+      "label": "Text",
+      "info": "Use bold or italic to highlight text",
+      "default": "<p><strong>Maatwerk</strong> mogelijk</p>"
+    },
+    {
+      "type": "url",
+      "id": "usp_4_link",
+      "label": "Link"
+    },
+    {
+      "type": "header",
+      "content": "USP style"
+    },
+    {
+      "type": "range",
+      "id": "icon_size",
+      "label": "Icon size",
+      "min": 12,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "default": 18
+    },
+    {
+      "type": "color",
+      "id": "icon_color",
+      "label": "Icon color",
+      "default": "#74C200"
+    },
+    {
+      "type": "range",
+      "id": "text_size",
+      "label": "Text size",
+      "min": 10,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "text_weight",
+      "label": "Text weight",
+      "min": 400,
+      "max": 900,
+      "step": 100,
+      "default": 600
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "highlight_color",
+      "label": "Highlight color",
+      "default": "#FF7300"
+    },
+    {
+      "type": "range",
+      "id": "highlight_weight",
+      "label": "Highlight weight",
+      "min": 400,
+      "max": 900,
+      "step": 100,
+      "default": 700
+    },
+    {
+      "type": "color",
+      "id": "link_hover_color",
+      "label": "Link hover color",
+      "default": "#003878"
+    },
+    {
+      "type": "header",
+      "content": "Utility link 1"
+    },
+    {
+      "type": "checkbox",
+      "id": "link_1_enabled",
+      "label": "Enable link 1",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "link_1_text",
+      "label": "Text",
+      "default": "Inloggen"
+    },
+    {
+      "type": "url",
+      "id": "link_1_url",
+      "label": "URL"
+    },
+    {
+      "type": "header",
+      "content": "Utility link 2"
+    },
+    {
+      "type": "checkbox",
+      "id": "link_2_enabled",
+      "label": "Enable link 2",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "link_2_text",
+      "label": "Text",
+      "default": "Klantenservice"
+    },
+    {
+      "type": "url",
+      "id": "link_2_url",
+      "label": "URL"
+    },
+    {
+      "type": "header",
+      "content": "Utility link 3"
+    },
+    {
+      "type": "checkbox",
+      "id": "link_3_enabled",
+      "label": "Enable link 3",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "link_3_text",
+      "label": "Text",
+      "default": "Over ons"
+    },
+    {
+      "type": "url",
+      "id": "link_3_url",
+      "label": "URL"
+    },
+    {
+      "type": "header",
+      "content": "Utility links style"
+    },
+    {
+      "type": "range",
+      "id": "link_gap",
+      "label": "Link spacing",
+      "min": 8,
+      "max": 32,
+      "step": 4,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "link_text_size",
+      "label": "Text size",
+      "min": 10,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "link_text_weight",
+      "label": "Text weight",
+      "min": 400,
+      "max": 900,
+      "step": 100,
+      "default": 800
+    },
+    {
+      "type": "color",
+      "id": "link_text_color",
+      "label": "Text color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "link_text_hover_color",
+      "label": "Hover color",
+      "default": "#003878"
+    }
+  ],
+  "presets": [
+    {
+      "name": "USP bar"
+    }
+  ]
+}
+{% endschema %}

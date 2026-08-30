@@ -1,0 +1,168 @@
+<script>
+(() => {
+  document.addEventListener('DOMContentLoaded', function () {
+    const VAT_RATE = 0.21;
+    const formatCurrency = new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR' });
+
+    /* ✅ 1 metafield (multiline text) met JSON */
+    const volumeDiscountsText = {{ product.metafields.custom.volume_discounts.value | default: '' | strip | json }};
+
+    function safeJsonParse(str) {
+      if (!str || typeof str !== 'string') return null;
+      try { return JSON.parse(str); } catch { return null; }
+    }
+
+    function normalizeDiscount(val) {
+      let n = Number(val);
+      if (!Number.isFinite(n)) return 0;
+      if (n > 1) n = n / 100; // allow 50 or 0.50
+      return Math.max(0, Math.min(0.99, n));
+    }
+
+    function getTiers() {
+      const obj = safeJsonParse(volumeDiscountsText);
+      const tiers = obj?.tiers;
+      if (!Array.isArray(tiers)) return [];
+      return tiers
+        .map(t => ({ min: Number(t.min), discount: normalizeDiscount(t.discount) }))
+        .filter(t => Number.isFinite(t.min) && t.min >= 2 && t.discount > 0)
+        .sort((a, b) => a.min - b.min);
+    }
+
+    const tiers = getTiers();
+
+    function discountForQty(qty) {
+      let d = 0;
+      for (const t of tiers) {
+        if (qty >= t.min) d = t.discount;
+      }
+      return d;
+    }
+
+    function findPriceElement() {
+      // Dawn: prefer sale price if present, else regular
+      return document.querySelector(
+        '.price__sale .price-item--sale, .price__regular .price-item--regular, .price-item--regular'
+      );
+    }
+
+    function parseDisplayedPriceIncl(priceEl) {
+      if (!priceEl) return null;
+      const raw = (priceEl.textContent || '').trim();
+      let num = raw.replace(/[^\d.,]/g, '');
+      if (!num) return null;
+
+      // NL style: 1.234,56 => 1234.56
+      if (num.includes('.') && num.includes(',')) num = num.replace(/\./g, '').replace(',', '.');
+      else if (num.includes(',')) num = num.replace(',', '.');
+
+      const v = parseFloat(num);
+      return Number.isFinite(v) ? v : null;
+    }
+
+    function ensureTotalsUI(priceEl) {
+      const parent = priceEl?.parentNode;
+      if (!parent) return null;
+
+      let excl = parent.querySelector('.price-item--excl');
+      let incl = parent.querySelector('.price-item--incl');
+      let savings = parent.querySelector('.savings-item');
+
+      if (!excl) {
+        excl = document.createElement('div');
+        excl.className = 'price-item--excl';
+        parent.insertBefore(excl, priceEl.nextSibling);
+      }
+      if (!incl) {
+        incl = document.createElement('div');
+        incl.className = 'price-item--incl';
+        parent.insertBefore(incl, excl.nextSibling);
+      }
+      if (!savings) {
+        savings = document.createElement('div');
+        savings.className = 'savings-item';
+        parent.insertBefore(savings, incl.nextSibling);
+      }
+
+      return { excl, incl, savings };
+    }
+
+    const quantityInput = document.querySelector('input[name="quantity"]');
+    if (!quantityInput) {
+      console.error('Hoeveelheid input niet gevonden.');
+      return;
+    }
+
+    function calculate() {
+      const priceEl = findPriceElement();
+      if (!priceEl) {
+        console.error('Prijs element niet gevonden.');
+        return;
+      }
+
+      const basePriceIncl = parseDisplayedPriceIncl(priceEl);
+      if (!Number.isFinite(basePriceIncl)) {
+        console.error('De basisprijs is geen geldig getal.');
+        return;
+      }
+
+      const qty = Math.max(1, parseInt(quantityInput.value, 10) || 1);
+      const discount = discountForQty(qty);
+
+      const unitIncl = basePriceIncl * (1 - discount);
+      const totalIncl = unitIncl * qty;
+      const totalExcl = totalIncl / (1 + VAT_RATE);
+      const totalSavings = (basePriceIncl * qty) - totalIncl;
+
+      const ui = ensureTotalsUI(priceEl);
+      if (!ui) return;
+
+      ui.excl.textContent = `${formatCurrency.format(totalExcl)} (excl. BTW)`;
+      ui.incl.textContent = `${formatCurrency.format(totalIncl)} (incl. BTW)`;
+      ui.savings.textContent = discount > 0 ? `- ${formatCurrency.format(totalSavings)}` : '';
+    }
+
+    quantityInput.addEventListener('input', calculate);
+    quantityInput.addEventListener('change', calculate);
+
+    // ✅ Variant change (Dawn) — re-calc after price updates
+    document.addEventListener('variant:change', () => setTimeout(calculate, 50));
+
+    // ✅ Jouw add-to-cart redirect (voorkom dubbel binden)
+    const addToCartButton = document.querySelector('button[name="add"]');
+    if (addToCartButton && !addToCartButton.dataset.rtCartBound) {
+      addToCartButton.dataset.rtCartBound = '1';
+
+      addToCartButton.addEventListener('click', function (event) {
+        event.preventDefault();
+
+        const idEl = document.querySelector('form[action^="/cart/add"] [name="id"], [name="id"]');
+        const variantId = idEl?.value;
+
+        if (!variantId) {
+          console.error('Variant ID niet gevonden.');
+          return;
+        }
+
+        const formData = {
+          items: [{
+            id: variantId,
+            quantity: Math.max(1, parseInt(quantityInput.value, 10) || 1)
+          }]
+        };
+
+        fetch('/cart/add.js', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(formData)
+        })
+        .then(r => r.json())
+        .then(() => window.location.href = '/cart')
+        .catch(err => console.error('Fout bij toevoegen aan winkelwagen:', err));
+      });
+    }
+
+    calculate();
+  });
+})();
+</script>

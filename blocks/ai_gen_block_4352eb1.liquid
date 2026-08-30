@@ -1,0 +1,408 @@
+{% doc %}
+  @prompt
+    <!-- USP lijst (product-specifiek) -->
+    <div class="rt-usps" role="list" aria-label="USP’s">
+      <div class="rt-usps__item" role="listitem">
+        <span class="rt-usps__icon" aria-hidden="true">
+          <svg viewBox="0 0 20 20" focusable="false" aria-hidden="true">
+            <path fill-rule="evenodd" clip-rule="evenodd"
+              d="M19.358 2.981c.788.702.86 1.912.163 2.704L9.68 16.855a1.9 1.9 0 0 1-2.773.084l-6.35-6.383a1.92 1.92 0 0 1 0-2.708 1.9 1.9 0 0 1 2.695 0l5.081 5.043 8.336-9.746a1.9 1.9 0 0 1 2.69-.164Z"
+              fill="currentColor"></path>
+          </svg>
+        </span>
+        <span class="rt-usps__text">
+          Rustig bestellen met 14 dagen <span class="rt-accent">bedenktijd</span>
+        </span>
+      </div>
+    
+      <div class="rt-usps__item" role="listitem">
+        <span class="rt-usps__icon" aria-hidden="true">
+          <svg viewBox="0 0 20 20" focusable="false" aria-hidden="true">
+            <path fill-rule="evenodd" clip-rule="evenodd"
+              d="M19.358 2.981c.788.702.86 1.912.163 2.704L9.68 16.855a1.9 1.9 0 0 1-2.773.084l-6.35-6.383a1.92 1.92 0 0 1 0-2.708 1.9 1.9 0 0 1 2.695 0l5.081 5.043 8.336-9.746a1.9 1.9 0 0 1 2.69-.164Z"
+              fill="currentColor"></path>
+          </svg>
+        </span>
+        <span class="rt-usps__text">
+          Dit product is op <span class="rt-accent">voorraad</span>
+        </span>
+      </div>
+    
+      <div class="rt-usps__item" role="listitem">
+        <span class="rt-usps__icon" aria-hidden="true">
+          <svg viewBox="0 0 20 20" focusable="false" aria-hidden="true">
+            <path fill-rule="evenodd" clip-rule="evenodd"
+              d="M19.358 2.981c.788.702.86 1.912.163 2.704L9.68 16.855a1.9 1.9 0 0 1-2.773.084l-6.35-6.383a1.92 1.92 0 0 1 0-2.708 1.9 1.9 0 0 1 2.695 0l5.081 5.043 8.336-9.746a1.9 1.9 0 0 1 2.69-.164Z"
+              fill="currentColor"></path>
+          </svg>
+        </span>
+        <span class="rt-usps__text">
+          Specialist in <span class="rt-accent">maatwerk</span>
+        </span>
+      </div>
+    
+      <div class="rt-usps__item" role="listitem">
+        <span class="rt-usps__icon" aria-hidden="true">
+          <svg viewBox="0 0 20 20" focusable="false" aria-hidden="true">
+            <path fill-rule="evenodd" clip-rule="evenodd"
+              d="M19.358 2.981c.788.702.86 1.912.163 2.704L9.68 16.855a1.9 1.9 0 0 1-2.773.084l-6.35-6.383a1.92 1.92 0 0 1 0-2.708 1.9 1.9 0 0 1 2.695 0l5.081 5.043 8.336-9.746a1.9 1.9 0 0 1 2.69-.164Z"
+              fill="currentColor"></path>
+          </svg>
+        </span>
+        <span class="rt-usps__text">
+          <span class="rt-accent">Snel</span> geleverd
+        </span>
+      </div>
+    </div>
+    
+    <style>
+      .rt-usps{
+        --rt-orange:#FF7300;
+        --rt-green:#74C200;
+    
+        display: grid;
+        gap: 10px;
+        margin: 0;
+      }
+    
+      .rt-usps__item{
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+      }
+    
+      .rt-usps__icon{
+        color: var(--rt-green);
+        flex: 0 0 auto;
+        width: 18px;
+        height: 18px;
+        margin-top: 2px;
+      }
+      .rt-usps__icon svg{ width: 100%; height: 100%; display:block; }
+    
+      .rt-usps__text{
+        font-size: 14px;
+        line-height: 1.25;
+        letter-spacing: 0;
+        text-transform: none;
+        color: rgba(0,0,0,.82);
+      }
+    
+      .rt-accent{
+        color: var(--rt-orange);
+        font-weight: 700;
+      }
+    </style>
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-usp-list-{{ ai_gen_id }} {
+    display: block;
+    width: {{ block.settings.desktop_width_percent }}%;
+    max-width: 100%;
+  }
+
+  .ai-usp-list-container-{{ ai_gen_id }} {
+    display: grid;
+    gap: {{ block.settings.item_spacing }}px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .ai-usp-item-{{ ai_gen_id }} {
+    display: flex;
+    align-items: flex-start;
+    gap: {{ block.settings.icon_text_gap }}px;
+  }
+
+  .ai-usp-icon-{{ ai_gen_id }} {
+    color: {{ block.settings.icon_color }};
+    flex: 0 0 auto;
+    width: {{ block.settings.icon_size }}px;
+    height: {{ block.settings.icon_size }}px;
+    margin-top: 2px;
+  }
+
+  .ai-usp-icon-{{ ai_gen_id }} svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  .ai-usp-text-{{ ai_gen_id }} {
+    font-size: {{ block.settings.text_size }}px;
+    line-height: {{ block.settings.line_height }};
+    letter-spacing: 0;
+    text-transform: none;
+    color: {{ block.settings.text_color }};
+  }
+
+  .ai-usp-accent-{{ ai_gen_id }} {
+    color: {{ block.settings.accent_color }};
+    font-weight: {{ block.settings.accent_weight }};
+  }
+{% endstyle %}
+
+<div class="ai-usp-list-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  <ul class="ai-usp-list-container-{{ ai_gen_id }}" role="list" aria-label="USP's">
+    {% for i in (1..4) %}
+      {% liquid
+        assign text_key = 'usp_' | append: i | append: '_text'
+        assign accent_key = 'usp_' | append: i | append: '_accent'
+        assign enabled_key = 'usp_' | append: i | append: '_enabled'
+        
+        assign usp_text = block.settings[text_key]
+        assign usp_accent = block.settings[accent_key]
+        assign usp_enabled = block.settings[enabled_key]
+      %}
+      
+      {% if usp_enabled and usp_text != blank %}
+        <li class="ai-usp-item-{{ ai_gen_id }}" role="listitem">
+          <span class="ai-usp-icon-{{ ai_gen_id }}" aria-hidden="true">
+            <svg viewBox="0 0 20 20" focusable="false" aria-hidden="true">
+              <path
+                fill-rule="evenodd"
+                clip-rule="evenodd"
+                d="M19.358 2.981c.788.702.86 1.912.163 2.704L9.68 16.855a1.9 1.9 0 0 1-2.773.084l-6.35-6.383a1.92 1.92 0 0 1 0-2.708 1.9 1.9 0 0 1 2.695 0l5.081 5.043 8.336-9.746a1.9 1.9 0 0 1 2.69-.164Z"
+                fill="currentColor"
+              ></path>
+            </svg>
+          </span>
+          <span class="ai-usp-text-{{ ai_gen_id }}">
+            {% if usp_accent != blank %}
+              {{ usp_text }} <span class="ai-usp-accent-{{ ai_gen_id }}">{{ usp_accent }}</span>
+            {% else %}
+              {{ usp_text }}
+            {% endif %}
+          </span>
+        </li>
+      {% endif %}
+    {% endfor %}
+  </ul>
+</div>
+
+{% schema %}
+{
+  "name": "Product USP list",
+  "settings": [
+    {
+      "type": "header",
+      "content": "USP 1"
+    },
+    {
+      "type": "checkbox",
+      "id": "usp_1_enabled",
+      "label": "Enable USP 1",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "usp_1_text",
+      "label": "Text",
+      "default": "Rustig bestellen met 14 dagen"
+    },
+    {
+      "type": "text",
+      "id": "usp_1_accent",
+      "label": "Accent text",
+      "default": "bedenktijd"
+    },
+    {
+      "type": "header",
+      "content": "USP 2"
+    },
+    {
+      "type": "checkbox",
+      "id": "usp_2_enabled",
+      "label": "Enable USP 2",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "usp_2_text",
+      "label": "Text",
+      "default": "Dit product is op"
+    },
+    {
+      "type": "text",
+      "id": "usp_2_accent",
+      "label": "Accent text",
+      "default": "voorraad"
+    },
+    {
+      "type": "header",
+      "content": "USP 3"
+    },
+    {
+      "type": "checkbox",
+      "id": "usp_3_enabled",
+      "label": "Enable USP 3",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "usp_3_text",
+      "label": "Text",
+      "default": "Specialist in"
+    },
+    {
+      "type": "text",
+      "id": "usp_3_accent",
+      "label": "Accent text",
+      "default": "maatwerk"
+    },
+    {
+      "type": "header",
+      "content": "USP 4"
+    },
+    {
+      "type": "checkbox",
+      "id": "usp_4_enabled",
+      "label": "Enable USP 4",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "usp_4_text",
+      "label": "Text"
+    },
+    {
+      "type": "text",
+      "id": "usp_4_accent",
+      "label": "Accent text",
+      "default": "Snel"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "desktop_width_percent",
+      "label": "Desktop width",
+      "min": 50,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 100
+    },
+    {
+      "type": "range",
+      "id": "item_spacing",
+      "label": "Spacing between items",
+      "min": 4,
+      "max": 24,
+      "step": 2,
+      "unit": "px",
+      "default": 10
+    },
+    {
+      "type": "range",
+      "id": "icon_text_gap",
+      "label": "Icon to text spacing",
+      "min": 4,
+      "max": 20,
+      "step": 2,
+      "unit": "px",
+      "default": 10
+    },
+    {
+      "type": "header",
+      "content": "Icon style"
+    },
+    {
+      "type": "range",
+      "id": "icon_size",
+      "label": "Icon size",
+      "min": 12,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "default": 18
+    },
+    {
+      "type": "color",
+      "id": "icon_color",
+      "label": "Icon color",
+      "default": "#74C200"
+    },
+    {
+      "type": "header",
+      "content": "Text style"
+    },
+    {
+      "type": "range",
+      "id": "text_size",
+      "label": "Text size",
+      "min": 10,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "select",
+      "id": "line_height",
+      "label": "Line height",
+      "options": [
+        {
+          "value": "1",
+          "label": "Tight"
+        },
+        {
+          "value": "1.25",
+          "label": "Normal"
+        },
+        {
+          "value": "1.5",
+          "label": "Loose"
+        }
+      ],
+      "default": "1.25"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#000000"
+    },
+    {
+      "type": "header",
+      "content": "Accent style"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent color",
+      "default": "#FF7300"
+    },
+    {
+      "type": "select",
+      "id": "accent_weight",
+      "label": "Accent weight",
+      "options": [
+        {
+          "value": "400",
+          "label": "Normal"
+        },
+        {
+          "value": "600",
+          "label": "Semi bold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ],
+      "default": "700"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product USP list"
+    }
+  ]
+}
+{% endschema %}

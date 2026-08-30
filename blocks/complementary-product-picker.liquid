@@ -1,0 +1,152 @@
+{% liquid
+  assign product_resource = closest.product
+  if request.visual_preview_mode and product_resource == blank
+    assign product_resource = collections.all.products.first
+  endif
+%}
+{% unless product_resource == blank %}
+  {%- assign comp_products = product_resource.metafields['shopify--discovery--product_recommendation'].complementary_products.value -%}
+  {% unless comp_products == blank or comp_products.size == 0 %}
+    <div class="complementary-picker">
+
+      {% if block.settings.label != blank %}
+        <div class="complementary-picker__label">
+          <span class="variant-option__name">{{ block.settings.label }}</span>
+        </div>
+      {% endif %}
+
+      {% if block.settings.style == 'dropdown' %}
+        <div class="variant-option variant-option--dropdowns">
+          <div class="variant-option__select-wrapper">
+            <select class="variant-option__select" onchange="if(this.value) window.location.href = this.value;">
+              <option value="" disabled selected>{{ block.settings.placeholder }}</option>
+              {% for comp_product in comp_products %}
+                <option value="{{ comp_product.url }}"{% if product_resource.handle == comp_product.handle %} selected{% endif %}>
+                  {{ comp_product.title }}
+                </option>
+              {% endfor %}
+            </select>
+            <svg aria-hidden="true" focusable="false" class="icon icon-caret" viewBox="0 0 10 6">
+              <path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+            </svg>
+          </div>
+        </div>
+
+      {% elsif block.settings.style == 'images' %}
+        <div class="complementary-picker__images">
+          {% for comp_product in comp_products %}
+            {%- assign border_color = comp_product.metafields.custom.color.value | default: '#e0e0e0' -%}
+            <a href="{{ comp_product.url }}" class="complementary-picker__image-item" title="{{ comp_product.title | escape }}" style="border-color: {{ border_color }};">
+              {% if comp_product.featured_image %}
+                {{ comp_product.featured_image | image_url: width: 200 | image_tag: alt: comp_product.title, loading: 'lazy' }}
+              {% else %}
+                <span class="complementary-picker__image-fallback">{{ comp_product.title | slice: 0, 2 | upcase }}</span>
+              {% endif %}
+            </a>
+          {% endfor %}
+        </div>
+
+      {% endif %}
+
+    </div>
+
+    {% if block.settings.style == 'images' %}
+      <style>
+        .complementary-picker__label {
+          margin-bottom: 4px;
+        }
+        .complementary-picker__images {
+          display: flex;
+          flex-wrap: wrap;
+          gap: {{ block.settings.image_gap }}px;
+          justify-content: flex-start;
+        }
+        .complementary-picker__image-item {
+          display: block;
+          width: {{ block.settings.image_size }}px;
+          height: {{ block.settings.image_size }}px;
+          border: 1px solid #e0e0e0;
+          border-radius: 4px;
+          overflow: hidden;
+          background: #ffffff;
+          flex-shrink: 0;
+        }
+        .complementary-picker__image-item img {
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+          background: #ffffff;
+          display: block;
+        }
+        .complementary-picker__image-item:hover {
+          border-color: #000;
+        }
+        .complementary-picker__image-fallback {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 100%;
+          height: 100%;
+          font-size: 10px;
+          color: #666;
+        }
+      </style>
+    {% endif %}
+
+  {% endunless %}
+{% endunless %}
+
+{% schema %}
+{
+  "name": "Complementary picker",
+  "tag": null,
+  "settings": [
+    {
+      "type": "text",
+      "id": "label",
+      "label": "Label boven picker",
+      "default": "Combineert goed met"
+    },
+    {
+      "type": "text",
+      "id": "placeholder",
+      "label": "Dropdown placeholder",
+      "default": "Selecteer een product",
+      "info": "Alleen zichtbaar bij dropdown stijl"
+    },
+    {
+      "type": "select",
+      "id": "style",
+      "label": "Stijl",
+      "options": [
+        { "value": "dropdown", "label": "Dropdown" },
+        { "value": "images", "label": "Afbeeldingen" }
+      ],
+      "default": "dropdown"
+    },
+    {
+      "type": "range",
+      "id": "image_size",
+      "label": "Afbeelding grootte",
+      "info": "Alleen bij afbeeldingen stijl",
+      "min": 30,
+      "max": 120,
+      "step": 5,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "image_gap",
+      "label": "Ruimte tussen afbeeldingen",
+      "info": "Alleen bij afbeeldingen stijl",
+      "min": 0,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 6
+    }
+  ],
+  "presets": [{ "name": "Complementary picker" }]
+}
+{% endschema %}

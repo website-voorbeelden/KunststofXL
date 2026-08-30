@@ -1,0 +1,71 @@
+{%- comment -%}
+  rt-card-from-price.liquid
+  - Vanaf (excl.) in oranje
+  - Incl. BTW ernaast in licht grijs
+  - Bij prijs 0/0.01/0.02: "Prijs op aanvraag"
+{%- endcomment -%}
+{%- liquid
+assign p = p | default: product | default: card_product
+assign VAT_NUM = 121
+assign VAT_DEN = 100
+assign tiers = blank
+assign max_bp = 0
+-%}
+{%- if p != blank -%}
+{%- liquid
+assign mf = p.metafields.custom.volume_discounts
+if mf != blank
+  assign v = mf.value
+  if v != blank and v.tiers != blank
+    assign tiers = v.tiers
+  else
+    assign s = v | default: mf | to_s
+    if s != blank
+      assign parsed = s | parse_json
+      if parsed != blank and parsed.tiers != blank
+        assign tiers = parsed.tiers
+      endif
+    endif
+  endif
+endif
+if tiers != blank
+  for t in tiers
+    assign d = t.discount | default: 0 | plus: 0
+    if d > 1
+      assign d = d | divided_by: 100.0
+    endif
+    assign bp = d | times: 10000 | round
+    if bp > 9900
+      assign bp = 9900
+    endif
+    if bp > max_bp
+      assign max_bp = bp
+    endif
+  endfor
+endif
+assign base_incl = p.price_min
+assign factor_bp = 10000 | minus: max_bp
+assign from_incl = base_incl | times: factor_bp | divided_by: 10000
+assign from_excl = from_incl | times: VAT_DEN | plus: 60 | divided_by: VAT_NUM
+assign is_price_on_request = false
+if base_incl <= 2 or from_incl <= 2
+  assign is_price_on_request = true
+endif
+-%}
+
+<div class="rt-card-fromprice" style="margin-top:4px;display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;line-height:1.2;">
+  {%- if is_price_on_request -%}
+    <span class="rt-card-fromprice__poa" style="color:#FF7300 !important;font-weight:800;font-size:16px;">
+      Prijs op aanvraag
+    </span>
+  {%- else -%}
+    <span class="rt-card-fromprice__main" style="color:#FF7300 !important;font-weight:800;font-size:16px;">
+      {%- if max_bp > 0 -%}Vanaf {% endif %}{{ from_excl | money }}
+    </span>
+    <span class="rt-card-fromprice__alt" style="color:rgb(0 0 0 / 0.55);font-weight:600;font-size:12px;white-space:nowrap;">
+      {{ from_incl | money }} incl. BTW
+    </span>
+  {%- endif -%}
+</div>
+
+{%- endif -%}

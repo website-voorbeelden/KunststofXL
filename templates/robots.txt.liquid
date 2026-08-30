@@ -1,0 +1,9 @@
+{% assign default_groups = robots.default_groups %}
+{% for group in default_groups %}
+User-agent: {{ group.user_agent }}
+{% for rule in group.rules %}
+{{ rule.directive }}: {{ rule.value }}
+{% endfor %}
+Allow: /policies/
+
+{% endfor %}

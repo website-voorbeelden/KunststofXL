@@ -1,0 +1,314 @@
+<section class="rt-uspbar" aria-label="{{ section.settings.aria_label | escape }}">
+  <div class="rt-uspbar__inner page-width">
+
+    {% if section.settings.quote != blank %}
+      <div class="rt-uspbar__quote">
+        {{ section.settings.quote }}
+      </div>
+    {% endif %}
+
+    <div class="rt-uspbar__right" role="list" aria-label="USP's">
+
+      {% if section.settings.usp_1_text != blank %}
+        <div class="usp-item" role="listitem">
+          {% if section.settings.usp_1_link != blank %}
+            <a class="usp-link" href="{{ section.settings.usp_1_link }}">
+          {% endif %}
+            <span class="usp-check" aria-hidden="true">
+              <svg viewBox="0 0 20 20" focusable="false" aria-hidden="true">
+                <path fill-rule="evenodd" clip-rule="evenodd"
+                  d="M19.358 2.981c.788.702.86 1.912.163 2.704L9.68 16.855a1.9 1.9 0 0 1-2.773.084l-6.35-6.383a1.92 1.92 0 0 1 0-2.708 1.9 1.9 0 0 1 2.695 0l5.081 5.043 8.336-9.746a1.9 1.9 0 0 1 2.69-.164Z"
+                  fill="currentColor"></path>
+              </svg>
+            </span>
+            <span class="usp-text">
+              {{ section.settings.usp_1_text }}
+            </span>
+          {% if section.settings.usp_1_link != blank %}
+            </a>
+          {% endif %}
+        </div>
+      {% endif %}
+
+      {% if section.settings.usp_2_text != blank %}
+        <div class="usp-item" role="listitem">
+          {% if section.settings.usp_2_link != blank %}
+            <a class="usp-link" href="{{ section.settings.usp_2_link }}">
+          {% endif %}
+            <span class="usp-check" aria-hidden="true">
+              <svg viewBox="0 0 20 20" focusable="false" aria-hidden="true">
+                <path fill-rule="evenodd" clip-rule="evenodd"
+                  d="M19.358 2.981c.788.702.86 1.912.163 2.704L9.68 16.855a1.9 1.9 0 0 1-2.773.084l-6.35-6.383a1.92 1.92 0 0 1 0-2.708 1.9 1.9 0 0 1 2.695 0l5.081 5.043 8.336-9.746a1.9 1.9 0 0 1 2.69-.164Z"
+                  fill="currentColor"></path>
+              </svg>
+            </span>
+            <span class="usp-text">
+              {{ section.settings.usp_2_text }}
+            </span>
+          {% if section.settings.usp_2_link != blank %}
+            </a>
+          {% endif %}
+        </div>
+      {% endif %}
+
+      {% if section.settings.usp_3_text != blank %}
+        <div class="usp-item" role="listitem">
+          {% if section.settings.usp_3_link != blank %}
+            <a class="usp-link" href="{{ section.settings.usp_3_link }}">
+          {% endif %}
+            <span class="usp-check" aria-hidden="true">
+              <svg viewBox="0 0 20 20" focusable="false" aria-hidden="true">
+                <path fill-rule="evenodd" clip-rule="evenodd"
+                  d="M19.358 2.981c.788.702.86 1.912.163 2.704L9.68 16.855a1.9 1.9 0 0 1-2.773.084l-6.35-6.383a1.92 1.92 0 0 1 0-2.708 1.9 1.9 0 0 1 2.695 0l5.081 5.043 8.336-9.746a1.9 1.9 0 0 1 2.69-.164Z"
+                  fill="currentColor"></path>
+              </svg>
+            </span>
+            <span class="usp-text">
+              {{ section.settings.usp_3_text }}
+            </span>
+          {% if section.settings.usp_3_link != blank %}
+            </a>
+          {% endif %}
+        </div>
+      {% endif %}
+
+      {% if section.settings.usp_4_text != blank %}
+        <div class="usp-item" role="listitem">
+          {% if section.settings.usp_4_link != blank %}
+            <a class="usp-link" href="{{ section.settings.usp_4_link }}">
+          {% endif %}
+            <span class="usp-check" aria-hidden="true">
+              <svg viewBox="0 0 20 20" focusable="false" aria-hidden="true">
+                <path fill-rule="evenodd" clip-rule="evenodd"
+                  d="M19.358 2.981c.788.702.86 1.912.163 2.704L9.68 16.855a1.9 1.9 0 0 1-2.773.084l-6.35-6.383a1.92 1.92 0 0 1 0-2.708 1.9 1.9 0 0 1 2.695 0l5.081 5.043 8.336-9.746a1.9 1.9 0 0 1 2.69-.164Z"
+                  fill="currentColor"></path>
+              </svg>
+            </span>
+            <span class="usp-text">
+              {{ section.settings.usp_4_text }}
+            </span>
+          {% if section.settings.usp_4_link != blank %}
+            </a>
+          {% endif %}
+        </div>
+      {% endif %}
+
+    </div>
+  </div>
+</section>
+
+<style>
+  .rt-uspbar {
+    display: none;
+  }
+
+  @media (min-width: 768px) {
+    .rt-uspbar {
+      display: block;
+      background: {{ section.settings.bg_color }};
+      padding-top: {{ section.settings.padding_y }}px;
+      padding-bottom: {{ section.settings.padding_y }}px;
+    }
+
+    .rt-uspbar__inner {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      width: 100%;
+      margin: 0;
+      padding-left: 0 !important;
+      padding-right: 0 !important;
+      max-width: none !important;
+    }
+
+    .rt-uspbar__quote {
+      flex: 0 0 auto;
+      font-size: {{ section.settings.quote_size }}px;
+      font-weight: 800;
+      line-height: 1.1;
+      color: {{ section.settings.quote_color }};
+      white-space: nowrap;
+    }
+
+    .rt-uspbar__right {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 28px;
+      flex: 1 1 auto;
+      min-width: 0;
+      margin-left: auto;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+
+    .usp-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex: 0 0 auto;
+      white-space: nowrap;
+    }
+
+    .usp-link {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      color: inherit;
+      white-space: nowrap;
+    }
+
+    .usp-check {
+      width: 18px;
+      height: 18px;
+      flex: 0 0 auto;
+      color: {{ section.settings.check_color }};
+    }
+
+    .usp-check svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .usp-text {
+      font-size: {{ section.settings.usp_size }}px;
+      font-weight: 600;
+      line-height: 1.2;
+      color: {{ section.settings.text_color }};
+      white-space: nowrap;
+      transition: color .15s ease;
+    }
+
+    .usp-link:hover .usp-text {
+      color: {{ section.settings.link_hover_color }};
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "RT USP bar",
+  "settings": [
+    {
+      "type": "text",
+      "id": "aria_label",
+      "label": "ARIA label",
+      "default": "USP balk"
+    },
+    {
+      "type": "text",
+      "id": "quote",
+      "label": "Linker tekst",
+      "default": "Waarom zou kwaliteit duur moeten zijn?"
+    },
+    {
+      "type": "text",
+      "id": "usp_1_text",
+      "label": "USP 1 tekst",
+      "default": "Voor 17.00 besteld, dezelfde werkdag verzonden"
+    },
+    {
+      "type": "url",
+      "id": "usp_1_link",
+      "label": "USP 1 link"
+    },
+    {
+      "type": "text",
+      "id": "usp_2_text",
+      "label": "USP 2 tekst",
+      "default": "Altijd op voorraad"
+    },
+    {
+      "type": "url",
+      "id": "usp_2_link",
+      "label": "USP 2 link"
+    },
+    {
+      "type": "text",
+      "id": "usp_3_text",
+      "label": "USP 3 tekst",
+      "default": "Scherpe prijzen"
+    },
+    {
+      "type": "url",
+      "id": "usp_3_link",
+      "label": "USP 3 link"
+    },
+    {
+      "type": "text",
+      "id": "usp_4_text",
+      "label": "USP 4 tekst",
+      "default": "Maatwerk mogelijk"
+    },
+    {
+      "type": "url",
+      "id": "usp_4_link",
+      "label": "USP 4 link"
+    },
+    {
+      "type": "range",
+      "id": "quote_size",
+      "label": "Lettergrootte linker tekst",
+      "min": 14,
+      "max": 40,
+      "step": 1,
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "usp_size",
+      "label": "Lettergrootte USP's",
+      "min": 10,
+      "max": 24,
+      "step": 1,
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "padding_y",
+      "label": "Verticale padding",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "default": 10
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Achtergrondkleur",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "quote_color",
+      "label": "Kleur linker tekst",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Kleur USP tekst",
+      "default": "#111111"
+    },
+    {
+      "type": "color",
+      "id": "check_color",
+      "label": "Kleur check-icoon",
+      "default": "#00C73C"
+    },
+    {
+      "type": "color",
+      "id": "link_hover_color",
+      "label": "Hover kleur linktekst",
+      "default": "#003878"
+    }
+  ],
+  "presets": [
+    {
+      "name": "RT USP bar"
+    }
+  ]
+}
+{% endschema %}
