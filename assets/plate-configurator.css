@@ -776,3 +776,110 @@
   .pc-content-heading{align-items:flex-start;flex-direction:column}
   .pc-machining-group ul{grid-template-columns:1fr}
 }
+
+
+/* Vertical placeholder content flow */
+.pc-product-content{
+  grid-template-columns:1fr;
+  gap:26px;
+  margin-top:50px;
+}
+.pc-description-card{
+  min-height:340px;
+  padding:34px;
+}
+.pc-placeholder-copy{
+  display:grid;
+  gap:13px;
+  margin:24px 0 22px;
+}
+.pc-copy-placeholder{
+  display:grid;
+  grid-template-columns:92px minmax(190px,.5fr) minmax(0,1fr);
+  align-items:center;
+  gap:18px;
+  padding:17px 18px;
+  border:1px dashed #bfd8df;
+  border-radius:6px;
+  background:rgba(255,255,255,.76);
+}
+.pc-copy-placeholder>span{
+  color:#2694b9;
+  font-size:9px;
+  font-weight:800;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+.pc-copy-placeholder>strong{color:#40535c;font-size:12px}
+.pc-copy-placeholder>p{
+  margin:0;
+  color:#788990;
+  font-size:11px;
+  line-height:1.55;
+}
+.pc-description-card .pc-feature-pills span{
+  border-style:dashed;
+  color:#74868d;
+}
+.pc-description-card .pc-feature-pills i{background:#9bc7d5}
+
+.pc-specifications-card{
+  overflow:hidden;
+  border:1px solid #dfe9ec;
+  border-radius:8px;
+  background:#fff;
+}
+.pc-specifications-card>header{padding:28px 30px 20px;border-bottom:1px solid #e4ecee}
+.pc-specifications-card h2{
+  margin:0;
+  color:#302532;
+  font-size:clamp(21px,1.7vw,26px);
+  line-height:1.15;
+  letter-spacing:-.02em;
+}
+.pc-specifications-card>header>p{
+  max-width:650px;
+  margin:10px 0 0;
+  color:#7a8a91;
+  font-size:11px;
+  line-height:1.55;
+}
+.pc-specification-list{display:grid;margin:0;padding:0}
+.pc-specification-list>div{
+  display:grid;
+  grid-template-columns:minmax(180px,.35fr) 1fr;
+  gap:24px;
+  min-height:58px;
+  padding:17px 30px;
+  border-bottom:1px solid #e7edef;
+}
+.pc-specification-list>div:last-child{border-bottom:0}
+.pc-specification-list>div:nth-child(even){background:#fafcfd}
+.pc-specification-list dt{color:#52656e;font-size:11px;font-weight:750}
+.pc-specification-list dd{
+  margin:0;
+  color:#9aa7ac;
+  font-size:11px;
+  font-style:italic;
+}
+
+.pc-machining-card>header{
+  align-items:flex-start;
+  padding:28px 30px 21px;
+}
+.pc-machining-card>header>p{max-width:390px}
+.pc-machining-columns{grid-template-columns:1fr}
+.pc-machining-group{padding:25px 30px 28px}
+.pc-machining-group+ .pc-machining-group{border-top:1px solid #e4ecee;border-left:0}
+.pc-machining-group ul{grid-template-columns:1fr;gap:9px}
+.pc-machining-group li{min-height:57px;padding:11px 13px}
+.pc-machining-group li strong{font-size:11px}
+.pc-machining-group li small{font-size:9px}
+@media(max-width:680px){
+  .pc-product-content{gap:18px;margin-top:30px}
+  .pc-description-card{min-height:0;padding:24px 20px}
+  .pc-copy-placeholder{grid-template-columns:1fr;gap:6px;padding:15px}
+  .pc-specifications-card>header{padding:23px 20px 17px}
+  .pc-specification-list>div{grid-template-columns:1fr;gap:5px;padding:15px 20px}
+  .pc-machining-group{padding:21px 20px 23px}
+}
