@@ -219,12 +219,30 @@
       </div>
 
       <details class="pc-price-details">
-        <summary><span>＋ Prijsopbouw</span><strong data-pc-price>{{ pc_base_price | money }}</strong></summary>
+        <summary>
+          <span class="pc-price-details__heading">
+            <span class="pc-price-details__icon" aria-hidden="true">€</span>
+            <span><strong>Prijsopbouw</strong><small>Bekijk wat er in de prijs zit</small></span>
+          </span>
+          <span class="pc-price-details__amount"><strong data-pc-price>{{ pc_base_price | money }}</strong><i aria-hidden="true"></i></span>
+        </summary>
         <div class="pc-price-details__body">
-          <div><span>Plaat en dikte</span><strong data-pc-breakdown-material>{{ pc_base_price | money }}</strong></div>
-          <div><span>Vormbewerking</span><strong data-pc-breakdown-shape>{{ 0 | money }}</strong></div>
-          <div><span>Boorgaten, uitsnede en rand</span><strong data-pc-breakdown-extras>{{ 0 | money }}</strong></div>
-          <div class="pc-price-details__total"><span>Totaal per plaat</span><strong data-pc-breakdown-total>{{ pc_base_price | money }}</strong></div>
+          <div>
+            <span><strong>Plaat en dikte</strong><small>PVC grijs, op maat gezaagd</small></span>
+            <b data-pc-breakdown-material>{{ pc_base_price | money }}</b>
+          </div>
+          <div>
+            <span><strong>Vormbewerking</strong><small>De gekozen buitenvorm</small></span>
+            <b data-pc-breakdown-shape>{{ 0 | money }}</b>
+          </div>
+          <div>
+            <span><strong>Extra bewerkingen</strong><small>Boorgaten, uitsnede en randafwerking</small></span>
+            <b data-pc-breakdown-extras>{{ 0 | money }}</b>
+          </div>
+          <div class="pc-price-details__total">
+            <span><strong>Totaal per plaat</strong><small>Inclusief btw</small></span>
+            <b data-pc-breakdown-total>{{ pc_base_price | money }}</b>
+          </div>
         </div>
       </details>
 
