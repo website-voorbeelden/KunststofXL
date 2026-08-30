@@ -279,26 +279,37 @@
       var widthExtB = one('.pc-w-ext-b');
       var heightExtA = one('.pc-h-ext-a');
       var heightExtB = one('.pc-h-ext-b');
+      var heightDimension = one('.pc-dim-h');
       var heightLabel = one('.pc-label-h');
       var heightLabelBackground = one('.pc-label-h-bg');
+      var isCircle = state.shape === 'circle';
 
       showSvg(widthExtA, true);
       showSvg(widthExtB, true);
-      showSvg(heightExtA, true);
-      showSvg(heightExtB, true);
-      showSvg(heightLabel, true);
-      showSvg(heightLabelBackground, true);
+      showSvg(heightExtA, !isCircle);
+      showSvg(heightExtB, !isCircle);
+      showSvg(heightDimension, !isCircle);
+      showSvg(heightLabel, !isCircle);
+      showSvg(heightLabelBackground, !isCircle);
 
       var horizontalY = box.y + box.height + 48;
       var verticalX = box.x - 50;
-      var curvedShape = state.shape === 'circle' || state.shape === 'rounded';
+      var curvedShape = isCircle || state.shape === 'rounded';
       var widthGuideStartY = curvedShape ? 225 : box.y + box.height + 4;
       var heightGuideStartX = curvedShape ? 350 : box.x - 4;
 
       setLine('.pc-w-ext-a', box.x, widthGuideStartY, box.x, horizontalY + 7);
       setLine('.pc-w-ext-b', box.x + box.width, widthGuideStartY, box.x + box.width, horizontalY + 7);
       setLine('.pc-dim-w', box.x, horizontalY, box.x + box.width, horizontalY);
-      setDimensionLabel('.pc-label-w', '.pc-label-w-bg', 350, horizontalY, measure(currentValues.width) + ' cm');
+      setDimensionLabel(
+        '.pc-label-w',
+        '.pc-label-w-bg',
+        350,
+        horizontalY,
+        (isCircle ? 'Ø ' : '') + measure(currentValues.width) + ' cm'
+      );
+
+      if (isCircle) return;
 
       setLine('.pc-h-ext-a', heightGuideStartX, box.y, verticalX - 7, box.y);
       setLine('.pc-h-ext-b', heightGuideStartX, box.y + box.height, verticalX - 7, box.y + box.height);
