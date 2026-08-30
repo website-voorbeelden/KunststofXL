@@ -1183,3 +1183,7 @@
   border-radius:0;
 }
 .pc-machining-card>header{padding-right:0;padding-left:0}
+
+
+/* Neutral machining columns */
+.pc-machining-group--yes,.pc-machining-group--no{background:#fff}
