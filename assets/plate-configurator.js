@@ -28,6 +28,17 @@
     Object.keys(values).forEach(function (key) { element.setAttribute(key, values[key]); });
   }
 
+  function showSvg(element, visible) {
+    if (!element) return;
+    if (visible) {
+      element.removeAttribute('hidden');
+      element.style.display = '';
+    } else {
+      element.setAttribute('hidden', '');
+      element.style.display = 'none';
+    }
+  }
+
   function initialise(root) {
     if (!root || root.dataset.ready === 'true') return;
     root.dataset.ready = 'true';
@@ -184,8 +195,8 @@
       var width = box.width;
       var height = box.height;
 
-      shapePath.hidden = state.shape === 'letter';
-      letterShape.hidden = state.shape !== 'letter';
+      showSvg(shapePath, state.shape !== 'letter');
+      showSvg(letterShape, state.shape === 'letter');
 
       if (state.shape === 'letter') {
         letterShape.textContent = currentValues.text;
@@ -254,7 +265,7 @@
     }
 
     function renderCutout(box, currentValues) {
-      cutoutLayer.hidden = !state.cutout;
+      showSvg(cutoutLayer, state.cutout);
       if (!state.cutout) return;
 
       var maximumSize = Math.max(1, Math.min(currentValues.width, currentValues.height) * 0.7);
@@ -262,9 +273,9 @@
       cutoutSizeInput.value = Number(sizeCm.toFixed(1));
       var size = sizeCm * box.scale;
 
-      cutoutCircle.hidden = state.cutoutType !== 'circle';
-      cutoutRect.hidden = state.cutoutType !== 'rounded';
-      cutoutText.hidden = state.cutoutType !== 'text';
+      showSvg(cutoutCircle, state.cutoutType === 'circle');
+      showSvg(cutoutRect, state.cutoutType === 'rounded');
+      showSvg(cutoutText, state.cutoutType === 'text');
 
       if (state.cutoutType === 'circle') {
         attrs(cutoutCircle, { cx: 350, cy: 225, r: size / 2 });
