@@ -47,12 +47,12 @@
           <div class="pc-accord__body">
             <div class="pc-shape-tabs">
               <button type="button" class="pc-choice" data-shape="rectangle" aria-pressed="true"><svg viewBox="0 0 32 26"><rect x="3" y="5" width="26" height="16"/></svg>Rechthoek</button>
-              <button type="button" class="pc-choice" data-shape="rounded" aria-pressed="false"><svg viewBox="0 0 32 26"><rect x="3" y="5" width="26" height="16" rx="6"/></svg>Afgerond</button>
-              <button type="button" class="pc-choice" data-shape="round" aria-pressed="false"><svg viewBox="0 0 32 26"><circle cx="16" cy="13" r="10"/></svg>Rond</button>
+              <button type="button" class="pc-choice" data-shape="rounded" aria-pressed="false"><svg viewBox="0 0 32 26"><path d="M5 19 L13 7 L20 17 L27 8"/></svg>Vormkiezer</button>
+              <button type="button" class="pc-choice" data-shape="round" aria-pressed="false"><svg viewBox="0 0 32 26"><path d="M6 8h12l8 8v5H14l-8-8z"/><path d="M11 12h5"/></svg>Vorm upload</button>
             </div>
             <div class="pc-fields">
-              <label>Breedte <small>Max: {{ pc_sheet_width | divided_by: 10 }} cm</small><span class="pc-unit"><input data-pc-width type="number" value="50" min="5" max="{{ pc_sheet_width | divided_by: 10 }}">cm</span></label>
-              <label>Hoogte <small>Max: {{ pc_sheet_height | divided_by: 10 }} cm</small><span class="pc-unit"><input data-pc-height type="number" value="50" min="5" max="{{ pc_sheet_height | divided_by: 10 }}">cm</span></label>
+              <label>Breedte <small>Max: {{ pc_sheet_width | divided_by: 10 }} cm</small><span class="pc-unit"><input data-pc-width type="number" value="10" min="5" max="{{ pc_sheet_width | divided_by: 10 }}">cm</span></label>
+              <label>Hoogte <small>Max: {{ pc_sheet_height | divided_by: 10 }} cm</small><span class="pc-unit"><input data-pc-height type="number" value="10" min="5" max="{{ pc_sheet_height | divided_by: 10 }}">cm</span></label>
             </div>
           </div>
         </details>
