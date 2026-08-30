@@ -43,7 +43,7 @@
 
       <div class="pc-accordion">
         <details class="pc-accord" open>
-          <summary><span class="pc-check">✓</span><span><strong>Afmetingen</strong><small>Rechthoek</small></span><b>⌃</b></summary>
+          <summary><span class="pc-check">✓</span><span><strong>Afmetingen</strong><small data-pc-dimension-summary>Rechthoek: 10 cm × 10 cm</small></span><b>⌃</b></summary>
           <div class="pc-accord__body">
             <div class="pc-shape-tabs">
               <button type="button" class="pc-choice" data-shape="rectangle" aria-pressed="true"><svg viewBox="0 0 32 26"><rect x="3" y="5" width="26" height="16"/></svg>Rechthoek</button>
@@ -58,8 +58,22 @@
         </details>
 
         <details class="pc-accord">
-          <summary><span class="pc-check">✓</span><span><strong>Dikte</strong><small>{{ pc_variant.title }}</small></span><b>⌄</b></summary>
-          <div class="pc-accord__body"><select data-pc-thickness>{% for variant in product.variants %}<option>{{ variant.title }}</option>{% endfor %}</select></div>
+          <summary><span class="pc-check">✓</span><span><strong>Dikte</strong><small data-pc-thickness-summary>2 mm</small></span><b>⌄</b></summary>
+          <div class="pc-accord__body">
+            <p class="pc-picker-label">Bepaal de dikte (mm)</p>
+            <div class="pc-thickness-grid" role="radiogroup">
+              <button type="button" data-pc-thickness-choice="2" aria-pressed="true">2</button>
+              <button type="button" data-pc-thickness-choice="3" aria-pressed="false">3</button>
+              <button type="button" data-pc-thickness-choice="4" aria-pressed="false">4</button>
+              <button type="button" data-pc-thickness-choice="5" aria-pressed="false">5</button>
+              <button type="button" data-pc-thickness-choice="6" aria-pressed="false">6</button>
+              <button type="button" data-pc-thickness-choice="8" aria-pressed="false">8</button>
+              <button type="button" data-pc-thickness-choice="10" aria-pressed="false">10</button>
+              <button type="button" data-pc-thickness-choice="13" aria-pressed="false">13</button>
+              <button type="button" data-pc-thickness-choice="19" aria-pressed="false">19</button>
+            </div>
+            <select data-pc-thickness hidden><option value="2 mm">2 mm</option></select>
+          </div>
         </details>
 
         <details class="pc-accord">
