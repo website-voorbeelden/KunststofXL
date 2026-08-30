@@ -1,10 +1,10 @@
-{% comment %} Homepage hero inspired by the two-card composition of the supplied reference. {% endcomment %}
-<section class="kxl-home-hero">
+{% comment %} Rustige tweedelige homepage hero voor platen en maatwerk. {% endcomment %}
+<section class="kxl-home-hero" aria-label="Kunststof platen en maatwerk">
   <div class="kxl-home-hero__grid">
     <a class="kxl-home-hero__card kxl-home-hero__card--primary" href="/collections/kunststof-platen">
       <img
         src="{{ 'kxl-home-custom-parts.svg' | asset_url }}"
-        alt="Kunststof platen en maatwerkonderdelen in verschillende vormen"
+        alt="Kunststof platen en maatwerkonderdelen"
         width="1440"
         height="810"
         loading="eager"
@@ -12,234 +12,64 @@
       >
       <span class="kxl-home-hero__shade" aria-hidden="true"></span>
       <div class="kxl-home-hero__content">
-        <span class="kxl-home-hero__eyebrow">Kunststof platen op maat</span>
-        <h2>Van plaat tot precies passend onderdeel</h2>
-        <p>Kies het materiaal, formaat en de bewerking die bij jouw project passen.</p>
-        <span class="kxl-home-hero__button">
-          Bekijk kunststof platen
-          <i aria-hidden="true">→</i>
-        </span>
+        <span class="kxl-home-hero__eyebrow">Platen op maat</span>
+        <h2>Kunststof voor ieder project</h2>
+        <span class="kxl-home-hero__link">Bekijk materialen <i aria-hidden="true">→</i></span>
       </div>
     </a>
 
     <a class="kxl-home-hero__card kxl-home-hero__card--secondary" href="/pages/maatwerk">
       <img
-        src="{{ 'kxl-home-hdpe-maatwerk.svg' | asset_url }}"
-        alt="HDPE plaat met verschillende onderdelen op maat"
+        src="{{ 'kxl-home-machine-maatwerk.svg' | asset_url }}"
+        alt="Kunststof maatwerkonderdelen gemonteerd op een machine"
         width="1200"
         height="1200"
         loading="eager"
       >
       <span class="kxl-home-hero__shade" aria-hidden="true"></span>
       <div class="kxl-home-hero__content">
-        <span class="kxl-home-hero__eyebrow">Maatwerk</span>
-        <h3>Een vorm die niet standaard is?</h3>
-        <p>Wij denken mee over platen, gaten, uitsneden en seriewerk.</p>
-        <span class="kxl-home-hero__button">
-          Maatwerk aanvragen
-          <i aria-hidden="true">→</i>
-        </span>
+        <span class="kxl-home-hero__eyebrow">Technisch maatwerk</span>
+        <h3>Precies gemaakt voor jouw toepassing</h3>
+        <span class="kxl-home-hero__link">Bekijk maatwerk <i aria-hidden="true">→</i></span>
       </div>
     </a>
   </div>
-
-  <div class="kxl-home-hero__proof" aria-label="Onze beloftes">
-    <div class="kxl-home-hero__proof-item kxl-home-hero__proof-item--rating">
-      <strong aria-label="5 sterren">★★★★★</strong>
-      <span><b>4,8 uit 5</b><small>door onze klanten</small></span>
-    </div>
-    <div class="kxl-home-hero__proof-item">
-      <i aria-hidden="true">✓</i>
-      <span><b>Exact op maat</b><small>zorgvuldig geproduceerd</small></span>
-    </div>
-    <div class="kxl-home-hero__proof-item">
-      <i aria-hidden="true">↗</i>
-      <span><b>Advies van een specialist</b><small>voor ieder type project</small></span>
-    </div>
-  </div>
-
 </section>
 
 <style>
   .kxl-home-hero,.kxl-home-hero *{box-sizing:border-box}
-  .kxl-home-hero{
-    width:100%;
-    max-width:1500px;
-    margin:0 auto;
-    padding:18px 32px 8px;
-    font-family:inherit;
-  }
-  .kxl-home-hero__grid{
-    display:grid;
-    grid-template-columns:minmax(0,1.72fr) minmax(310px,.78fr);
-    gap:18px;
-  }
-  .kxl-home-hero__card{
-    position:relative;
-    min-width:0;
-    min-height:460px;
-    overflow:hidden;
-    border-radius:8px;
-    color:#fff;
-    text-decoration:none;
-    isolation:isolate;
-    box-shadow:0 1px 0 rgba(8,36,52,.06);
-  }
-  .kxl-home-hero__card>img{
-    position:absolute;
-    inset:0;
-    z-index:-2;
-    display:block;
-    width:100%;
-    height:100%;
-    object-fit:cover;
-    transition:transform .45s ease;
-  }
+  .kxl-home-hero{width:100%;max-width:1320px;margin:0 auto;padding:14px 20px 34px;font-family:inherit}
+  .kxl-home-hero__grid{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(300px,.85fr);gap:16px}
+  .kxl-home-hero__card{position:relative;min-width:0;min-height:450px;overflow:hidden;border-radius:8px;color:#fff;text-decoration:none;isolation:isolate}
+  .kxl-home-hero__card>img{position:absolute;inset:0;z-index:-2;display:block;width:100%;height:100%;object-fit:cover;transition:transform .45s ease}
   .kxl-home-hero__card--primary>img{object-position:center}
-  .kxl-home-hero__card--secondary>img{object-position:center 61%}
-  .kxl-home-hero__shade{
-    position:absolute;
-    inset:0;
-    z-index:-1;
-    background:linear-gradient(180deg,rgba(3,15,30,.04) 18%,rgba(4,20,40,.83) 100%);
-  }
-  .kxl-home-hero__card--secondary .kxl-home-hero__shade{
-    background:linear-gradient(180deg,rgba(255,255,255,0) 30%,rgba(9,38,62,.9) 100%);
-  }
-  .kxl-home-hero__content{
-    position:absolute;
-    right:0;
-    bottom:0;
-    left:0;
-    padding:clamp(26px,3vw,44px);
-  }
-  .kxl-home-hero__card--primary .kxl-home-hero__content{max-width:790px}
-  .kxl-home-hero__eyebrow{
-    display:block;
-    margin-bottom:8px;
-    color:#7fd2ed;
-    font-size:11px;
-    font-weight:800;
-    letter-spacing:.11em;
-    text-transform:uppercase;
-  }
-  .kxl-home-hero h2,.kxl-home-hero h3{
-    margin:0;
-    color:#fff;
-    line-height:1.03;
-    font-weight:820;
-    letter-spacing:-.035em;
-  }
-  .kxl-home-hero h2{max-width:720px;font-size:clamp(38px,4.2vw,58px)}
-  .kxl-home-hero h3{margin:0;color:#fff;font-size:clamp(27px,2.5vw,38px);font-weight:820;letter-spacing:-.035em;line-height:1.03}
-  .kxl-home-hero__content p{
-    max-width:610px;
-    margin:14px 0 20px;
-    color:rgba(255,255,255,.86);
-    font-size:14px;
-    line-height:1.5;
-  }
-  .kxl-home-hero__card--secondary .kxl-home-hero__content p{font-size:12px}
-  .kxl-home-hero__button{
-    display:inline-flex;
-    align-items:center;
-    gap:11px;
-    min-height:45px;
-    padding:0 17px;
-    border-radius:5px;
-    background:#fff;
-    color:#003878;
-    font-size:12px;
-    font-weight:800;
-    transition:background .18s,color .18s,transform .18s;
-  }
-  .kxl-home-hero__button i{font-size:17px;font-style:normal;transition:transform .18s}
+  .kxl-home-hero__card--secondary>img{object-position:center 54%}
+  .kxl-home-hero__shade{position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(6,20,36,.02) 28%,rgba(8,29,55,.87) 100%)}
+  .kxl-home-hero__card--secondary .kxl-home-hero__shade{background:linear-gradient(180deg,rgba(5,15,25,.04) 20%,rgba(6,25,48,.88) 100%)}
+  .kxl-home-hero__content{position:absolute;right:0;bottom:0;left:0;padding:clamp(25px,3vw,40px)}
+  .kxl-home-hero__card--primary .kxl-home-hero__content{max-width:720px}
+  .kxl-home-hero__eyebrow{display:block;margin-bottom:9px;color:#8dd8f3;font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase}
+  .kxl-home-hero h2,.kxl-home-hero h3{margin:0;color:#fff;font-weight:780;letter-spacing:-.035em;line-height:1.04}
+  .kxl-home-hero h2{max-width:650px;font-size:clamp(38px,4.1vw,57px)}
+  .kxl-home-hero h3{max-width:390px;font-size:clamp(27px,2.5vw,38px)}
+  .kxl-home-hero__link{display:inline-flex;align-items:center;gap:10px;margin-top:20px;padding-bottom:4px;border-bottom:1px solid rgba(255,255,255,.72);color:#fff;font-size:14px;font-weight:750}
+  .kxl-home-hero__link i{font-size:18px;font-style:normal;transition:transform .2s ease}
   .kxl-home-hero__card:hover>img{transform:scale(1.025)}
-  .kxl-home-hero__card:hover .kxl-home-hero__button{
-    background:#ff7300;
-    color:#fff;
-    transform:translateY(-1px);
-  }
-  .kxl-home-hero__card:hover .kxl-home-hero__button i{transform:translateX(3px)}
-  .kxl-home-hero__proof{
-    display:grid;
-    grid-template-columns:repeat(3,minmax(0,1fr));
-    gap:0;
-    margin-top:15px;
-    border:1px solid #dce4ec;
-    border-radius:8px;
-    background:#fff;
-  }
-  .kxl-home-hero__proof-item{
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    gap:13px;
-    min-height:68px;
-    padding:12px 18px;
-    border-right:1px solid #dce4ec;
-  }
-  .kxl-home-hero__proof-item:last-child{border-right:0}
-  .kxl-home-hero__proof-item>i{
-    display:grid;
-    width:30px;
-    height:30px;
-    place-items:center;
-    border-radius:50%;
-    color:#1872c9;
-    background:#eef6fd;
-    font-size:15px;
-    font-style:normal;
-    font-weight:850;
-  }
-  .kxl-home-hero__proof-item>strong{color:#f57b20;font-size:14px;letter-spacing:.04em}
-  .kxl-home-hero__proof-item>span{display:flex;flex-direction:column;gap:2px}
-  .kxl-home-hero__proof-item b{color:#14213d;font-size:13px;line-height:1.2}
-  .kxl-home-hero__proof-item small{color:#6c7887;font-size:11px;line-height:1.2}
-  .kxl-home-hero__trust{
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:18px;
-    padding:18px 6px 0;
-    color:#43565f;
-    font-size:12px;
-    font-weight:700;
-  }
-  .kxl-home-hero__trust span{display:flex;align-items:center;justify-content:center;gap:9px}
-  .kxl-home-hero__trust svg{
-    width:20px;
-    height:20px;
-    fill:none;
-    stroke:#168dbb;
-    stroke-width:1.7;
-    stroke-linecap:round;
-    stroke-linejoin:round;
-  }
+  .kxl-home-hero__card:hover .kxl-home-hero__link i{transform:translateX(4px)}
   @media(max-width:900px){
-    .kxl-home-hero{padding-inline:20px}
-    .kxl-home-hero__grid{grid-template-columns:1fr;gap:14px}
-    .kxl-home-hero__card{min-height:450px}
-    .kxl-home-hero__card--secondary{min-height:340px}
-    .kxl-home-hero__card--secondary>img{object-position:center 68%}
-    .kxl-home-hero__proof{grid-template-columns:1fr 1fr}
-    .kxl-home-hero__proof-item:nth-child(2){border-right:0}
-    .kxl-home-hero__proof-item:last-child{grid-column:1/-1;border-top:1px solid #dce4ec}
+    .kxl-home-hero{padding-inline:18px}
+    .kxl-home-hero__grid{grid-template-columns:1fr;gap:12px}
+    .kxl-home-hero__card{min-height:420px}
+    .kxl-home-hero__card--secondary{min-height:330px}
+    .kxl-home-hero__card--secondary>img{object-position:center 52%}
+    .kxl-home-hero__card--secondary h3{max-width:520px}
   }
-  @media(max-width:700px){
-    .kxl-home-hero{padding:12px 14px 18px}
-    .kxl-home-hero__grid{grid-template-columns:1fr}
-    .kxl-home-hero__card{min-height:410px}
-    .kxl-home-hero__card--secondary{min-height:360px}
-    .kxl-home-hero__content{padding:24px}
-    .kxl-home-hero h2{font-size:38px}
-    .kxl-home-hero__proof{grid-template-columns:1fr}
-    .kxl-home-hero__proof-item,.kxl-home-hero__proof-item:nth-child(2){justify-content:flex-start;border-right:0;border-bottom:1px solid #dce4ec}
-    .kxl-home-hero__proof-item:last-child{grid-column:auto;border-top:0;border-bottom:0}
-    .kxl-home-hero__trust{
-      grid-template-columns:1fr;
-      gap:10px;
-      padding-top:16px;
-    }
-    .kxl-home-hero__trust span{justify-content:flex-start}
+  @media(max-width:600px){
+    .kxl-home-hero{padding:8px 14px 26px}
+    .kxl-home-hero__card{min-height:390px}
+    .kxl-home-hero__card--secondary{min-height:310px}
+    .kxl-home-hero__content{padding:23px}
+    .kxl-home-hero h2{font-size:37px}
+    .kxl-home-hero h3{font-size:29px}
   }
 </style>
