@@ -8,7 +8,7 @@
     var width=$('[data-pc-width]'), height=$('[data-pc-height]'), thickness=$('[data-pc-thickness]'), holes=$('[data-pc-holes]'), holeDia=$('[data-pc-hole-dia]'), cutout=$('[data-pc-cutout]');
     var sheetW=number(root.dataset.sheetWidth)||3050,sheetH=number(root.dataset.sheetHeight)||2050,base=number(root.dataset.basePrice)||0;
     function draw(){
-      var w=Math.min(Math.max(number(width.value)||100,1),sheetW),h=Math.min(Math.max(number(height.value)||100,1),sheetH);width.value=w;height.value=h;
+      var wCm=Math.min(Math.max(number(width.value)||10,5),sheetW/10),hCm=Math.min(Math.max(number(height.value)||10,5),sheetH/10),w=wCm*10,h=hCm*10;width.value=wCm;height.value=hCm;
       var svg=$('.pc-svg'),image=$('.pc-image'),rect=$('.pc-shape'),holesGroup=$('.pc-holes'),dimW=$('.pc-dim-w'),dimH=$('.pc-dim-h'),labelW=$('.pc-label-w'),labelH=$('.pc-label-h'),wExtA=$('.pc-w-ext-a'),wExtB=$('.pc-w-ext-b'),hExtA=$('.pc-h-ext-a'),hExtB=$('.pc-h-ext-b');
       if(state.view==='image'){svg.hidden=true;image.hidden=false;$('.pc-canvas').classList.add('is-image')}else{svg.hidden=false;image.hidden=true;$('.pc-canvas').classList.remove('is-image')}
       var scale=Math.min(410/w,250/h),rw=w*scale,rh=h*scale,x=320-rw/2,y=170-rh/2;
@@ -19,11 +19,11 @@
       dimW.setAttribute('x1',x);dimW.setAttribute('x2',x+rw);dimW.setAttribute('y1',wy);dimW.setAttribute('y2',wy);
       wExtA.setAttribute('x1',x);wExtA.setAttribute('x2',x);wExtA.setAttribute('y1',y+rh);wExtA.setAttribute('y2',wy+7);
       wExtB.setAttribute('x1',x+rw);wExtB.setAttribute('x2',x+rw);wExtB.setAttribute('y1',y+rh);wExtB.setAttribute('y2',wy+7);
-      labelW.setAttribute('x',320);labelW.setAttribute('y',wy+20);labelW.textContent=(w/10)+' cm';
+      labelW.setAttribute('x',320);labelW.setAttribute('y',wy+20);labelW.textContent=wCm+' cm';
       dimH.setAttribute('x1',hx);dimH.setAttribute('x2',hx);dimH.setAttribute('y1',y);dimH.setAttribute('y2',y+rh);
       hExtA.setAttribute('x1',x);hExtA.setAttribute('x2',hx-7);hExtA.setAttribute('y1',y);hExtA.setAttribute('y2',y);
       hExtB.setAttribute('x1',x);hExtB.setAttribute('x2',hx-7);hExtB.setAttribute('y1',y+rh);hExtB.setAttribute('y2',y+rh);
-      labelH.setAttribute('x',hx-9);labelH.setAttribute('y',170);labelH.textContent=(h/10)+' cm';
+      labelH.setAttribute('x',hx-9);labelH.setAttribute('y',170);labelH.textContent=hCm+' cm';
       var area=(w*h)/(sheetW*sheetH), extra=(state.holes?count*125:0)+(state.cutout?450:0)+(state.finish==='gefreesd'?650:0),price=Math.max(1,Math.round(base*area+extra));$('[data-pc-price]').textContent=money(price,root.dataset.locale,root.dataset.currency);$('[data-pc-summary]').textContent=w+' × '+h+' mm · '+thickness.value+(state.holes?' · '+count+' boorgaten':'')+(state.cutout?' · uitsnede':'');
       root.dataset.configuration=JSON.stringify({width:w,height:h,thickness:thickness.value,shape:state.shape,holes:state.holes?count:0,cutout:state.cutout,finish:state.finish,price:price});
     }
