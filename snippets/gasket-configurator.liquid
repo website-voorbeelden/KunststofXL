@@ -360,6 +360,7 @@
 
         <div class="pc-featured-products">
           {% for pc_product in pc_featured_collection.products limit: 4 %}
+            {% assign pc_product_image_alt = pc_product.featured_image.alt | default: pc_product.title %}
             <a class="pc-featured-product" href="{{ pc_product.url }}">
               <div class="pc-featured-product__media">
                 {% if pc_product.featured_image %}
@@ -370,7 +371,7 @@
                       loading: 'lazy',
                       widths: '220, 320, 480, 640',
                       sizes: '(max-width: 560px) 46vw, (max-width: 900px) 32vw, 230px',
-                      alt: pc_product.featured_image.alt | default: pc_product.title
+                      alt: pc_product_image_alt
                   }}
                 {% else %}
                   <div class="pc-featured-product__placeholder" aria-hidden="true">
