@@ -67,6 +67,9 @@
 
     if (!widthInput || !heightInput || !svg || !shapePath) return;
 
+    holesToggle.checked = false;
+    cutoutToggle.checked = false;
+
     var maximumWidth = num(root.dataset.maxWidth, 305);
     var maximumHeight = num(root.dataset.maxHeight, 155);
     var basePrice = Math.max(1, num(root.dataset.basePrice, 1000));
