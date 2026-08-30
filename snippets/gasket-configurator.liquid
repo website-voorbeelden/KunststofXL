@@ -72,10 +72,10 @@
 
     <div class="pc-config">
       <header class="pc-product-head">
-        <h1>{{ product.title }}</h1>
+        <h1>{% if product.title contains 'grijs' or product.title contains 'Grijs' %}{{ product.title }}{% else %}{{ product.title }} grijs{% endif %}</h1>
         <div class="pc-rating" aria-label="Conceptbeoordeling">★★★★★ <span>7 reviews</span></div>
         <div class="pc-product-head__bottom">
-          <div class="pc-start-price">{{ pc_base_price | money }} <small>incl. btw</small></div>
+          <div class="pc-start-price"><span data-pc-price>{{ pc_base_price | money }}</span> <small>incl. btw</small></div>
           <button type="button" class="pc-sample" data-pc-sample>◇ Bestel een sample</button>
         </div>
       </header>
