@@ -1,4 +1,4 @@
-{% comment %} Rustige tweedelige homepage hero voor platen en maatwerk. {% endcomment %}
+{% comment %} Tweedelige homepage hero met rustige teksthiërarchie. {% endcomment %}
 <section class="kxl-home-hero" aria-label="Kunststof platen en maatwerk">
   <div class="kxl-home-hero__grid">
     <a class="kxl-home-hero__card kxl-home-hero__card--primary" href="/collections/kunststof-platen">
@@ -11,10 +11,12 @@
         fetchpriority="high"
       >
       <span class="kxl-home-hero__shade" aria-hidden="true"></span>
-      <div class="kxl-home-hero__content">
-        <span class="kxl-home-hero__eyebrow">Platen op maat</span>
+      <div class="kxl-home-hero__content kxl-home-hero__content--primary">
         <h2>Kunststof voor ieder project</h2>
-        <span class="kxl-home-hero__link">Bekijk materialen <i aria-hidden="true">→</i></span>
+        <span class="kxl-home-hero__pill">
+          Direct naar ons assortiment
+          <i aria-hidden="true">›</i>
+        </span>
       </div>
     </a>
 
@@ -27,10 +29,12 @@
         loading="eager"
       >
       <span class="kxl-home-hero__shade" aria-hidden="true"></span>
-      <div class="kxl-home-hero__content">
-        <span class="kxl-home-hero__eyebrow">Technisch maatwerk</span>
-        <h3>Precies gemaakt voor jouw toepassing</h3>
-        <span class="kxl-home-hero__link">Bekijk maatwerk <i aria-hidden="true">→</i></span>
+      <div class="kxl-home-hero__content kxl-home-hero__content--secondary">
+        <div>
+          <h3>Technisch maatwerk</h3>
+          <p>Precies gemaakt voor jouw toepassing</p>
+        </div>
+        <span class="kxl-home-hero__circle" aria-hidden="true">›</span>
       </div>
     </a>
   </div>
@@ -40,36 +44,43 @@
   .kxl-home-hero,.kxl-home-hero *{box-sizing:border-box}
   .kxl-home-hero{width:100%;max-width:1320px;margin:0 auto;padding:14px 20px 34px;font-family:inherit}
   .kxl-home-hero__grid{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(300px,.85fr);gap:16px}
-  .kxl-home-hero__card{position:relative;min-width:0;min-height:450px;overflow:hidden;border-radius:8px;color:#fff;text-decoration:none;isolation:isolate}
+  .kxl-home-hero__card{position:relative;min-width:0;min-height:470px;overflow:hidden;border-radius:8px;color:#fff;text-decoration:none;isolation:isolate}
   .kxl-home-hero__card>img{position:absolute;inset:0;z-index:-2;display:block;width:100%;height:100%;object-fit:cover;transition:transform .45s ease}
   .kxl-home-hero__card--primary>img{object-position:center}
   .kxl-home-hero__card--secondary>img{object-position:center 54%}
-  .kxl-home-hero__shade{position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(6,20,36,.02) 28%,rgba(8,29,55,.87) 100%)}
-  .kxl-home-hero__card--secondary .kxl-home-hero__shade{background:linear-gradient(180deg,rgba(5,15,25,.04) 20%,rgba(6,25,48,.88) 100%)}
-  .kxl-home-hero__content{position:absolute;right:0;bottom:0;left:0;padding:clamp(25px,3vw,40px)}
-  .kxl-home-hero__card--primary .kxl-home-hero__content{max-width:720px}
-  .kxl-home-hero__eyebrow{display:block;margin-bottom:9px;color:#8dd8f3;font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase}
-  .kxl-home-hero h2,.kxl-home-hero h3{margin:0;color:#fff;font-weight:780;letter-spacing:-.035em;line-height:1.04}
-  .kxl-home-hero h2{max-width:650px;font-size:clamp(38px,4.1vw,57px)}
-  .kxl-home-hero h3{max-width:390px;font-size:clamp(27px,2.5vw,38px)}
-  .kxl-home-hero__link{display:inline-flex;align-items:center;gap:10px;margin-top:20px;padding-bottom:4px;border-bottom:1px solid rgba(255,255,255,.72);color:#fff;font-size:14px;font-weight:750}
-  .kxl-home-hero__link i{font-size:18px;font-style:normal;transition:transform .2s ease}
+  .kxl-home-hero__shade{position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(7,17,31,.04) 15%,rgba(8,29,55,.68) 100%)}
+  .kxl-home-hero__card--primary .kxl-home-hero__shade{background:linear-gradient(180deg,rgba(7,17,31,.06),rgba(8,26,49,.67))}
+  .kxl-home-hero__card--secondary .kxl-home-hero__shade{background:linear-gradient(180deg,rgba(5,15,25,.04) 20%,rgba(6,25,48,.82) 100%)}
+  .kxl-home-hero__content{position:absolute;right:0;bottom:0;left:0}
+  .kxl-home-hero__content--primary{display:flex;align-items:center;flex-direction:column;justify-content:flex-end;height:100%;padding:46px 38px;text-align:center}
+  .kxl-home-hero h2{max-width:760px;margin:0;color:#fff;font-size:clamp(44px,5.2vw,72px);font-weight:800;letter-spacing:-.045em;line-height:.98}
+  .kxl-home-hero__pill{display:flex;align-items:center;justify-content:space-between;gap:22px;width:min(560px,72%);min-height:62px;margin-top:34px;padding:0 25px 0 32px;border:1px solid rgba(255,255,255,.24);border-radius:999px;color:#fff;background:rgba(255,255,255,.29);backdrop-filter:blur(10px);font-size:16px;font-weight:750;text-align:left;transition:background .2s ease,transform .2s ease}
+  .kxl-home-hero__pill i{font-size:28px;font-style:normal;font-weight:300;line-height:1}
+  .kxl-home-hero__content--secondary{display:grid;grid-template-columns:minmax(0,1fr) 74px;align-items:end;gap:22px;padding:34px}
+  .kxl-home-hero h3{margin:0;color:#fff;font-size:clamp(29px,2.8vw,40px);font-weight:780;letter-spacing:-.035em;line-height:1.02}
+  .kxl-home-hero__content--secondary p{max-width:300px;margin:12px 0 0;color:rgba(255,255,255,.88);font-size:15px;line-height:1.5}
+  .kxl-home-hero__circle{display:grid;width:74px;height:74px;place-items:center;border:1px solid rgba(255,255,255,.2);border-radius:50%;color:#fff;background:rgba(255,255,255,.3);backdrop-filter:blur(10px);font-size:32px;font-weight:300;line-height:1;transition:background .2s ease,transform .2s ease}
   .kxl-home-hero__card:hover>img{transform:scale(1.025)}
-  .kxl-home-hero__card:hover .kxl-home-hero__link i{transform:translateX(4px)}
+  .kxl-home-hero__card:hover .kxl-home-hero__pill,.kxl-home-hero__card:hover .kxl-home-hero__circle{background:rgba(255,255,255,.4);transform:translateY(-2px)}
   @media(max-width:900px){
     .kxl-home-hero{padding-inline:18px}
     .kxl-home-hero__grid{grid-template-columns:1fr;gap:12px}
-    .kxl-home-hero__card{min-height:420px}
+    .kxl-home-hero__card{min-height:430px}
     .kxl-home-hero__card--secondary{min-height:330px}
     .kxl-home-hero__card--secondary>img{object-position:center 52%}
-    .kxl-home-hero__card--secondary h3{max-width:520px}
+    .kxl-home-hero__content--secondary{grid-template-columns:minmax(0,1fr) 68px}
+    .kxl-home-hero__circle{width:68px;height:68px}
   }
   @media(max-width:600px){
     .kxl-home-hero{padding:8px 14px 26px}
     .kxl-home-hero__card{min-height:390px}
-    .kxl-home-hero__card--secondary{min-height:310px}
-    .kxl-home-hero__content{padding:23px}
-    .kxl-home-hero h2{font-size:37px}
+    .kxl-home-hero__card--secondary{min-height:300px}
+    .kxl-home-hero__content--primary{padding:32px 22px}
+    .kxl-home-hero h2{font-size:42px}
+    .kxl-home-hero__pill{width:100%;min-height:56px;margin-top:26px;padding:0 20px 0 24px;font-size:14px}
+    .kxl-home-hero__content--secondary{grid-template-columns:minmax(0,1fr) 58px;gap:14px;padding:24px}
     .kxl-home-hero h3{font-size:29px}
+    .kxl-home-hero__content--secondary p{font-size:14px}
+    .kxl-home-hero__circle{width:58px;height:58px;font-size:27px}
   }
 </style>
