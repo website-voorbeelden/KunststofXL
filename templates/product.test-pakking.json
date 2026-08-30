@@ -342,7 +342,8 @@
         "color_scheme": "scheme-4",
         "padding-block-start": 0,
         "padding-block-end": 24
-      }
+      },
+      "disabled": true
     },
     "plate_configurator": {
       "type": "custom-liquid",
@@ -351,8 +352,8 @@
         "custom_liquid": "{% render 'gasket-configurator' %}",
         "color_scheme": "scheme-4",
         "section_width": "page-width",
-        "padding_block_start": 24,
-        "padding_block_end": 48
+        "padding_block_start": 0,
+        "padding_block_end": 32
       }
     }
   },
