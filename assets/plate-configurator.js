@@ -272,6 +272,40 @@
     }
 
     function renderDimensions(box, currentValues) {
+      var widthExtA = one('.pc-w-ext-a');
+      var widthExtB = one('.pc-w-ext-b');
+      var heightExtA = one('.pc-h-ext-a');
+      var heightExtB = one('.pc-h-ext-b');
+      var heightLabel = one('.pc-label-h');
+      var heightLabelBackground = one('.pc-label-h-bg');
+
+      if (state.shape === 'circle') {
+        showSvg(widthExtA, false);
+        showSvg(widthExtB, false);
+        showSvg(heightExtA, false);
+        showSvg(heightExtB, false);
+        showSvg(heightLabel, false);
+        showSvg(heightLabelBackground, false);
+
+        setLine('.pc-dim-w', box.x, 225, 350, 225);
+        setLine('.pc-dim-h', 350, box.y, 350, 225);
+        setDimensionLabel(
+          '.pc-label-w',
+          '.pc-label-w-bg',
+          box.x + (350 - box.x) / 2,
+          205,
+          'Ø ' + measure(currentValues.width) + ' cm'
+        );
+        return;
+      }
+
+      showSvg(widthExtA, true);
+      showSvg(widthExtB, true);
+      showSvg(heightExtA, true);
+      showSvg(heightExtB, true);
+      showSvg(heightLabel, true);
+      showSvg(heightLabelBackground, true);
+
       var horizontalY = box.y + box.height + 48;
       var verticalX = box.x - 50;
 
@@ -293,17 +327,24 @@
       return 'Rechthoek · ' + measure(currentValues.width) + ' × ' + measure(currentValues.height) + ' cm';
     }
 
-    function price(currentValues) {
+    function priceParts(currentValues) {
       var areaPart = currentValues.width * currentValues.height / (305 * 155);
       var thicknessPart = 0.82 + state.thickness * 0.09;
       var shapePart = state.shape === 'rectangle' ? 1 : state.shape === 'rounded' ? 1.08 : 1.12;
+      var material = Math.max(basePrice, Math.round((basePrice + areaPart * 6100) * thicknessPart));
+      var shape = Math.max(0, Math.round(material * (shapePart - 1)));
       var extras = (state.holes ? 4 * 65 : 0) +
         (state.cutout ? 425 : 0) +
         (state.finish === 'gefreesd' ? 550 : 0);
-      return Math.max(basePrice, Math.round((basePrice + areaPart * 6100) * thicknessPart * shapePart + extras));
+      return {
+        material: material,
+        shape: shape,
+        extras: extras,
+        total: material + shape + extras
+      };
     }
 
-    function updateSummary(currentValues, unitPrice) {
+    function updateSummary(currentValues, pricing) {
       var dimensionsText = state.shape === 'circle'
         ? 'Ø ' + measure(currentValues.width) + ' cm'
         : state.shape === 'letter'
@@ -332,8 +373,17 @@
 
       all('[data-pc-summary]').forEach(function (element) { element.textContent = compact; });
       all('[data-pc-price]').forEach(function (element) {
-        element.textContent = money(unitPrice * state.quantity, root.dataset.locale, root.dataset.currency);
+        element.textContent = money(pricing.total * state.quantity, root.dataset.locale, root.dataset.currency);
       });
+
+      var materialPrice = one('[data-pc-breakdown-material]');
+      var shapePrice = one('[data-pc-breakdown-shape]');
+      var extrasPrice = one('[data-pc-breakdown-extras]');
+      var breakdownTotal = one('[data-pc-breakdown-total]');
+      if (materialPrice) materialPrice.textContent = money(pricing.material, root.dataset.locale, root.dataset.currency);
+      if (shapePrice) shapePrice.textContent = money(pricing.shape, root.dataset.locale, root.dataset.currency);
+      if (extrasPrice) extrasPrice.textContent = money(pricing.extras, root.dataset.locale, root.dataset.currency);
+      if (breakdownTotal) breakdownTotal.textContent = money(pricing.total, root.dataset.locale, root.dataset.currency);
 
       var holesStatus = one('[data-pc-holes-status]');
       var cutoutStatus = one('[data-pc-cutout-status]');
@@ -367,7 +417,7 @@
       renderHoles(box);
       renderCutout(box, currentValues);
       renderDimensions(box, currentValues);
-      updateSummary(currentValues, price(currentValues));
+      updateSummary(currentValues, priceParts(currentValues));
     }
 
     function chooseShape(shape) {
