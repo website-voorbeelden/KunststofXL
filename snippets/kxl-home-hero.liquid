@@ -43,6 +43,21 @@
     </a>
   </div>
 
+  <div class="kxl-home-hero__proof" aria-label="Onze beloftes">
+    <div class="kxl-home-hero__proof-item kxl-home-hero__proof-item--rating">
+      <strong aria-label="5 sterren">★★★★★</strong>
+      <span><b>4,8 uit 5</b><small>door onze klanten</small></span>
+    </div>
+    <div class="kxl-home-hero__proof-item">
+      <i aria-hidden="true">✓</i>
+      <span><b>Exact op maat</b><small>zorgvuldig geproduceerd</small></span>
+    </div>
+    <div class="kxl-home-hero__proof-item">
+      <i aria-hidden="true">↗</i>
+      <span><b>Advies van een specialist</b><small>voor ieder type project</small></span>
+    </div>
+  </div>
+
 </section>
 
 <style>
@@ -146,6 +161,41 @@
     transform:translateY(-1px);
   }
   .kxl-home-hero__card:hover .kxl-home-hero__button i{transform:translateX(3px)}
+  .kxl-home-hero__proof{
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:0;
+    margin-top:15px;
+    border:1px solid #dce4ec;
+    border-radius:8px;
+    background:#fff;
+  }
+  .kxl-home-hero__proof-item{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:13px;
+    min-height:68px;
+    padding:12px 18px;
+    border-right:1px solid #dce4ec;
+  }
+  .kxl-home-hero__proof-item:last-child{border-right:0}
+  .kxl-home-hero__proof-item>i{
+    display:grid;
+    width:30px;
+    height:30px;
+    place-items:center;
+    border-radius:50%;
+    color:#1872c9;
+    background:#eef6fd;
+    font-size:15px;
+    font-style:normal;
+    font-weight:850;
+  }
+  .kxl-home-hero__proof-item>strong{color:#f57b20;font-size:14px;letter-spacing:.04em}
+  .kxl-home-hero__proof-item>span{display:flex;flex-direction:column;gap:2px}
+  .kxl-home-hero__proof-item b{color:#14213d;font-size:13px;line-height:1.2}
+  .kxl-home-hero__proof-item small{color:#6c7887;font-size:11px;line-height:1.2}
   .kxl-home-hero__trust{
     display:grid;
     grid-template-columns:repeat(3,1fr);
@@ -167,8 +217,13 @@
   }
   @media(max-width:900px){
     .kxl-home-hero{padding-inline:20px}
-    .kxl-home-hero__grid{grid-template-columns:1.35fr .85fr;gap:12px}
-    .kxl-home-hero__card{min-height:440px}
+    .kxl-home-hero__grid{grid-template-columns:1fr;gap:14px}
+    .kxl-home-hero__card{min-height:450px}
+    .kxl-home-hero__card--secondary{min-height:340px}
+    .kxl-home-hero__card--secondary>img{object-position:center 68%}
+    .kxl-home-hero__proof{grid-template-columns:1fr 1fr}
+    .kxl-home-hero__proof-item:nth-child(2){border-right:0}
+    .kxl-home-hero__proof-item:last-child{grid-column:1/-1;border-top:1px solid #dce4ec}
   }
   @media(max-width:700px){
     .kxl-home-hero{padding:12px 14px 18px}
@@ -177,6 +232,9 @@
     .kxl-home-hero__card--secondary{min-height:360px}
     .kxl-home-hero__content{padding:24px}
     .kxl-home-hero h2{font-size:38px}
+    .kxl-home-hero__proof{grid-template-columns:1fr}
+    .kxl-home-hero__proof-item,.kxl-home-hero__proof-item:nth-child(2){justify-content:flex-start;border-right:0;border-bottom:1px solid #dce4ec}
+    .kxl-home-hero__proof-item:last-child{grid-column:auto;border-top:0;border-bottom:0}
     .kxl-home-hero__trust{
       grid-template-columns:1fr;
       gap:10px;
