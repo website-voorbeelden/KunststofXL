@@ -1,348 +1,131 @@
-{% doc %}
-Renders the gasket price configurator.
-
-Place this in a Custom Liquid block:
-
-{% render 'gasket-configurator' %}
-{% enddoc %}
-
-{{ 'gasket-configurator.css' | asset_url | stylesheet_tag }}
-<script src="{{ 'gasket-configurator-nesting.js' | asset_url }}" defer></script>
-<script src="{{ 'gasket-configurator-drawing.js' | asset_url }}" defer></script>
-<script src="{{ 'gasket-configurator.js' | asset_url }}" defer></script>
+{% comment %}
+  PVC plaat configurator — visual concept.
+  Replaces the former gasket configurator while keeping the existing product template hook.
+{% endcomment %}
+{{ 'plate-configurator.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'plate-configurator.js' | asset_url }}" defer></script>
 
 {% liquid
-  assign gcfg_id = 'gasket-configurator'
-  if section.id != blank
-    assign gcfg_id = gcfg_id | append: '-' | append: section.id
-  elsif product.id != blank
-    assign gcfg_id = gcfg_id | append: '-' | append: product.id
-  endif
+  assign pc_variant = product.selected_or_first_available_variant
+  assign pc_id = 'plate-configurator-' | append: section.id | append: '-' | append: product.id
+  assign pc_sheet_width = product.metafields.custom.max_breedte.value | default: 3050
+  assign pc_sheet_height = product.metafields.custom.max_hoogte.value | default: 2050
+  assign pc_default_width = pc_sheet_width | divided_by: 2
+  assign pc_default_height = pc_sheet_height | divided_by: 2
 %}
 
-<div id="{{ gcfg_id }}" class="gcfg" data-section-id="{{ section.id }}">
-  <script type="application/json" data-gasket-variants>
-    [
-      {%- for variant in product.variants -%}
-        {%- liquid
-          assign plate_price = variant.metafields.custom.plate_price.value
-          assign plate_price = plate_price | default: variant.metafields.custom.plaatprijs.value
-          assign plate_price = plate_price | default: variant.metafields.custom.plaat_prijs.value
-          assign plate_price = plate_price | default: 0
+<div
+  id="{{ pc_id }}"
+  class="plate-configurator"
+  data-plate-configurator
+  data-base-price="{{ pc_variant.price }}"
+  data-sheet-width="{{ pc_sheet_width }}"
+  data-sheet-height="{{ pc_sheet_height }}"
+  data-locale="{{ request.locale.iso_code | default: 'nl-NL' }}"
+  data-currency="{{ cart.currency.iso_code | default: shop.currency }}"
+>
+  <div class="pc-grid">
+    <div class="pc-panel">
+      <p class="pc-kicker">Op maat gemaakt</p>
+      <h3 class="pc-title">Stel je plaat samen</h3>
+      <p class="pc-intro">Kies de vorm en afmetingen. Je ziet direct hoe jouw plaat eruitziet.</p>
 
-          assign cut_speed = variant.metafields.custom.cut_speed.value
-          assign cut_speed = cut_speed | default: variant.metafields.custom.snijsnelheid.value
-          assign cut_speed = cut_speed | default: variant.metafields.custom.snij_snelheid.value
-          assign cut_speed = cut_speed | default: 700
+      <section class="pc-step">
+        <h4><span class="pc-step-num">1</span>Vorm</h4>
+        <div class="pc-choices">
+          <button type="button" class="pc-choice" data-shape="rectangle" aria-pressed="true">
+            <svg viewBox="0 0 32 26" aria-hidden="true"><rect x="3" y="5" width="26" height="16" rx="1"/></svg>Rechthoek
+          </button>
+          <button type="button" class="pc-choice" data-shape="rounded" aria-pressed="false">
+            <svg viewBox="0 0 32 26" aria-hidden="true"><rect x="3" y="5" width="26" height="16" rx="6"/></svg>Afgerond
+          </button>
+          <button type="button" class="pc-choice" data-shape="round" aria-pressed="false">
+            <svg viewBox="0 0 32 26" aria-hidden="true"><circle cx="16" cy="13" r="10"/></svg>Rond
+          </button>
+        </div>
+      </section>
 
-          assign variant_title = product.title | append: ' — ' | append: variant.title
-          if product.has_only_default_variant
-            assign variant_title = product.title
-          endif
-        -%}
-        {
-          "id": {{ variant.id | json }},
-          "title": {{ variant_title | json }},
-          "platePrice": {{ plate_price | json }},
-          "cutSpeed": {{ cut_speed | json }}
-        }{% unless forloop.last %},{% endunless %}
-      {%- endfor -%}
-    ]
-  </script>
+      <section class="pc-step">
+        <h4><span class="pc-step-num">2</span>Afmetingen</h4>
+        <div class="pc-fields">
+          <div class="pc-field pc-unit">
+            <label for="{{ pc_id }}-width">Breedte</label>
+            <input id="{{ pc_id }}-width" data-pc-width type="number" min="50" max="{{ pc_sheet_width }}" step="1" value="{{ pc_default_width }}">
+            <span>mm</span>
+          </div>
+          <div class="pc-field pc-unit">
+            <label for="{{ pc_id }}-height">Hoogte</label>
+            <input id="{{ pc_id }}-height" data-pc-height type="number" min="50" max="{{ pc_sheet_height }}" step="1" value="{{ pc_default_height }}">
+            <span>mm</span>
+          </div>
+        </div>
+        <p class="pc-intro" style="margin:10px 0 0;font-size:12px">Maximaal {{ pc_sheet_width }} × {{ pc_sheet_height }} mm</p>
+      </section>
 
-  <div class="gcfg__grid">
-    <div class="gcfg__form">
-      <div class="gcfg__intro">
-        <h3 class="gcfg__title">Prijs berekenen</h3>
-        <div class="gcfg__subtitle">Kies materiaal, vorm en maten. Klik daarna op prijs berekenen.</div>
-      </div>
-
-      <div class="gcfg__accordion">
-        <details class="gcfg__panel" open>
-          <summary class="gcfg__sectionTitle">
-            <span>1</span>
-            <strong>Materiaal & dikte</strong>
-            <small>Kies het materiaalproduct en de variant.</small>
-          </summary>
-
-          <div class="gcfg__row">
-            <label class="gcfg__label" for="{{ gcfg_id }}-variant">Materiaal / dikte</label>
-            <select id="{{ gcfg_id }}-variant" class="gcfg__input">
-              {% for variant in product.variants %}
-                <option value="{{ variant.id }}" {% if variant.id == product.selected_or_first_available_variant.id %}selected{% endif %}>
-                  {{ product.title }}{% unless product.has_only_default_variant %} — {{ variant.title }}{% endunless %}
-                </option>
+      <section class="pc-step">
+        <h4><span class="pc-step-num">3</span>Dikte & bewerking</h4>
+        <div class="pc-fields">
+          <div class="pc-field">
+            <label for="{{ pc_id }}-thickness">Dikte</label>
+            <select id="{{ pc_id }}-thickness" data-pc-thickness>
+              {% for option in product.options_with_values %}
+                {% assign option_name = option.name | downcase %}
+                {% if option_name == 'dikte' or option_name == 'thickness' %}
+                  {% for value in option.values %}<option value="{{ value | escape }}" {% if value == pc_variant.options[forloop.parentloop.index0] %}selected{% endif %}>{{ value }}</option>{% endfor %}
+                {% endif %}
               {% endfor %}
-            </select>
-            <div id="{{ gcfg_id }}-variant-debug" class="gcfg__hint"></div>
-          </div>
-        </details>
-
-        <details class="gcfg__panel" open>
-          <summary class="gcfg__sectionTitle">
-            <span>2</span>
-            <strong>Vorm & maten</strong>
-            <small>Kies eerst de vorm; daarna vul je de bijbehorende maten in.</small>
-          </summary>
-
-          <div id="{{ gcfg_id }}-items"></div>
-          <button id="{{ gcfg_id }}-add-item" type="button" class="gcfg__btn gcfg__btn--secondary">+ Pakking toevoegen</button>
-        </details>
-
-        <details class="gcfg__panel">
-          <summary class="gcfg__sectionTitle">
-            <span>3</span>
-            <strong>Plaat & nesting</strong>
-            <small>Stel plaatmaat, randafstand en tussenruimte in.</small>
-          </summary>
-
-          <div class="gcfg__row gcfg__row--2">
-            <div>
-              <label class="gcfg__label" for="{{ gcfg_id }}-plateW">Plaatbreedte mm</label>
-              <input id="{{ gcfg_id }}-plateW" class="gcfg__input" type="number" min="1" step="1" value="1500">
-            </div>
-            <div>
-              <label class="gcfg__label" for="{{ gcfg_id }}-plateH">Plaathoogte mm</label>
-              <input id="{{ gcfg_id }}-plateH" class="gcfg__input" type="number" min="1" step="1" value="1500">
-            </div>
-          </div>
-
-          <div class="gcfg__row gcfg__row--2">
-            <div>
-              <label class="gcfg__label" for="{{ gcfg_id }}-edge">Randafstand mm</label>
-              <input id="{{ gcfg_id }}-edge" class="gcfg__input" type="number" min="0" step="0.1" value="5">
-            </div>
-            <div>
-              <label class="gcfg__label" for="{{ gcfg_id }}-gap">Tussenruimte mm</label>
-              <input id="{{ gcfg_id }}-gap" class="gcfg__input" type="number" min="0" step="0.1" value="5">
-            </div>
-          </div>
-        </details>
-
-        <details class="gcfg__panel">
-          <summary class="gcfg__sectionTitle">
-            <span>4</span>
-            <strong>Kosten</strong>
-            <small>Prijs per plaat, snijsnelheid, uurprijs, arbeid en marge.</small>
-          </summary>
-
-          <div class="gcfg__row gcfg__row--2">
-            <div>
-              <label class="gcfg__label" for="{{ gcfg_id }}-platePrice">Plaatprijs €</label>
-              <input id="{{ gcfg_id }}-platePrice" class="gcfg__input" type="number" min="0" step="0.01" placeholder="uit variant">
-            </div>
-            <div>
-              <label class="gcfg__label" for="{{ gcfg_id }}-hourRate">Uurtarief €</label>
-              <input id="{{ gcfg_id }}-hourRate" class="gcfg__input" type="number" min="0" step="0.01" value="75">
-            </div>
-          </div>
-
-          <div class="gcfg__row gcfg__row--2">
-            <div>
-              <label class="gcfg__label" for="{{ gcfg_id }}-cutSpeed">Snijsnelheid mm/min</label>
-              <input id="{{ gcfg_id }}-cutSpeed" class="gcfg__input" type="number" min="1" step="1" placeholder="uit variant">
-            </div>
-            <div>
-              <label class="gcfg__label" for="{{ gcfg_id }}-setupMin">Setup minuten</label>
-              <input id="{{ gcfg_id }}-setupMin" class="gcfg__input" type="number" min="0" step="0.1" value="1">
-            </div>
-          </div>
-
-          <div class="gcfg__row gcfg__row--2">
-            <div>
-              <label class="gcfg__label" for="{{ gcfg_id }}-kerf">Kerf/toeslag mm per contour</label>
-              <input id="{{ gcfg_id }}-kerf" class="gcfg__input" type="number" min="0" step="0.1" value="1">
-            </div>
-            <div>
-              <label class="gcfg__label" for="{{ gcfg_id }}-pierceSec">Pierce seconden</label>
-              <input id="{{ gcfg_id }}-pierceSec" class="gcfg__input" type="number" min="0" step="0.1" value="1">
-            </div>
-          </div>
-
-          <div class="gcfg__row gcfg__row--2">
-            <div>
-              <label class="gcfg__label" for="{{ gcfg_id }}-holeMethod">Bewerkingsmethode boutgaten</label>
-              <select id="{{ gcfg_id }}-holeMethod" class="gcfg__input">
-                <option value="cut" selected>CNC snijden</option>
-                <option value="punch">Stansen</option>
-              </select>
-            </div>
-            <div>
-              <label class="gcfg__label" for="{{ gcfg_id }}-punchSec">Stanstijd sec/gat</label>
-              <input id="{{ gcfg_id }}-punchSec" class="gcfg__input" type="number" min="0" step="0.1" value="1">
-            </div>
-          </div>
-
-          <div class="gcfg__row gcfg__row--2">
-            <div>
-              <label class="gcfg__label" for="{{ gcfg_id }}-plateLoadMin">Plaat laden min</label>
-              <input id="{{ gcfg_id }}-plateLoadMin" class="gcfg__input" type="number" min="0" step="0.1" value="1">
-            </div>
-            <div>
-              <label class="gcfg__label" for="{{ gcfg_id }}-plateUnloadMin">Plaat afruimen min</label>
-              <input id="{{ gcfg_id }}-plateUnloadMin" class="gcfg__input" type="number" min="0" step="0.1" value="1">
-            </div>
-          </div>
-
-          <div class="gcfg__row gcfg__row--2">
-            <div>
-              <label class="gcfg__label" for="{{ gcfg_id }}-moveSec">Positioneren sec/contour</label>
-              <input id="{{ gcfg_id }}-moveSec" class="gcfg__input" type="number" min="0" step="0.1" value="1">
-            </div>
-            <div>
-              <label class="gcfg__label" for="{{ gcfg_id }}-finishSec">Opruimen/sorteren sec/stuk</label>
-              <input id="{{ gcfg_id }}-finishSec" class="gcfg__input" type="number" min="0" step="0.1" value="3">
-            </div>
-          </div>
-
-          <div class="gcfg__row gcfg__row--2">
-            <div>
-              <label class="gcfg__label" for="{{ gcfg_id }}-marginPct">Marge/opslag %</label>
-              <input id="{{ gcfg_id }}-marginPct" class="gcfg__input" type="number" min="0" step="0.1" value="150">
-            </div>
-            <div>
-              <label class="gcfg__label" for="{{ gcfg_id }}-minOrder">Minimum orderbedrag €</label>
-              <input id="{{ gcfg_id }}-minOrder" class="gcfg__input" type="number" min="0" step="0.01" value="100">
-            </div>
-          </div>
-
-          <div class="gcfg__row">
-            <label class="gcfg__label" for="{{ gcfg_id }}-remainderMode">Restmateriaal</label>
-            <select id="{{ gcfg_id }}-remainderMode" class="gcfg__input">
-              <option value="charge" selected>Meerekenen in materiaalprijs</option>
-              <option value="discard">Niet meerekenen / rood als restafval tonen</option>
+              {% if product.options.size == 0 %}<option>{{ pc_variant.title }}</option>{% endif %}
             </select>
           </div>
-        </details>
-      </div>
-
-      <button id="{{ gcfg_id }}-calc" type="button" class="gcfg__btn">Prijs berekenen</button>
-      <div id="{{ gcfg_id }}-warn" class="gcfg__warn" aria-live="polite"></div>
-
-      <div id="{{ gcfg_id }}-calcBox" class="gcfg__calc" hidden>
-        <div class="gcfg__calcGrid">
-          <div class="gcfg__calcCard">
-            <h4>Resultaat</h4>
-            <div id="{{ gcfg_id }}-priceResult" class="gcfg__resultText"></div>
-          </div>
-
-          <div class="gcfg__calcCard">
-            <div class="gcfg__nestHead">
-              <h4>Plaatindeling</h4>
-              <div>Visuele nesting</div>
+          <div class="pc-field">
+            <label>Randafwerking</label>
+            <div class="pc-choices" style="grid-template-columns:1fr 1fr">
+              <button type="button" class="pc-choice" data-finish="gezaagd" aria-pressed="true">Gezaagd</button>
+              <button type="button" class="pc-choice" data-finish="gefreesd" aria-pressed="false">Gefreesd</button>
             </div>
-            <svg id="{{ gcfg_id }}-nestSvg" class="gcfg__nestSvg" role="img" aria-label="Plaatindeling"></svg>
           </div>
         </div>
-      </div>
+      </section>
+
+      <section class="pc-step">
+        <h4><span class="pc-step-num">4</span>Extra bewerkingen</h4>
+        <label class="pc-checkbox"><input type="checkbox" data-pc-holes> Boorgaten toevoegen</label>
+        <div class="pc-extra" data-pc-holes-extra>
+          <div class="pc-fields">
+            <div class="pc-field"><label for="{{ pc_id }}-holes">Aantal gaten</label><input id="{{ pc_id }}-holes" data-pc-holes-count type="number" min="1" max="8" value="4"></div>
+            <div class="pc-field pc-unit"><label for="{{ pc_id }}-hole-dia">Diameter</label><input id="{{ pc_id }}-hole-dia" data-pc-hole-dia type="number" min="3" max="50" value="8"><span>mm</span></div>
+          </div>
+        </div>
+        <label class="pc-checkbox" style="margin-top:13px"><input type="checkbox" data-pc-cutout> Uitsnede toevoegen</label>
+      </section>
     </div>
 
-    <div class="gcfg__preview">
-      <div class="gcfg__card">
-        <div class="gcfg__head">
-          <strong>Live voorbeeld</strong>
-          <span class="gcfg__headSub">Geselecteerde pakking of getoonde plaat.</span>
+    <aside class="pc-preview">
+      <div class="pc-preview-head">
+        <div><strong>Jouw plaat</strong><br><span>Live 2D-weergave</span></div>
+        <div class="pc-tabs" role="tablist">
+          <button type="button" class="pc-tab" data-pc-tab="image" aria-selected="false">Afbeelding</button>
+          <button type="button" class="pc-tab" data-pc-tab="preview" aria-selected="true">Preview</button>
         </div>
-
-        <svg class="gcfg__svg" viewBox="0 0 640 560" role="img" aria-label="Pakking schema">
-          <path class="ringFill" fill="rgba(20,106,91,0.18)" stroke="rgba(20,106,91,0.72)" stroke-width="2"></path>
-          <circle class="ringOD" cx="0" cy="0" r="0"></circle>
-          <circle class="ringID" cx="0" cy="0" r="0"></circle>
-          <g class="holes"></g>
-          <circle class="pcdCircle" cx="0" cy="0" r="0"></circle>
-
-          <g class="dims">
-            <line class="dim-ext od-ext-l"></line>
-            <line class="dim-ext od-ext-r"></line>
-            <line class="dim-line od-line"></line>
-            <text class="dim-text od-text" text-anchor="middle"></text>
-
-            <line class="dim-ext id-ext-l"></line>
-            <line class="dim-ext id-ext-r"></line>
-            <line class="dim-line id-line"></line>
-            <text class="dim-text id-text" text-anchor="middle"></text>
-
-            <line class="dim-ext hole-ext-l"></line>
-            <line class="dim-ext hole-ext-r"></line>
-            <line class="dim-line hole-line"></line>
-            <text class="dim-text hole-text" text-anchor="middle"></text>
-
-            <line class="dim-ext pcd-ext-l"></line>
-            <line class="dim-ext pcd-ext-r"></line>
-            <line class="dim-line pcd-line"></line>
-            <text class="dim-text pcd-text" text-anchor="middle"></text>
-          </g>
-
-          <g class="thk">
-            <line class="thk-vert thk-left"></line>
-            <line class="thk-vert thk-right"></line>
-            <line class="thk-h thk-top"></line>
-            <line class="thk-h thk-bot"></line>
-            <line class="thk-h thk-id-top"></line>
-            <line class="thk-h thk-id-bot"></line>
-            <line class="thk-h thk-dim"></line>
-            <text class="dim-text thk-text" text-anchor="middle"></text>
-          </g>
+      </div>
+      <div class="pc-canvas">
+        {% if product.featured_image %}
+          {{ product.featured_image | image_url: width: 900 | image_tag: class: 'pc-image', hidden: true, alt: product.title }}
+        {% else %}
+          <div class="pc-image" hidden>Productafbeelding</div>
+        {% endif %}
+        <svg class="pc-svg" viewBox="0 0 640 380" role="img" aria-label="2D voorbeeld van de samengestelde plaat">
+          <path class="pc-shape"></path>
+          <g class="pc-holes"></g>
+          <line class="pc-dim pc-dim-w"></line><text class="pc-dim-text pc-label-w" text-anchor="middle"></text>
+          <line class="pc-dim pc-dim-h"></line><text class="pc-dim-text pc-label-h" text-anchor="end"></text>
         </svg>
-
-        <p class="gcfg__hint">Tip: klik bij een pakkingregel op “Voorbeeld” om die pakking rechts te tonen.</p>
-        <div id="{{ gcfg_id }}-svgWarn" class="gcfg__warn" aria-live="polite"></div>
-
-        <div class="gcfg__downloadGrid">
-          <button id="{{ gcfg_id }}-download-dxf" type="button" class="gcfg__btn gcfg__btn--dxf">Download DXF live pakking</button>
-          <button id="{{ gcfg_id }}-download-svg" type="button" class="gcfg__btn gcfg__btn--secondary">Download SVG live pakking</button>
-        </div>
       </div>
-    </div>
+      <div class="pc-summary">
+        <div><small>Prijsindicatie incl. btw</small><strong class="pc-price" data-pc-price></strong></div>
+        <small data-pc-summary></small>
+        <button type="button" class="pc-cart" data-pc-cart>Toevoegen aan winkelwagen</button>
+      </div>
+    </aside>
   </div>
-
-  <template id="{{ gcfg_id }}-item-template">
-    <div class="gcfg__item" data-gasket-item>
-      <div class="gcfg__itemHead">
-        <strong class="gcfg__itemTitle">Pakking</strong>
-        <div class="gcfg__itemActions">
-          <button type="button" class="gcfg__miniBtn" data-preview>Voorbeeld</button>
-          <button type="button" class="gcfg__miniBtn gcfg__miniBtn--danger" data-remove>Verwijderen</button>
-        </div>
-      </div>
-
-      <div class="gcfg__row gcfg__row--2">
-        <div>
-          <label class="gcfg__label">Buitendiameter (OD) mm *</label>
-          <input class="gcfg__input" data-field="od" type="text" inputmode="decimal" placeholder="bijv. 160" value="160">
-        </div>
-        <div>
-          <label class="gcfg__label">Binnendiameter (ID) mm *</label>
-          <input class="gcfg__input" data-field="id" type="text" inputmode="decimal" placeholder="bijv. 90" value="90">
-        </div>
-      </div>
-
-      <div class="gcfg__row gcfg__row--2">
-        <div>
-          <label class="gcfg__label">Boutsteek (PCD) mm</label>
-          <input class="gcfg__input" data-field="pcd" type="text" inputmode="decimal" placeholder="bijv. 125">
-        </div>
-        <div>
-          <label class="gcfg__label">Aantal gaten</label>
-          <input class="gcfg__input" data-field="holes" type="number" min="0" step="1" placeholder="bijv. 8">
-        </div>
-      </div>
-
-      <div class="gcfg__row gcfg__row--2">
-        <div>
-          <label class="gcfg__label">Gatdiameter Ø mm</label>
-          <input class="gcfg__input" data-field="holeDia" type="text" inputmode="decimal" placeholder="bijv. 18">
-        </div>
-        <div>
-          <label class="gcfg__label">Dikte (H) mm</label>
-          <input class="gcfg__input" data-field="h" type="text" inputmode="decimal" placeholder="bijv. 2">
-        </div>
-      </div>
-
-      <div class="gcfg__row">
-        <label class="gcfg__label">Aantal pakkingen *</label>
-        <input class="gcfg__input" data-field="qty" type="number" min="1" step="1" placeholder="bijv. 50" value="2">
-      </div>
-    </div>
-  </template>
 </div>
