@@ -1,137 +1,78 @@
-{% comment %}
-  PVC plaat configurator — visual concept.
-  Replaces the former gasket configurator while keeping the existing product template hook.
-{% endcomment %}
+{% comment %} Full-width plate configurator concept {% endcomment %}
 {{ 'plate-configurator.css' | asset_url | stylesheet_tag }}
 <script src="{{ 'plate-configurator.js' | asset_url }}" defer></script>
-
 {% liquid
   assign pc_variant = product.selected_or_first_available_variant
-  assign pc_id = 'plate-configurator-' | append: section.id | append: '-' | append: product.id
+  assign pc_id = 'plate-configurator-' | append: product.id
   assign pc_sheet_width = product.metafields.custom.max_breedte.value | default: 3050
-  assign pc_sheet_height = product.metafields.custom.max_hoogte.value | default: 2050
-  assign pc_default_width = pc_sheet_width | divided_by: 2
-  assign pc_default_height = pc_sheet_height | divided_by: 2
+  assign pc_sheet_height = product.metafields.custom.max_hoogte.value | default: 1550
 %}
-
-<div
-  id="{{ pc_id }}"
-  class="plate-configurator"
-  data-plate-configurator
-  data-base-price="{{ pc_variant.price }}"
-  data-sheet-width="{{ pc_sheet_width }}"
-  data-sheet-height="{{ pc_sheet_height }}"
-  data-locale="{{ request.locale.iso_code | default: 'nl-NL' }}"
-  data-currency="{{ cart.currency.iso_code | default: shop.currency }}"
->
-  <div class="pc-grid">
-    <div class="pc-panel">
-      <div class="pc-product-meta">
-        <h1 class="pc-product-title">{{ product.title }}</h1>
-        <div class="pc-rating" aria-label="Productbeoordelingen">★★★★★ <span>Concept preview</span></div>
-        <div class="pc-base-price">{{ pc_variant.price | money }} <small>incl. btw</small></div>
-        <button type="button" class="pc-sample">Bestel een sample</button>
-      </div>
-      <p class="pc-kicker">Op maat gemaakt</p>
-      <h3 class="pc-title">Afmetingen</h3>
-      <p class="pc-intro">Kies de vorm en maten van je plaat.</p>
-
-      <section class="pc-step">
-        <h4><span class="pc-step-num">1</span>Vorm</h4>
-        <div class="pc-choices">
-          <button type="button" class="pc-choice" data-shape="rectangle" aria-pressed="true">
-            <svg viewBox="0 0 32 26" aria-hidden="true"><rect x="3" y="5" width="26" height="16" rx="1"/></svg>Rechthoek
-          </button>
-          <button type="button" class="pc-choice" data-shape="rounded" aria-pressed="false">
-            <svg viewBox="0 0 32 26" aria-hidden="true"><rect x="3" y="5" width="26" height="16" rx="6"/></svg>Afgerond
-          </button>
-          <button type="button" class="pc-choice" data-shape="round" aria-pressed="false">
-            <svg viewBox="0 0 32 26" aria-hidden="true"><circle cx="16" cy="13" r="10"/></svg>Rond
-          </button>
-        </div>
-      </section>
-
-      <section class="pc-step">
-        <h4><span class="pc-step-num">2</span>Afmetingen</h4>
-        <div class="pc-fields">
-          <div class="pc-field pc-unit">
-            <label for="{{ pc_id }}-width">Breedte</label>
-            <input id="{{ pc_id }}-width" data-pc-width type="number" min="50" max="{{ pc_sheet_width }}" step="1" value="{{ pc_default_width }}">
-            <span>mm</span>
-          </div>
-          <div class="pc-field pc-unit">
-            <label for="{{ pc_id }}-height">Hoogte</label>
-            <input id="{{ pc_id }}-height" data-pc-height type="number" min="50" max="{{ pc_sheet_height }}" step="1" value="{{ pc_default_height }}">
-            <span>mm</span>
-          </div>
-        </div>
-        <p class="pc-intro" style="margin:10px 0 0;font-size:12px">Maximaal {{ pc_sheet_width }} × {{ pc_sheet_height }} mm</p>
-      </section>
-
-      <section class="pc-step">
-        <h4><span class="pc-step-num">3</span>Dikte & bewerking</h4>
-        <div class="pc-fields">
-          <div class="pc-field">
-            <label for="{{ pc_id }}-thickness">Dikte</label>
-            <select id="{{ pc_id }}-thickness" data-pc-thickness>
-              {% for option in product.options_with_values %}
-                {% assign option_name = option.name | downcase %}
-                {% if option_name == 'dikte' or option_name == 'thickness' %}
-                  {% for value in option.values %}<option value="{{ value | escape }}" {% if value == pc_variant.options[forloop.parentloop.index0] %}selected{% endif %}>{{ value }}</option>{% endfor %}
-                {% endif %}
-              {% endfor %}
-              {% if product.options.size == 0 %}<option>{{ pc_variant.title }}</option>{% endif %}
-            </select>
-          </div>
-          <div class="pc-field">
-            <label>Randafwerking</label>
-            <div class="pc-choices" style="grid-template-columns:1fr 1fr">
-              <button type="button" class="pc-choice" data-finish="gezaagd" aria-pressed="true">Gezaagd</button>
-              <button type="button" class="pc-choice" data-finish="gefreesd" aria-pressed="false">Gefreesd</button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section class="pc-step">
-        <h4><span class="pc-step-num">4</span>Extra bewerkingen</h4>
-        <label class="pc-checkbox"><input type="checkbox" data-pc-holes> Boorgaten toevoegen</label>
-        <div class="pc-extra" data-pc-holes-extra>
-          <div class="pc-fields">
-            <div class="pc-field"><label for="{{ pc_id }}-holes">Aantal gaten</label><input id="{{ pc_id }}-holes" data-pc-holes-count type="number" min="1" max="8" value="4"></div>
-            <div class="pc-field pc-unit"><label for="{{ pc_id }}-hole-dia">Diameter</label><input id="{{ pc_id }}-hole-dia" data-pc-hole-dia type="number" min="3" max="50" value="8"><span>mm</span></div>
-          </div>
-        </div>
-        <label class="pc-checkbox" style="margin-top:13px"><input type="checkbox" data-pc-cutout> Uitsnede toevoegen</label>
-      </section>
-    </div>
-
-    <aside class="pc-preview">
-      <div class="pc-preview-head">
-        <div><strong>Jouw plaat</strong><br><span>Live 2D-weergave</span></div>
-        <div class="pc-tabs" role="tablist">
-          <button type="button" class="pc-tab" data-pc-tab="image" aria-selected="false">Afbeelding</button>
-          <button type="button" class="pc-tab" data-pc-tab="preview" aria-selected="true">Preview</button>
-        </div>
-      </div>
+<section id="{{ pc_id }}" class="plate-configurator pc-page" data-plate-configurator data-base-price="{{ pc_variant.price }}" data-sheet-width="{{ pc_sheet_width }}" data-sheet-height="{{ pc_sheet_height }}" data-locale="{{ request.locale.iso_code | default: 'nl-NL' }}" data-currency="{{ cart.currency.iso_code | default: shop.currency }}">
+  <div class="pc-page__inner">
+    <div class="pc-visual">
       <div class="pc-canvas">
         {% if product.featured_image %}
-          {{ product.featured_image | image_url: width: 900 | image_tag: class: 'pc-image', hidden: true, alt: product.title }}
-        {% else %}
-          <div class="pc-image" hidden>Productafbeelding</div>
+          {{ product.featured_image | image_url: width: 1200 | image_tag: class: 'pc-image', alt: product.title }}
         {% endif %}
-        <svg class="pc-svg" viewBox="0 0 640 380" role="img" aria-label="2D voorbeeld van de samengestelde plaat">
-          <path class="pc-shape"></path>
-          <g class="pc-holes"></g>
+        <svg class="pc-svg" viewBox="0 0 640 430" role="img" aria-label="Voorbeeld van jouw plaat">
+          <path class="pc-shape"></path><g class="pc-holes"></g>
           <line class="pc-dim pc-dim-w"></line><text class="pc-dim-text pc-label-w" text-anchor="middle"></text>
           <line class="pc-dim pc-dim-h"></line><text class="pc-dim-text pc-label-h" text-anchor="end"></text>
         </svg>
       </div>
-      <div class="pc-summary">
-        <div><small>Prijsindicatie incl. btw</small><strong class="pc-price" data-pc-price></strong></div>
-        <small data-pc-summary></small>
-        <button type="button" class="pc-cart" data-pc-cart>Toevoegen aan winkelwagen</button>
+      <div class="pc-switch" role="tablist">
+        <button type="button" data-pc-tab="image" aria-selected="false">Afbeelding</button>
+        <button type="button" data-pc-tab="preview" aria-selected="true">Afmetingen</button>
       </div>
-    </aside>
+    </div>
+
+    <div class="pc-sidebar">
+      <header class="pc-product-meta">
+        <h1>{{ product.title }}</h1>
+        <div class="pc-rating">★★★★★ <span>Concept productpagina</span></div>
+        <div class="pc-base-price">{{ pc_variant.price | money }} <small>incl. btw</small></div>
+        <button type="button" class="pc-sample">Bestel een sample</button>
+      </header>
+
+      <div class="pc-accordion">
+        <details class="pc-accord" open>
+          <summary><span class="pc-check">✓</span><span><strong>Afmetingen</strong><small>Rechthoek</small></span><b>⌃</b></summary>
+          <div class="pc-accord__body">
+            <div class="pc-shape-tabs">
+              <button type="button" class="pc-choice" data-shape="rectangle" aria-pressed="true"><svg viewBox="0 0 32 26"><rect x="3" y="5" width="26" height="16"/></svg>Rechthoek</button>
+              <button type="button" class="pc-choice" data-shape="rounded" aria-pressed="false"><svg viewBox="0 0 32 26"><rect x="3" y="5" width="26" height="16" rx="6"/></svg>Afgerond</button>
+              <button type="button" class="pc-choice" data-shape="round" aria-pressed="false"><svg viewBox="0 0 32 26"><circle cx="16" cy="13" r="10"/></svg>Rond</button>
+            </div>
+            <div class="pc-fields">
+              <label>Breedte <small>Max: {{ pc_sheet_width | divided_by: 10 }} cm</small><span class="pc-unit"><input data-pc-width type="number" value="500" min="50" max="{{ pc_sheet_width }}">cm</span></label>
+              <label>Hoogte <small>Max: {{ pc_sheet_height | divided_by: 10 }} cm</small><span class="pc-unit"><input data-pc-height type="number" value="500" min="50" max="{{ pc_sheet_height }}">cm</span></label>
+            </div>
+          </div>
+        </details>
+
+        <details class="pc-accord">
+          <summary><span class="pc-check">✓</span><span><strong>Dikte</strong><small>{{ pc_variant.title }}</small></span><b>⌄</b></summary>
+          <div class="pc-accord__body"><select data-pc-thickness>{% for variant in product.variants %}<option>{{ variant.title }}</option>{% endfor %}</select></div>
+        </details>
+
+        <details class="pc-accord">
+          <summary><span class="pc-empty"></span><span><strong>Boorgaten</strong></span><b>⌄</b></summary>
+          <div class="pc-accord__body"><label class="pc-checkbox"><input type="checkbox" data-pc-holes> Boorgaten toevoegen</label><div class="pc-extra" data-pc-holes-extra><label>Aantal <input data-pc-holes-count type="number" value="4" min="1" max="8"></label><label>Diameter <input data-pc-hole-dia type="number" value="8" min="3"> mm</label></div></div>
+        </details>
+
+        <details class="pc-accord">
+          <summary><span class="pc-empty"></span><span><strong>Uitsnede</strong></span><b>⌄</b></summary>
+          <div class="pc-accord__body"><label class="pc-checkbox"><input type="checkbox" data-pc-cutout> Uitsnede toevoegen</label></div>
+        </details>
+
+        <details class="pc-accord" open>
+          <summary><span class="pc-check">✓</span><span><strong>Randafwerking</strong><small>Gezaagd</small></span><b>⌃</b></summary>
+          <div class="pc-accord__body pc-finish"><button type="button" class="pc-choice" data-finish="gezaagd" aria-pressed="true">Gezaagd <small>Gratis</small></button><button type="button" class="pc-choice" data-finish="gefreesd" aria-pressed="false">Gefreesd</button></div>
+        </details>
+      </div>
+
+      <div class="pc-price-row"><span>Prijsopbouw</span><div><strong data-pc-price></strong><small data-pc-summary></small></div></div>
+      <button class="pc-cart" data-pc-cart type="button">+ In winkelmand</button>
+    </div>
   </div>
-</div>
+</section>
