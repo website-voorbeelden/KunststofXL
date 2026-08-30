@@ -24,7 +24,7 @@
       hExtA.setAttribute('x1',x);hExtA.setAttribute('x2',hx-7);hExtA.setAttribute('y1',y);hExtA.setAttribute('y2',y);
       hExtB.setAttribute('x1',x);hExtB.setAttribute('x2',hx-7);hExtB.setAttribute('y1',y+rh);hExtB.setAttribute('y2',y+rh);
       labelH.setAttribute('x',hx-9);labelH.setAttribute('y',170);labelH.textContent=hCm+' cm';
-      var area=(w*h)/(sheetW*sheetH), extra=(state.holes?count*125:0)+(state.cutout?450:0)+(state.finish==='gefreesd'?650:0),price=Math.max(1,Math.round(base*area+extra));$('[data-pc-price]').textContent=money(price,root.dataset.locale,root.dataset.currency);$('[data-pc-summary]').textContent=wCm+' × '+hCm+' cm · '+thickness.value+(state.holes?' · '+count+' boorgaten':'')+(state.cutout?' · uitsnede':'');
+      var area=(w*h)/(sheetW*sheetH), extra=(state.holes?count*125:0)+(state.cutout?450:0)+(state.finish==='gefreesd'?650:0),price=Math.max(1,Math.round(base*area+extra));$('[data-pc-price]').forEach(function(node){node.textContent=money(price,root.dataset.locale,root.dataset.currency)});$('[data-pc-summary]').forEach(function(node){node.textContent=wCm+' × '+hCm+' cm · '+thickness.value+(state.holes?' · '+count+' boorgaten':'')+(state.cutout?' · uitsnede':'')});
       var dimensionSummary=$('[data-pc-dimension-summary]'); if(dimensionSummary) dimensionSummary.textContent=(state.shape==='rectangle'?'Rechthoek':state.shape==='rounded'?'Vormkiezer':'Vorm upload')+': '+wCm+' cm × '+hCm+' cm';
       root.dataset.configuration=JSON.stringify({width:w,height:h,thickness:thickness.value,shape:state.shape,holes:state.holes?count:0,cutout:state.cutout,finish:state.finish,price:price});
     }
@@ -34,7 +34,7 @@
     $('[data-pc-tab]').forEach(function(b){b.addEventListener('click',function(){$('[data-pc-tab]').forEach(function(x){x.setAttribute('aria-selected','false')});b.setAttribute('aria-selected','true');state.view=b.dataset.pcTab;draw()})});
     $('[data-pc-thickness-choice]').forEach(function(b){b.addEventListener('click',function(){$('[data-pc-thickness-choice]').forEach(function(x){x.setAttribute('aria-pressed','false')});b.setAttribute('aria-pressed','true');thickness.value=b.dataset.pcThicknessChoice+' mm';var thicknessSummary=$('[data-pc-thickness-summary]');if(thicknessSummary)thicknessSummary.textContent=thickness.value;state.view='preview';draw()})});
     $('.pc-accord').forEach(function(detail){detail.addEventListener('toggle',function(){if(detail.open){$('.pc-accord').forEach(function(other){if(other!==detail)other.open=false})}})});
-    $('[data-pc-cart]').addEventListener('click',function(){var c=JSON.parse(root.dataset.configuration||'{}');document.dispatchEvent(new CustomEvent('plate-configurator:add',{detail:c}));this.textContent='Configuratie opgeslagen';setTimeout(()=>this.textContent='Toevoegen aan winkelwagen',1600)});
+    $('[data-pc-cart]').forEach(function(cartButton){cartButton.addEventListener('click',function(){var c=JSON.parse(root.dataset.configuration||'{}');document.dispatchEvent(new CustomEvent('plate-configurator:add',{detail:c}));cartButton.textContent='Configuratie opgeslagen';setTimeout(function(){cartButton.textContent=cartButton.classList.contains('pc-sticky-cart')?'+ In winkelmand':'Toevoegen aan winkelwagen'},1600)})});
     draw();
   } document.addEventListener('DOMContentLoaded',function(){document.querySelectorAll('[data-plate-configurator]').forEach(init)});
 })();
