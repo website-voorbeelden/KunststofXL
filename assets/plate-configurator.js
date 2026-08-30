@@ -111,7 +111,7 @@
       var height = clamp(num(heightInput.value, 10), 1, maximumHeight);
       var text = letters(letterInput);
 
-      if (state.shape === 'circle') {
+      if (state.shape === 'circle' || state.shape === 'rounded') {
         width = clamp(width, 1, Math.min(maximumWidth, maximumHeight));
         height = width;
         heightInput.value = Number(height.toFixed(1));
@@ -155,12 +155,12 @@
 
       if (pickerPanel) pickerPanel.hidden = state.mainMode !== 'picker';
       widthField.hidden = state.shape === 'letter';
-      heightField.hidden = state.shape === 'circle';
+      heightField.hidden = state.shape === 'circle' || state.shape === 'rounded';
       radiusField.hidden = state.shape !== 'rounded';
       letterField.hidden = state.shape !== 'letter';
 
-      if (widthLabel) widthLabel.textContent = state.shape === 'circle' ? 'Diameter' : 'Breedte';
-      if (widthMax) widthMax.textContent = 'Max: ' + (state.shape === 'circle' ? Math.min(maximumWidth, maximumHeight) : maximumWidth) + ' cm';
+      if (widthLabel) widthLabel.textContent = state.shape === 'circle' ? 'Diameter' : state.shape === 'rounded' ? 'Zijde' : 'Breedte';
+      if (widthMax) widthMax.textContent = 'Max: ' + ((state.shape === 'circle' || state.shape === 'rounded') ? Math.min(maximumWidth, maximumHeight) : maximumWidth) + ' cm';
 
       var halfShortSide = Math.max(0, Math.min(num(widthInput.value, 10), num(heightInput.value, 10)) / 2);
       radiusInput.max = Number(halfShortSide.toFixed(1));
@@ -313,7 +313,7 @@
 
     function shapeLabel(currentValues) {
       if (state.shape === 'circle') return 'Cirkel · Ø ' + measure(currentValues.width) + ' cm';
-      if (state.shape === 'rounded') return 'Vierkant met radius · ' + measure(currentValues.width) + ' × ' + measure(currentValues.height) + ' cm';
+      if (state.shape === 'rounded') return 'Vierkant met radius · ' + measure(currentValues.width) + ' cm';
       if (state.shape === 'letter') return 'Letters “' + currentValues.text + '” · ' + measure(currentValues.height) + ' cm hoog';
       return 'Rechthoek · ' + measure(currentValues.width) + ' × ' + measure(currentValues.height) + ' cm';
     }
@@ -399,7 +399,7 @@
       state.shape = shape;
       state.mainMode = shape === 'rectangle' ? 'rectangle' : 'picker';
       state.view = 'dimensions';
-      if (shape === 'circle') {
+      if (shape === 'circle' || shape === 'rounded') {
         var diameter = clamp(num(widthInput.value, 10), 1, Math.min(maximumWidth, maximumHeight));
         widthInput.value = diameter;
         heightInput.value = diameter;
@@ -460,7 +460,7 @@
 
     [widthInput, heightInput, radiusInput, letterInput].forEach(function (input) {
       input.addEventListener('input', function () {
-        if (state.shape === 'circle') heightInput.value = widthInput.value;
+        if (state.shape === 'circle' || state.shape === 'rounded') heightInput.value = widthInput.value;
         state.view = 'dimensions';
         render();
       });
