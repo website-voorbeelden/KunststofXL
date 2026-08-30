@@ -39,8 +39,6 @@
             <text class="pc-letter-shape" text-anchor="middle" dominant-baseline="middle" hidden>A</text>
             <g class="pc-cutout-layer" hidden>
               <circle class="pc-cutout-circle"></circle>
-              <rect class="pc-cutout-rect" hidden></rect>
-              <text class="pc-cutout-text" text-anchor="middle" dominant-baseline="middle" hidden>A</text>
             </g>
             <g class="pc-holes"></g>
           </g>
@@ -181,11 +179,10 @@
             <label class="pc-toggle">
               <input type="checkbox" data-pc-holes>
               <span></span>
-              Boorgaten toevoegen
+              Vier hoekgaten tonen
             </label>
-            <div class="pc-inline-fields" data-pc-holes-fields hidden>
-              <label>Aantal<div><input data-pc-hole-count type="number" value="4" min="1" max="12"><b>st.</b></div></label>
-              <label>Diameter<div><input data-pc-hole-diameter type="number" value="8" min="3" max="50" step="0.1"><b>mm</b></div></label>
+            <div class="pc-inline-fields pc-inline-fields--single" data-pc-holes-fields hidden>
+              <label>Diameter boorgat<div><input data-pc-hole-diameter type="number" value="8" min="3" max="30" step="0.1"><b>mm</b></div></label>
             </div>
           </div>
         </details>
@@ -200,19 +197,10 @@
             <label class="pc-toggle">
               <input type="checkbox" data-pc-cutout>
               <span></span>
-              Uitsnede toevoegen
+              Centrale ronde uitsnede tonen
             </label>
-            <div class="pc-cutout-fields" data-pc-cutout-fields hidden>
-              <div class="pc-cutout-types" role="radiogroup" aria-label="Type uitsnede">
-                <button type="button" data-pc-cutout-type="circle" aria-pressed="true">Rond</button>
-                <button type="button" data-pc-cutout-type="rounded" aria-pressed="false">Vierkant + radius</button>
-                <button type="button" data-pc-cutout-type="text" aria-pressed="false">Letters</button>
-              </div>
-              <div class="pc-inline-fields">
-                <label data-pc-cutout-size-field>Formaat<div><input data-pc-cutout-size type="number" value="3" min="1" max="50" step="0.1"><b>cm</b></div></label>
-                <label data-pc-cutout-radius-field hidden>Radius<div><input data-pc-cutout-radius type="number" value="0.5" min="0" max="10" step="0.1"><b>cm</b></div></label>
-                <label data-pc-cutout-text-field hidden>Letters<div><input data-pc-cutout-text type="text" value="A" maxlength="8" aria-label="Letters uitsnede"><b>ABC</b></div></label>
-              </div>
+            <div class="pc-inline-fields pc-inline-fields--single" data-pc-cutout-fields hidden>
+              <label>Diameter uitsnede<div><input data-pc-cutout-size type="number" value="3" min="1" max="50" step="0.1"><b>cm</b></div></label>
             </div>
           </div>
         </details>
