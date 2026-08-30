@@ -883,3 +883,52 @@
   .pc-specification-list>div{grid-template-columns:1fr;gap:5px;padding:15px 20px}
   .pc-machining-group{padding:21px 20px 23px}
 }
+
+
+/* Shopify product content, narrow and white */
+.pc-product-content{
+  max-width:980px;
+  margin-right:auto;
+  margin-left:auto;
+}
+.pc-description-card,.pc-specifications-card,.pc-machining-card{
+  background:#fff;
+  box-shadow:none;
+}
+.pc-description-card{
+  min-height:0;
+  padding:30px 0 34px;
+  border:0;
+  border-bottom:1px solid #e1e8ea;
+  border-radius:0;
+  background:#fff;
+}
+.pc-description-card>h2{
+  margin:0;
+  color:#302532;
+  font-size:clamp(22px,1.8vw,28px);
+  line-height:1.18;
+  letter-spacing:-.02em;
+}
+.pc-description-copy{
+  max-width:760px;
+  margin-top:18px;
+  color:#5f7078;
+  font-size:13px;
+  line-height:1.7;
+}
+.pc-description-copy>:first-child{margin-top:0}
+.pc-description-copy>:last-child{margin-bottom:0}
+.pc-description-copy h2,.pc-description-copy h3,.pc-description-copy h4{
+  margin:24px 0 8px;
+  color:#394b53;
+  line-height:1.25;
+}
+.pc-description-copy p{margin:0 0 13px}
+.pc-description-copy ul,.pc-description-copy ol{margin:12px 0;padding-left:20px}
+.pc-description-copy a{color:#168dbb;text-decoration:underline;text-underline-offset:2px}
+.pc-specifications-card,.pc-machining-card{border-color:#e1e8ea}
+@media(max-width:680px){
+  .pc-description-card{padding:22px 0 26px}
+  .pc-product-content{width:100%}
+}
