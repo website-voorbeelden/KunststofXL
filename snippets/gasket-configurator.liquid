@@ -1,74 +1,156 @@
-{% comment %} Full-width plate configurator concept {% endcomment %}
+{% comment %} Full-width PVC plate configurator concept {% endcomment %}
 {{ 'plate-configurator.css' | asset_url | stylesheet_tag }}
 <script src="{{ 'plate-configurator.js' | asset_url }}" defer></script>
+
 {% liquid
   assign pc_variant = product.selected_or_first_available_variant
   assign pc_id = 'plate-configurator-' | append: product.id
-  assign pc_sheet_width = product.metafields.custom.max_breedte.value | default: 3050
-  assign pc_sheet_height = product.metafields.custom.max_hoogte.value | default: 1550
+  assign pc_base_price = pc_variant.price | default: 1295
+  assign pc_max_width_cm = 305
+  assign pc_max_height_cm = 155
 %}
-<section id="{{ pc_id }}" class="plate-configurator pc-page" data-plate-configurator data-base-price="{{ pc_variant.price }}" data-sheet-width="{{ pc_sheet_width }}" data-sheet-height="{{ pc_sheet_height }}" data-locale="{{ request.locale.iso_code | default: 'nl-NL' }}" data-currency="{{ cart.currency.iso_code | default: shop.currency }}">
+
+<section
+  id="{{ pc_id }}"
+  class="plate-configurator pc-page"
+  data-plate-configurator
+  data-base-price="{{ pc_base_price }}"
+  data-max-width="{{ pc_max_width_cm }}"
+  data-max-height="{{ pc_max_height_cm }}"
+  data-locale="{{ request.locale.iso_code | default: 'nl-NL' }}"
+  data-currency="{{ cart.currency.iso_code | default: shop.currency }}"
+>
   <div class="pc-page__inner">
-    <div class="pc-visual">
+    <div class="pc-visual" aria-label="Voorbeeld van de geconfigureerde plaat">
+      <div class="pc-visual__eyebrow"><span></span> Live maatwerkvoorbeeld</div>
       <div class="pc-canvas">
         {% if product.featured_image %}
-          {{ product.featured_image | image_url: width: 1200 | image_tag: class: 'pc-image', alt: product.title }}
+          {{ product.featured_image | image_url: width: 1400 | image_tag: class: 'pc-image', alt: product.title, loading: 'eager' }}
+        {% else %}
+          <div class="pc-image pc-image--placeholder">Productafbeelding niet beschikbaar</div>
         {% endif %}
-        <svg class="pc-svg" viewBox="0 0 640 430" role="img" aria-label="Voorbeeld van jouw plaat">
-          <defs><marker id="{{ pc_id }}-arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#2583a5"/></marker></defs>
-          <path class="pc-shape"></path><rect class="pc-cutout" hidden></rect><g class="pc-holes"></g>
-          <g class="pc-dimensions">
-            <line class="pc-dim pc-ext pc-w-ext-a"></line><line class="pc-dim pc-ext pc-w-ext-b"></line>
+
+        <svg class="pc-svg" viewBox="0 0 720 500" role="img" aria-label="Plaat met maatlijnen">
+          <defs>
+            <marker id="{{ pc_id }}-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z"></path>
+            </marker>
+            <filter id="{{ pc_id }}-shadow" x="-20%" y="-20%" width="140%" height="150%">
+              <feDropShadow dx="0" dy="8" stdDeviation="8" flood-color="#33505e" flood-opacity=".16"/>
+            </filter>
+          </defs>
+
+          <g class="pc-plate-group" filter="url(#{{ pc_id }}-shadow)">
+            <path class="pc-shape"></path>
+            <rect class="pc-cutout" hidden></rect>
+            <g class="pc-holes"></g>
+          </g>
+
+          <g class="pc-guides">
+            <line class="pc-guide pc-w-ext-a"></line>
+            <line class="pc-guide pc-w-ext-b"></line>
             <line class="pc-dim pc-dim-w" marker-start="url(#{{ pc_id }}-arrow)" marker-end="url(#{{ pc_id }}-arrow)"></line>
+            <rect class="pc-label-bg pc-label-w-bg" rx="12"></rect>
             <text class="pc-dim-text pc-label-w" text-anchor="middle"></text>
-            <line class="pc-dim pc-ext pc-h-ext-a"></line><line class="pc-dim pc-ext pc-h-ext-b"></line>
+
+            <line class="pc-guide pc-h-ext-a"></line>
+            <line class="pc-guide pc-h-ext-b"></line>
             <line class="pc-dim pc-dim-h" marker-start="url(#{{ pc_id }}-arrow)" marker-end="url(#{{ pc_id }}-arrow)"></line>
-            <text class="pc-dim-text pc-label-h" text-anchor="end"></text>
+            <rect class="pc-label-bg pc-label-h-bg" rx="12"></rect>
+            <text class="pc-dim-text pc-label-h" text-anchor="middle"></text>
           </g>
         </svg>
+
+        <div class="pc-switch" role="tablist" aria-label="Voorbeeldweergave">
+          <button type="button" data-pc-tab="image" role="tab" aria-selected="false">Afbeelding</button>
+          <button type="button" data-pc-tab="dimensions" role="tab" aria-selected="true">Afmetingen</button>
+        </div>
       </div>
-      <div class="pc-switch" role="tablist">
-        <button type="button" data-pc-tab="image" aria-selected="false">Afbeelding</button>
-        <button type="button" data-pc-tab="preview" aria-selected="true">Afmetingen</button>
+
+      <div class="pc-visual__note">
+        <span aria-hidden="true">↗</span>
+        <p><strong>De tekening schaalt automatisch mee.</strong> Maatlijnen zijn indicatief; alle ingevoerde maten worden in centimeters verwerkt.</p>
       </div>
     </div>
 
-    <div class="pc-sidebar">
+    <aside class="pc-sidebar">
       <header class="pc-product-meta">
+        <div class="pc-kicker">Kunststof plaat op maat</div>
         <h1>{{ product.title }}</h1>
-        <div class="pc-rating">★★★★★ <span>Concept productpagina</span></div>
-        <div class="pc-base-price">{{ pc_variant.price | money }} <small>incl. btw</small></div>
-        <button type="button" class="pc-sample">Bestel een sample</button>
+        <div class="pc-product-meta__row">
+          <div>
+            <div class="pc-base-price">{{ pc_base_price | money }}</div>
+            <div class="pc-vat">incl. btw · per geconfigureerde plaat</div>
+          </div>
+          <button type="button" class="pc-sample" data-pc-sample><span>▧</span> Sample bestellen</button>
+        </div>
+        <div class="pc-stock"><span></span> Op voorraad · binnen 1–3 werkdagen geleverd</div>
       </header>
 
       <div class="pc-accordion">
         <details class="pc-accord" open>
-          <summary><span class="pc-check">✓</span><span><strong>Afmetingen</strong><small data-pc-dimension-summary>Rechthoek: 10 cm × 10 cm</small></span><b>⌃</b></summary>
+          <summary>
+            <span class="pc-step-number">1</span>
+            <span class="pc-step-copy"><strong>Afmetingen</strong><small data-pc-dimension-summary>Rechthoek · 10 × 10 cm</small></span>
+            <span class="pc-chevron" aria-hidden="true"></span>
+          </summary>
           <div class="pc-accord__body">
+            <p class="pc-field-title">Kies de basisvorm</p>
             <div class="pc-shape-tabs">
-              <button type="button" class="pc-choice" data-shape="rectangle" aria-pressed="true"><svg viewBox="0 0 32 26"><rect x="3" y="5" width="26" height="16"/></svg>Rechthoek</button>
-              <button type="button" class="pc-choice" data-pc-open-shapes aria-pressed="false"><svg viewBox="0 0 32 26"><path d="M5 19 L13 7 L20 17 L27 8"/></svg>Vormkiezer</button>
-              <button type="button" class="pc-choice" data-pc-upload-trigger aria-pressed="false"><svg viewBox="0 0 32 26"><path d="M6 8h12l8 8v5H14l-8-8z"/><path d="M11 12h5"/></svg>Vorm upload</button>
+              <button type="button" class="pc-choice" data-shape="rectangle" aria-pressed="true">
+                <svg viewBox="0 0 36 28" aria-hidden="true"><rect x="4" y="5" width="28" height="18" rx="1"/></svg>
+                <span>Rechthoek</span>
+              </button>
+              <button type="button" class="pc-choice" data-pc-open-shapes aria-expanded="false">
+                <svg viewBox="0 0 36 28" aria-hidden="true"><rect x="4" y="5" width="28" height="18" rx="6"/><circle cx="18" cy="14" r="5"/></svg>
+                <span>Vormkiezer</span>
+              </button>
+              <button type="button" class="pc-choice" data-pc-upload-trigger>
+                <svg viewBox="0 0 36 28" aria-hidden="true"><path d="M7 22V7h13l8 8v7z"/><path d="M20 7v8h8M13 16h7M16.5 12.5v7"/></svg>
+                <span>Vorm upload</span>
+              </button>
               <input data-pc-upload type="file" accept="image/*" hidden>
             </div>
+
             <div class="pc-shape-picker" data-pc-shape-picker hidden>
-              <button type="button" data-pc-shape-choice="rounded">Afgeronde rechthoek</button>
-              <button type="button" data-pc-shape-choice="round">Cirkel</button>
-              <button type="button" data-pc-shape-choice="triangle">Driehoek</button>
+              <button type="button" data-pc-shape-choice="rounded" aria-pressed="false">
+                <svg viewBox="0 0 44 34" aria-hidden="true"><rect x="5" y="6" width="34" height="22" rx="7"/></svg>
+                Afgeronde rechthoek
+              </button>
+              <button type="button" data-pc-shape-choice="circle" aria-pressed="false">
+                <svg viewBox="0 0 44 34" aria-hidden="true"><circle cx="22" cy="17" r="12"/></svg>
+                Cirkel
+              </button>
+              <button type="button" data-pc-shape-choice="triangle" aria-pressed="false">
+                <svg viewBox="0 0 44 34" aria-hidden="true"><path d="M22 5 39 29H5z"/></svg>
+                Driehoek
+              </button>
             </div>
+
             <p class="pc-upload-note" data-pc-upload-note hidden></p>
+
             <div class="pc-fields">
-              <label>Breedte <small>Max: {{ pc_sheet_width | divided_by: 10 }} cm</small><span class="pc-unit"><input data-pc-width type="number" value="10" min="5" max="{{ pc_sheet_width | divided_by: 10 }}">cm</span></label>
-              <label>Hoogte <small>Max: {{ pc_sheet_height | divided_by: 10 }} cm</small><span class="pc-unit"><input data-pc-height type="number" value="10" min="5" max="{{ pc_sheet_height | divided_by: 10 }}">cm</span></label>
+              <label>
+                <span>Breedte <small>max. {{ pc_max_width_cm }} cm</small></span>
+                <span class="pc-unit"><input data-pc-width type="number" value="10" min="1" max="{{ pc_max_width_cm }}" step="0.1" inputmode="decimal"><b>cm</b></span>
+              </label>
+              <label>
+                <span>Hoogte <small>max. {{ pc_max_height_cm }} cm</small></span>
+                <span class="pc-unit"><input data-pc-height type="number" value="10" min="1" max="{{ pc_max_height_cm }}" step="0.1" inputmode="decimal"><b>cm</b></span>
+              </label>
             </div>
           </div>
         </details>
 
         <details class="pc-accord">
-          <summary><span class="pc-check">✓</span><span><strong>Dikte</strong><small data-pc-thickness-summary>2 mm</small></span><b>⌄</b></summary>
+          <summary>
+            <span class="pc-step-number">2</span>
+            <span class="pc-step-copy"><strong>Dikte</strong><small data-pc-thickness-summary>2 mm</small></span>
+            <span class="pc-chevron" aria-hidden="true"></span>
+          </summary>
           <div class="pc-accord__body">
-            <p class="pc-picker-label">Bepaal de dikte (mm)</p>
-            <div class="pc-thickness-grid" role="radiogroup">
+            <p class="pc-field-title">Bepaal de dikte <span>in millimeters</span></p>
+            <div class="pc-thickness-grid" role="radiogroup" aria-label="Dikte">
               <button type="button" data-pc-thickness-choice="2" aria-pressed="true">2</button>
               <button type="button" data-pc-thickness-choice="3" aria-pressed="false">3</button>
               <button type="button" data-pc-thickness-choice="4" aria-pressed="false">4</button>
@@ -76,53 +158,81 @@
               <button type="button" data-pc-thickness-choice="6" aria-pressed="false">6</button>
               <button type="button" data-pc-thickness-choice="8" aria-pressed="false">8</button>
               <button type="button" data-pc-thickness-choice="10" aria-pressed="false">10</button>
-              <button type="button" data-pc-thickness-choice="13" aria-pressed="false">13</button>
+              <button type="button" data-pc-thickness-choice="12" aria-pressed="false">12</button>
+              <button type="button" data-pc-thickness-choice="15" aria-pressed="false">15</button>
               <button type="button" data-pc-thickness-choice="19" aria-pressed="false">19</button>
             </div>
-            <select data-pc-thickness hidden><option value="2 mm">2 mm</option></select>
+            <input data-pc-thickness type="hidden" value="2">
           </div>
         </details>
 
         <details class="pc-accord">
-          <summary><span class="pc-empty"></span><span><strong>Boorgaten</strong></span><b>⌄</b></summary>
-          <div class="pc-accord__body"><label class="pc-checkbox"><input type="checkbox" data-pc-holes> Boorgaten toevoegen</label><div class="pc-extra" data-pc-holes-extra><label>Aantal <input data-pc-holes-count type="number" value="4" min="1" max="8"></label><label>Diameter <input data-pc-hole-dia type="number" value="8" min="3"> mm</label></div></div>
+          <summary>
+            <span class="pc-step-number" data-pc-holes-status>3</span>
+            <span class="pc-step-copy"><strong>Boorgaten</strong><small data-pc-holes-summary>Geen boorgaten</small></span>
+            <span class="pc-chevron" aria-hidden="true"></span>
+          </summary>
+          <div class="pc-accord__body">
+            <label class="pc-toggle-row">
+              <span><strong>Boorgaten toevoegen</strong><small>Gelijkmatig verdeeld over de plaat</small></span>
+              <input type="checkbox" data-pc-holes>
+              <i aria-hidden="true"></i>
+            </label>
+            <div class="pc-extra" data-pc-holes-extra hidden>
+              <label>Aantal <span class="pc-unit"><input data-pc-holes-count type="number" value="4" min="1" max="12"><b>st.</b></span></label>
+              <label>Diameter <span class="pc-unit"><input data-pc-hole-dia type="number" value="8" min="3" max="50"><b>mm</b></span></label>
+            </div>
+          </div>
         </details>
 
         <details class="pc-accord">
-          <summary><span class="pc-empty"></span><span><strong>Uitsnede</strong></span><b>⌄</b></summary>
-          <div class="pc-accord__body"><label class="pc-checkbox"><input type="checkbox" data-pc-cutout> Uitsnede toevoegen</label></div>
+          <summary>
+            <span class="pc-step-number" data-pc-cutout-status>4</span>
+            <span class="pc-step-copy"><strong>Uitsnede</strong><small data-pc-cutout-summary>Geen uitsnede</small></span>
+            <span class="pc-chevron" aria-hidden="true"></span>
+          </summary>
+          <div class="pc-accord__body">
+            <label class="pc-toggle-row">
+              <span><strong>Uitsnede toevoegen</strong><small>Centraal in de plaat weergegeven</small></span>
+              <input type="checkbox" data-pc-cutout>
+              <i aria-hidden="true"></i>
+            </label>
+          </div>
         </details>
 
-        <details class="pc-accord" open>
-          <summary><span class="pc-check">✓</span><span><strong>Randafwerking</strong><small>Gezaagd</small></span><b>⌃</b></summary>
-          <div class="pc-accord__body pc-finish"><button type="button" class="pc-choice" data-finish="gezaagd" aria-pressed="true">Gezaagd <small>Gratis</small></button><button type="button" class="pc-choice" data-finish="gefreesd" aria-pressed="false">Gefreesd</button></div>
+        <details class="pc-accord">
+          <summary>
+            <span class="pc-step-number pc-step-number--done">✓</span>
+            <span class="pc-step-copy"><strong>Randafwerking</strong><small data-pc-finish-summary>Gezaagd</small></span>
+            <span class="pc-chevron" aria-hidden="true"></span>
+          </summary>
+          <div class="pc-accord__body pc-finish">
+            <button type="button" class="pc-finish-choice" data-finish="gezaagd" aria-pressed="true"><span>Gezaagd</span><small>Inbegrepen</small></button>
+            <button type="button" class="pc-finish-choice" data-finish="gefreesd" aria-pressed="false"><span>Glad gefreesd</span><small>+ afwerking</small></button>
+          </div>
         </details>
       </div>
 
-      <div class="pc-price-row"><span>Prijsopbouw</span><div><strong data-pc-price></strong><small data-pc-summary></small></div></div>
-      <button class="pc-cart" data-pc-cart type="button">+ In winkelmand</button>
-    </div>
+      <div class="pc-sidebar-total">
+        <span>Jouw configuratie</span>
+        <div><strong data-pc-price>{{ pc_base_price | money }}</strong><small data-pc-summary>10 × 10 cm · 2 mm</small></div>
+      </div>
+    </aside>
   </div>
+
   <div class="pc-sticky-buy" aria-label="Besteloverzicht">
-    <div class="pc-delivery"><strong>✓ Op voorraad</strong><span>Verwachte levering: 1–3 werkdagen</span></div>
-    <div class="pc-sticky-price"><strong data-pc-price></strong><small data-pc-summary></small></div>
-    <div class="pc-quantity" aria-label="Aantal"><button type="button">−</button><span>1</span><button type="button">+</button></div>
-    <button class="pc-sticky-cart" type="button" data-pc-cart>+ In winkelmand</button>
+    <div class="pc-delivery"><strong><span></span> Direct te bestellen</strong><small>Op maat gemaakt · 1–3 werkdagen</small></div>
+    <div class="pc-sticky-config"><span>Jouw plaat</span><strong data-pc-summary>10 × 10 cm · 2 mm</strong></div>
+    <div class="pc-sticky-price"><small>Totaal incl. btw</small><strong data-pc-price>{{ pc_base_price | money }}</strong></div>
+    <div class="pc-quantity" aria-label="Aantal">
+      <button type="button" data-pc-qty-minus aria-label="Aantal verlagen">−</button>
+      <span data-pc-quantity>1</span>
+      <button type="button" data-pc-qty-plus aria-label="Aantal verhogen">+</button>
+    </div>
+    <button class="pc-sticky-cart" type="button" data-pc-cart>
+      <span aria-hidden="true">▣</span> In winkelmand
+    </button>
   </div>
+
+  <div class="pc-toast" data-pc-toast role="status" aria-live="polite" hidden></div>
 </section>
-<script>
-(function(){
-  var root=document.getElementById({{ pc_id | json }}); if(!root) return;
-  root.querySelectorAll('[data-pc-tab]').forEach(function(button){
-    button.addEventListener('click',function(){
-      var imageMode=button.getAttribute('data-pc-tab')==='image';
-      var image=root.querySelector('.pc-image'), drawing=root.querySelector('.pc-svg'), canvas=root.querySelector('.pc-canvas');
-      root.querySelectorAll('[data-pc-tab]').forEach(function(tab){tab.setAttribute('aria-selected','false')});
-      button.setAttribute('aria-selected','true');
-      if(image){image.hidden=!imageMode;image.style.display=imageMode?'block':'none'}
-      if(drawing){drawing.hidden=imageMode;drawing.style.display=imageMode?'none':'block'}
-      if(canvas) canvas.classList.toggle('is-image',imageMode);
-    });
-  });
-})();
-</script>
