@@ -283,18 +283,6 @@
   </div>
 
   <div class="pc-product-content">
-    <section class="pc-description-card" aria-labelledby="{{ pc_id }}-description-title">
-      <div class="pc-content-kicker">Productomschrijving</div>
-      <h2 id="{{ pc_id }}-description-title">{{ product.title }}</h2>
-      <div class="pc-description-copy rte">
-        {% if product.description != blank %}
-          {{ product.description }}
-        {% else %}
-          <p>Voor dit product is nog geen omschrijving ingevuld in Shopify.</p>
-        {% endif %}
-      </div>
-    </section>
-
     <section class="pc-specifications-card" aria-labelledby="{{ pc_id }}-specifications-title">
       <header>
         <div class="pc-content-kicker">Specificaties</div>
@@ -360,6 +348,15 @@
             </li>
           </ul>
         </div>
+      </div>
+    </section>
+    <section class="pc-description-card" aria-label="Productomschrijving">
+      <div class="pc-description-copy rte">
+        {% if product.description != blank %}
+          {{ product.description }}
+        {% else %}
+          <p>Voor dit product is nog geen omschrijving ingevuld in Shopify.</p>
+        {% endif %}
       </div>
     </section>
   </div>
