@@ -26,9 +26,15 @@
 >
   <div class="pc-grid">
     <div class="pc-panel">
+      <div class="pc-product-meta">
+        <h1 class="pc-product-title">{{ product.title }}</h1>
+        <div class="pc-rating" aria-label="Productbeoordelingen">★★★★★ <span>Concept preview</span></div>
+        <div class="pc-base-price">{{ pc_variant.price | money }} <small>incl. btw</small></div>
+        <button type="button" class="pc-sample">Bestel een sample</button>
+      </div>
       <p class="pc-kicker">Op maat gemaakt</p>
-      <h3 class="pc-title">Stel je plaat samen</h3>
-      <p class="pc-intro">Kies de vorm en afmetingen. Je ziet direct hoe jouw plaat eruitziet.</p>
+      <h3 class="pc-title">Afmetingen</h3>
+      <p class="pc-intro">Kies de vorm en maten van je plaat.</p>
 
       <section class="pc-step">
         <h4><span class="pc-step-num">1</span>Vorm</h4>
