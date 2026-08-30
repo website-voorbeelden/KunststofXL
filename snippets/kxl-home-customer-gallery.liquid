@@ -1,0 +1,270 @@
+{% comment %}
+  Editorial customer-project gallery for the homepage.
+{% endcomment %}
+
+<section class="kxl-customer-gallery" aria-labelledby="kxl-customer-gallery-title">
+  <div class="kxl-customer-gallery__inner">
+    <header class="kxl-customer-gallery__header">
+      <div>
+        <p class="kxl-customer-gallery__eyebrow">Gemaakt door onze klanten</p>
+        <h2 id="kxl-customer-gallery-title">Wat onze klanten maakten</h2>
+        <p class="kxl-customer-gallery__intro">Van een enkele ring tot een compleet maatwerkonderdeel. Dit is wat er mogelijk is met kunststof op maat.</p>
+      </div>
+      <a class="kxl-customer-gallery__cta" href="/pages/maatwerk">
+        Bespreek jouw project
+        <span aria-hidden="true">→</span>
+      </a>
+    </header>
+
+    <div class="kxl-customer-gallery__grid">
+      <figure class="kxl-customer-gallery__item kxl-customer-gallery__item--featured">
+        <img src="{{ 'kxl-customer-ring-flange.svg' | asset_url }}" alt="Transparante kunststof ring met kraag" loading="lazy" width="1000" height="1000">
+        <figcaption>
+          <span>Precisiewerk</span>
+          <strong>Ring met kraag</strong>
+        </figcaption>
+      </figure>
+
+      <figure class="kxl-customer-gallery__item">
+        <img src="{{ 'kxl-customer-hdpe-block.svg' | asset_url }}" alt="Zwart HDPE blok op maat" loading="lazy" width="300" height="300">
+        <figcaption>
+          <span>Technisch onderdeel</span>
+          <strong>HDPE blok op maat</strong>
+        </figcaption>
+      </figure>
+
+      <figure class="kxl-customer-gallery__item">
+        <img src="{{ 'kxl-customer-black-ring.svg' | asset_url }}" alt="Zwarte kunststof ring op maat" loading="lazy" width="1000" height="1000">
+        <figcaption>
+          <span>Kleine serie</span>
+          <strong>Zwarte kunststof ring</strong>
+        </figcaption>
+      </figure>
+
+      <figure class="kxl-customer-gallery__item kxl-customer-gallery__item--wide">
+        <img src="{{ 'kxl-customer-white-rings.svg' | asset_url }}" alt="Twee witte kunststof ringen op maat" loading="lazy" width="1000" height="1000">
+        <figcaption>
+          <span>Maatwerk</span>
+          <strong>Witte kunststof ringen</strong>
+        </figcaption>
+      </figure>
+
+      <figure class="kxl-customer-gallery__item">
+        <img src="{{ 'kxl-customer-strip-holes.svg' | asset_url }}" alt="Kunststof strook met montagegaten" loading="lazy" width="1000" height="1000">
+        <figcaption>
+          <span>Bewerkt plaatdeel</span>
+          <strong>Strook met montagegaten</strong>
+        </figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<style>
+  .kxl-customer-gallery {
+    background: #fff;
+    color: #14213d;
+    padding: clamp(56px, 7vw, 96px) 20px clamp(64px, 8vw, 112px);
+  }
+
+  .kxl-customer-gallery__inner {
+    width: min(1280px, 100%);
+    margin: 0 auto;
+  }
+
+  .kxl-customer-gallery__header {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 32px;
+    margin-bottom: 32px;
+  }
+
+  .kxl-customer-gallery__eyebrow {
+    margin: 0 0 10px;
+    color: #1872c9;
+    font-size: 13px;
+    font-weight: 750;
+    letter-spacing: .1em;
+    line-height: 1.2;
+    text-transform: uppercase;
+  }
+
+  .kxl-customer-gallery h2 {
+    max-width: 760px;
+    margin: 0;
+    color: #14213d;
+    font-size: clamp(30px, 3.5vw, 48px);
+    font-weight: 750;
+    letter-spacing: -.035em;
+    line-height: 1.05;
+  }
+
+  .kxl-customer-gallery__intro {
+    max-width: 690px;
+    margin: 16px 0 0;
+    color: #536174;
+    font-size: 17px;
+    line-height: 1.65;
+  }
+
+  .kxl-customer-gallery__cta {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 12px;
+    min-height: 48px;
+    padding: 0 18px;
+    border: 1px solid #cdd8e6;
+    border-radius: 7px;
+    color: #14213d;
+    font-size: 15px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: border-color .2s ease, color .2s ease, transform .2s ease;
+  }
+
+  .kxl-customer-gallery__cta:hover {
+    border-color: #1872c9;
+    color: #1872c9;
+    transform: translateY(-1px);
+  }
+
+  .kxl-customer-gallery__grid {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    grid-auto-rows: 210px;
+    gap: 16px;
+  }
+
+  .kxl-customer-gallery__item {
+    position: relative;
+    grid-column: span 4;
+    min-width: 0;
+    min-height: 0;
+    margin: 0;
+    overflow: hidden;
+    border-radius: 8px;
+    background: #eef2f6;
+    isolation: isolate;
+  }
+
+  .kxl-customer-gallery__item--featured {
+    grid-column: span 5;
+    grid-row: span 2;
+  }
+
+  .kxl-customer-gallery__item--featured + .kxl-customer-gallery__item {
+    grid-column: span 3;
+  }
+
+  .kxl-customer-gallery__item--wide {
+    grid-column: span 4;
+  }
+
+  .kxl-customer-gallery__item img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+    transition: transform .55s cubic-bezier(.2,.7,.2,1);
+  }
+
+  .kxl-customer-gallery__item:hover img {
+    transform: scale(1.035);
+  }
+
+  .kxl-customer-gallery__item::after {
+    content: "";
+    position: absolute;
+    inset: 42% 0 0;
+    z-index: 1;
+    background: linear-gradient(180deg, transparent, rgba(7, 19, 38, .74));
+    pointer-events: none;
+  }
+
+  .kxl-customer-gallery__item figcaption {
+    position: absolute;
+    right: 18px;
+    bottom: 17px;
+    left: 18px;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    color: #fff;
+  }
+
+  .kxl-customer-gallery__item figcaption span {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .09em;
+    line-height: 1.2;
+    opacity: .85;
+    text-transform: uppercase;
+  }
+
+  .kxl-customer-gallery__item figcaption strong {
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -.015em;
+    line-height: 1.25;
+  }
+
+  @media (max-width: 990px) {
+    .kxl-customer-gallery__header {
+      align-items: flex-start;
+      flex-direction: column;
+      margin-bottom: 26px;
+    }
+
+    .kxl-customer-gallery__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-auto-rows: 300px;
+    }
+
+    .kxl-customer-gallery__item,
+    .kxl-customer-gallery__item--featured,
+    .kxl-customer-gallery__item--featured + .kxl-customer-gallery__item,
+    .kxl-customer-gallery__item--wide {
+      grid-column: span 1;
+      grid-row: span 1;
+    }
+
+    .kxl-customer-gallery__item--featured {
+      grid-row: span 2;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .kxl-customer-gallery {
+      padding-right: 16px;
+      padding-left: 16px;
+    }
+
+    .kxl-customer-gallery__header {
+      gap: 22px;
+    }
+
+    .kxl-customer-gallery__cta {
+      justify-content: space-between;
+      width: 100%;
+    }
+
+    .kxl-customer-gallery__grid {
+      grid-template-columns: 1fr;
+      grid-auto-rows: 280px;
+      gap: 12px;
+    }
+
+    .kxl-customer-gallery__item,
+    .kxl-customer-gallery__item--featured {
+      grid-column: 1;
+      grid-row: auto;
+    }
+
+    .kxl-customer-gallery__item--featured {
+      min-height: 360px;
+    }
+  }
+</style>
