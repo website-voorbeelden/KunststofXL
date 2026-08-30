@@ -282,26 +282,6 @@
       var heightLabel = one('.pc-label-h');
       var heightLabelBackground = one('.pc-label-h-bg');
 
-      if (state.shape === 'circle') {
-        showSvg(widthExtA, false);
-        showSvg(widthExtB, false);
-        showSvg(heightExtA, false);
-        showSvg(heightExtB, false);
-        showSvg(heightLabel, false);
-        showSvg(heightLabelBackground, false);
-
-        setLine('.pc-dim-w', box.x, 225, 350, 225);
-        setLine('.pc-dim-h', 350, box.y, 350, 225);
-        setDimensionLabel(
-          '.pc-label-w',
-          '.pc-label-w-bg',
-          box.x + (350 - box.x) / 2,
-          205,
-          'Ø ' + measure(currentValues.width) + ' cm'
-        );
-        return;
-      }
-
       showSvg(widthExtA, true);
       showSvg(widthExtB, true);
       showSvg(heightExtA, true);
@@ -311,14 +291,17 @@
 
       var horizontalY = box.y + box.height + 48;
       var verticalX = box.x - 50;
+      var curvedShape = state.shape === 'circle' || state.shape === 'rounded';
+      var widthGuideStartY = curvedShape ? 225 : box.y + box.height + 4;
+      var heightGuideStartX = curvedShape ? 350 : box.x - 4;
 
-      setLine('.pc-w-ext-a', box.x, box.y + box.height + 4, box.x, horizontalY + 7);
-      setLine('.pc-w-ext-b', box.x + box.width, box.y + box.height + 4, box.x + box.width, horizontalY + 7);
+      setLine('.pc-w-ext-a', box.x, widthGuideStartY, box.x, horizontalY + 7);
+      setLine('.pc-w-ext-b', box.x + box.width, widthGuideStartY, box.x + box.width, horizontalY + 7);
       setLine('.pc-dim-w', box.x, horizontalY, box.x + box.width, horizontalY);
       setDimensionLabel('.pc-label-w', '.pc-label-w-bg', 350, horizontalY, measure(currentValues.width) + ' cm');
 
-      setLine('.pc-h-ext-a', box.x - 4, box.y, verticalX - 7, box.y);
-      setLine('.pc-h-ext-b', box.x - 4, box.y + box.height, verticalX - 7, box.y + box.height);
+      setLine('.pc-h-ext-a', heightGuideStartX, box.y, verticalX - 7, box.y);
+      setLine('.pc-h-ext-b', heightGuideStartX, box.y + box.height, verticalX - 7, box.y + box.height);
       setLine('.pc-dim-h', verticalX, box.y, verticalX, box.y + box.height);
       setDimensionLabel('.pc-label-h', '.pc-label-h-bg', verticalX, 225, measure(currentValues.height) + ' cm');
     }
