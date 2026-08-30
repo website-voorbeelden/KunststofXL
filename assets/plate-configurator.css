@@ -88,7 +88,7 @@
 .pc-dim,.pc-guide{stroke:#188eb8;vector-effect:non-scaling-stroke}
 .pc-dim{stroke-width:1.65}
 .pc-guide{stroke-width:1;stroke-dasharray:4 4;opacity:.62}
-.pc-dim marker path,.pc-dim+marker path{fill:#188eb8}
+.pc-svg marker path{fill:#188eb8}
 .pc-label-bg{fill:#fff;stroke:#cae4ec;stroke-width:1}
 .pc-dim-text{fill:#167fa5;font-size:15px;font-weight:800;dominant-baseline:middle}
 .pc-switch{
