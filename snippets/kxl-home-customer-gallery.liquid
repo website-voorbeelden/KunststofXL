@@ -162,6 +162,10 @@
     grid-column: span 4;
   }
 
+  .kxl-customer-gallery__item:last-child {
+    grid-column: span 3;
+  }
+
   .kxl-customer-gallery__item img {
     width: 100%;
     height: 100%;
@@ -226,7 +230,8 @@
     .kxl-customer-gallery__item,
     .kxl-customer-gallery__item--featured,
     .kxl-customer-gallery__item--featured + .kxl-customer-gallery__item,
-    .kxl-customer-gallery__item--wide {
+    .kxl-customer-gallery__item--wide,
+    .kxl-customer-gallery__item:last-child {
       grid-column: span 1;
       grid-row: span 1;
     }
