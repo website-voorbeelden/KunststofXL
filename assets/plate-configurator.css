@@ -1197,3 +1197,16 @@
 @media(max-width:560px){
   .plate-configurator{padding-bottom:150px}
 }
+
+
+/* Remove the remaining T-shaped dividers */
+.pc-machining-card>header{
+  padding-bottom:0;
+  border-bottom:0;
+}
+.pc-machining-columns{gap:22px}
+.pc-machining-group{padding:20px 0 0}
+.pc-machining-group+ .pc-machining-group{
+  border-top:0;
+  border-left:0;
+}
