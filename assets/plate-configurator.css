@@ -932,3 +932,15 @@
   .pc-description-card{padding:22px 0 26px}
   .pc-product-content{width:100%}
 }
+
+
+/* Description is intentionally the final, untitled content block */
+.pc-product-content>.pc-description-card:last-child{
+  padding:30px 0 0;
+  border-top:1px solid #e1e8ea;
+  border-bottom:0;
+}
+.pc-product-content>.pc-description-card:last-child .pc-description-copy{margin-top:0}
+@media(max-width:680px){
+  .pc-product-content>.pc-description-card:last-child{padding-top:24px}
+}
