@@ -1187,3 +1187,13 @@
 
 /* Neutral machining columns */
 .pc-machining-group--yes,.pc-machining-group--no{background:#fff}
+
+
+/* Tight bottom spacing around the fixed checkout bar */
+.plate-configurator{padding-bottom:96px}
+@media(max-width:720px){
+  .plate-configurator{padding-bottom:132px}
+}
+@media(max-width:560px){
+  .plate-configurator{padding-bottom:150px}
+}
