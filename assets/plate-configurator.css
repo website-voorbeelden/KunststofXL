@@ -20,3 +20,16 @@
 .pc-preview-head{padding:0;border:0;position:absolute;right:17px;bottom:17px;z-index:2}.pc-preview-head>div:first-child{display:none}.pc-tabs{padding:6px;background:#fff;border:1px solid #d9e5ea;box-shadow:0 2px 8px rgba(17,66,92,.08)}.pc-tab{font-weight:700}.pc-tab[aria-selected="true"]{color:#078fc4;box-shadow:none}
 .pc-canvas{position:relative;min-height:540px;padding:26px;background:#effcff;background-image:none;border-radius:8px;border:1px solid #e4f5fa}.pc-svg{max-height:490px}.pc-shape{fill:rgba(255,255,255,.72);stroke:#2aaedb;stroke-width:2.5}.pc-hole{stroke:#2aaedb}.pc-dim{stroke:#2aaedb}.pc-dim-text{fill:#2685a8;font-size:13px}.pc-summary{margin-top:18px;padding:15px 0 0;background:transparent;border:0;grid-template-columns:1fr auto}.pc-price{color:#152b3d;font-size:25px}.pc-cart{background:#75b72a;border-radius:26px;max-width:220px;justify-self:end;padding:0 22px}.pc-cart:hover{background:#639d23}
 @media(max-width:850px){.pc-preview{order:-1}.pc-canvas{min-height:360px}.pc-preview-head{bottom:12px;right:12px}.pc-summary{padding:14px 4px}.pc-cart{max-width:none;justify-self:stretch;border-radius:8px}}
+
+
+/* Product-page framing for the concept template */
+.plate-configurator{max-width:none;margin:0}
+.pc-grid{grid-template-columns:minmax(0,1.55fr) minmax(345px,.82fr);gap:38px;align-items:start}
+.pc-product-meta{padding:0 22px 20px;border-bottom:1px solid #e6ecef;position:relative}
+.pc-product-title{margin:0 0 7px;color:#2a1730;font-size:27px;line-height:1.12;font-weight:800;letter-spacing:-.03em}
+.pc-rating{font-size:15px;line-height:1;color:#ef3971;letter-spacing:1px;margin-bottom:14px}.pc-rating span{font-size:12px;color:#74808a;letter-spacing:0;margin-left:6px}
+.pc-base-price{color:#17242d;font-size:25px;font-weight:800;letter-spacing:-.02em}.pc-base-price small{font-size:13px;font-weight:500;color:#65737e;margin-left:5px}
+.pc-sample{position:absolute;right:22px;bottom:18px;border:0;border-radius:22px;background:#f2f8f9;color:#139bca;padding:9px 15px;font:inherit;font-size:12px;font-weight:800}
+.pc-panel{border:1px solid #e5eaed;box-shadow:none}.pc-title{display:none}.pc-panel>.pc-intro{display:none}.pc-step:first-of-type{padding-top:18px}
+.pc-preview{padding-top:55px}.pc-canvas{min-height:510px;border-radius:7px}.pc-summary{padding:16px 0 0}.pc-preview-head{bottom:34px;right:20px}
+@media(max-width:850px){.pc-grid{grid-template-columns:1fr;gap:20px}.pc-preview{padding-top:0}.pc-product-title{font-size:24px}.pc-sample{position:static;margin-top:13px}.pc-preview-head{bottom:29px}}
