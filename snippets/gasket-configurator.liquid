@@ -285,29 +285,13 @@
   <div class="pc-product-content">
     <section class="pc-description-card" aria-labelledby="{{ pc_id }}-description-title">
       <div class="pc-content-kicker">Productomschrijving</div>
-      <div class="pc-content-heading">
-        <h2 id="{{ pc_id }}-description-title">Omschrijving van {{ product.title }}</h2>
-        <span>Placeholder</span>
-      </div>
-
-      <div class="pc-placeholder-copy">
-        <div class="pc-copy-placeholder">
-          <span>Tekstblok 01</span>
-          <strong>Korte introductie van het materiaal</strong>
-          <p>Hier komt een duidelijke introductie over het materiaal, de uitstraling en de belangrijkste voordelen voor de klant.</p>
-        </div>
-        <div class="pc-copy-placeholder">
-          <span>Tekstblok 02</span>
-          <strong>Toepassingen en gebruik</strong>
-          <p>Hier komt aanvullende informatie over geschikte toepassingen, montage, onderhoud en aandachtspunten bij het gebruik.</p>
-        </div>
-      </div>
-
-      <div class="pc-feature-pills" aria-label="Voorbeeld van producteigenschappen">
-        <span><i aria-hidden="true"></i> Eigenschap 01</span>
-        <span><i aria-hidden="true"></i> Eigenschap 02</span>
-        <span><i aria-hidden="true"></i> Eigenschap 03</span>
-        <span><i aria-hidden="true"></i> Eigenschap 04</span>
+      <h2 id="{{ pc_id }}-description-title">{{ product.title }}</h2>
+      <div class="pc-description-copy rte">
+        {% if product.description != blank %}
+          {{ product.description }}
+        {% else %}
+          <p>Voor dit product is nog geen omschrijving ingevuld in Shopify.</p>
+        {% endif %}
       </div>
     </section>
 
