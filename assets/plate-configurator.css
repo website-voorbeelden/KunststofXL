@@ -1174,3 +1174,12 @@
   .pc-featured-products{gap:9px}
   .pc-featured-product__content{padding:11px}
 }
+
+
+/* Machining section without an outer card frame */
+.pc-machining-card{
+  overflow:visible;
+  border:0;
+  border-radius:0;
+}
+.pc-machining-card>header{padding-right:0;padding-left:0}
