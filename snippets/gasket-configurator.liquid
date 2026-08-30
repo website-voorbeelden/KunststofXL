@@ -15,9 +15,16 @@
           {{ product.featured_image | image_url: width: 1200 | image_tag: class: 'pc-image', alt: product.title }}
         {% endif %}
         <svg class="pc-svg" viewBox="0 0 640 430" role="img" aria-label="Voorbeeld van jouw plaat">
+          <defs><marker id="{{ pc_id }}-arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#2583a5"/></marker></defs>
           <path class="pc-shape"></path><g class="pc-holes"></g>
-          <line class="pc-dim pc-dim-w"></line><text class="pc-dim-text pc-label-w" text-anchor="middle"></text>
-          <line class="pc-dim pc-dim-h"></line><text class="pc-dim-text pc-label-h" text-anchor="end"></text>
+          <g class="pc-dimensions">
+            <line class="pc-dim pc-ext pc-w-ext-a"></line><line class="pc-dim pc-ext pc-w-ext-b"></line>
+            <line class="pc-dim pc-dim-w" marker-start="url(#{{ pc_id }}-arrow)" marker-end="url(#{{ pc_id }}-arrow)"></line>
+            <text class="pc-dim-text pc-label-w" text-anchor="middle"></text>
+            <line class="pc-dim pc-ext pc-h-ext-a"></line><line class="pc-dim pc-ext pc-h-ext-b"></line>
+            <line class="pc-dim pc-dim-h" marker-start="url(#{{ pc_id }}-arrow)" marker-end="url(#{{ pc_id }}-arrow)"></line>
+            <text class="pc-dim-text pc-label-h" text-anchor="end"></text>
+          </g>
         </svg>
       </div>
       <div class="pc-switch" role="tablist">
@@ -76,3 +83,19 @@
     </div>
   </div>
 </section>
+<script>
+(function(){
+  var root=document.getElementById({{ pc_id | json }}); if(!root) return;
+  root.querySelectorAll('[data-pc-tab]').forEach(function(button){
+    button.addEventListener('click',function(){
+      var imageMode=button.getAttribute('data-pc-tab')==='image';
+      var image=root.querySelector('.pc-image'), drawing=root.querySelector('.pc-svg'), canvas=root.querySelector('.pc-canvas');
+      root.querySelectorAll('[data-pc-tab]').forEach(function(tab){tab.setAttribute('aria-selected','false')});
+      button.setAttribute('aria-selected','true');
+      if(image){image.hidden=!imageMode;image.style.display=imageMode?'block':'none'}
+      if(drawing){drawing.hidden=imageMode;drawing.style.display=imageMode?'none':'block'}
+      if(canvas) canvas.classList.toggle('is-image',imageMode);
+    });
+  });
+})();
+</script>
