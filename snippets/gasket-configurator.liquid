@@ -343,6 +343,60 @@
         {% endif %}
       </div>
     </section>
+
+    {% assign pc_featured_collection = collections['kunststof-platen'] %}
+    {% if pc_featured_collection != blank and pc_featured_collection.products_count > 0 %}
+      <section class="pc-featured-collection" aria-labelledby="{{ pc_id }}-collection-title">
+        <header>
+          <div>
+            <div class="pc-content-kicker">Uitgelichte collectie</div>
+            <h2 id="{{ pc_id }}-collection-title">{{ pc_featured_collection.title }}</h2>
+          </div>
+          <a href="{{ pc_featured_collection.url }}">
+            Bekijk alle platen
+            <span aria-hidden="true">→</span>
+          </a>
+        </header>
+
+        <div class="pc-featured-products">
+          {% for pc_product in pc_featured_collection.products limit: 4 %}
+            <a class="pc-featured-product" href="{{ pc_product.url }}">
+              <div class="pc-featured-product__media">
+                {% if pc_product.featured_image %}
+                  {{
+                    pc_product.featured_image
+                    | image_url: width: 640
+                    | image_tag:
+                      loading: 'lazy',
+                      widths: '220, 320, 480, 640',
+                      sizes: '(max-width: 560px) 46vw, (max-width: 900px) 32vw, 230px',
+                      alt: pc_product.featured_image.alt | default: pc_product.title
+                  }}
+                {% else %}
+                  <div class="pc-featured-product__placeholder" aria-hidden="true">
+                    <svg viewBox="0 0 48 48"><rect x="8" y="11" width="32" height="26" rx="2"/><path d="m12 32 9-9 7 7 5-5 4 4"/></svg>
+                  </div>
+                {% endif %}
+                {% if pc_product.available %}
+                  <span class="pc-featured-product__stock">Op voorraad</span>
+                {% endif %}
+              </div>
+              <div class="pc-featured-product__content">
+                <h3>{{ pc_product.title }}</h3>
+                <div class="pc-featured-product__price">
+                  {% if pc_product.price_varies %}<small>Vanaf</small>{% endif %}
+                  <strong>{{ pc_product.price_min | money }}</strong>
+                  {% if pc_product.compare_at_price_max > pc_product.price_min %}
+                    <s>{{ pc_product.compare_at_price_max | money }}</s>
+                  {% endif %}
+                </div>
+                <span class="pc-featured-product__link">Bekijk product <i aria-hidden="true">→</i></span>
+              </div>
+            </a>
+          {% endfor %}
+        </div>
+      </section>
+    {% endif %}
   </div>
 
   <div class="pc-toast" data-pc-toast role="status" aria-live="polite" hidden></div>
