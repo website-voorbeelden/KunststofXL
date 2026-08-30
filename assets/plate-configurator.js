@@ -3,151 +3,212 @@
 
   var SVG_NS = 'http://www.w3.org/2000/svg';
 
-  function numberValue(value, fallback) {
+  function num(value, fallback) {
     var parsed = Number(String(value == null ? '' : value).replace(',', '.'));
     return Number.isFinite(parsed) ? parsed : fallback;
   }
 
-  function clamp(value, min, max) {
-    return Math.min(max, Math.max(min, value));
+  function clamp(value, minimum, maximum) {
+    return Math.min(maximum, Math.max(minimum, value));
   }
 
-  function formatMeasure(value) {
+  function measure(value) {
     return Number(value.toFixed(1)).toLocaleString('nl-NL', { maximumFractionDigits: 1 });
   }
 
-  function formatMoney(cents, locale, currency) {
+  function money(cents, locale, currency) {
     return new Intl.NumberFormat(locale || 'nl-NL', {
       style: 'currency',
       currency: currency || 'EUR'
     }).format(cents / 100);
   }
 
-  function setAttributes(element, attributes) {
-    Object.keys(attributes).forEach(function (name) {
-      element.setAttribute(name, attributes[name]);
-    });
+  function attrs(element, values) {
+    if (!element) return;
+    Object.keys(values).forEach(function (key) { element.setAttribute(key, values[key]); });
   }
 
-  function init(root) {
+  function initialise(root) {
     if (!root || root.dataset.ready === 'true') return;
     root.dataset.ready = 'true';
 
-    var query = function (selector) { return root.querySelector(selector); };
-    var queryAll = function (selector) { return Array.prototype.slice.call(root.querySelectorAll(selector)); };
+    var one = function (selector) { return root.querySelector(selector); };
+    var all = function (selector) { return Array.prototype.slice.call(root.querySelectorAll(selector)); };
 
-    var widthInput = query('[data-pc-width]');
-    var heightInput = query('[data-pc-height]');
-    var thicknessInput = query('[data-pc-thickness]');
-    var holesToggle = query('[data-pc-holes]');
-    var holeCountInput = query('[data-pc-holes-count]');
-    var holeDiameterInput = query('[data-pc-hole-dia]');
-    var cutoutToggle = query('[data-pc-cutout]');
-    var uploadInput = query('[data-pc-upload]');
-    var shapePicker = query('[data-pc-shape-picker]');
-    var canvas = query('.pc-canvas');
-    var svg = query('.pc-svg');
-    var image = query('.pc-image');
-    var shape = query('.pc-shape');
-    var cutout = query('.pc-cutout');
-    var holesGroup = query('.pc-holes');
+    var widthInput = one('[data-pc-width]');
+    var heightInput = one('[data-pc-height]');
+    var radiusInput = one('[data-pc-radius]');
+    var letterInput = one('[data-pc-letter]');
+    var holesToggle = one('[data-pc-holes]');
+    var holeCountInput = one('[data-pc-hole-count]');
+    var holeDiameterInput = one('[data-pc-hole-diameter]');
+    var cutoutToggle = one('[data-pc-cutout]');
+    var cutoutSizeInput = one('[data-pc-cutout-size]');
+    var cutoutRadiusInput = one('[data-pc-cutout-radius]');
+    var cutoutTextInput = one('[data-pc-cutout-text]');
+    var uploadInput = one('[data-pc-upload]');
 
-    if (!widthInput || !heightInput || !svg || !shape) return;
+    var svg = one('.pc-svg');
+    var canvas = one('.pc-canvas');
+    var productImage = one('.pc-product-image');
+    var shapePath = one('.pc-shape');
+    var letterShape = one('.pc-letter-shape');
+    var holesLayer = one('.pc-holes');
+    var cutoutLayer = one('.pc-cutout-layer');
+    var cutoutCircle = one('.pc-cutout-circle');
+    var cutoutRect = one('.pc-cutout-rect');
+    var cutoutText = one('.pc-cutout-text');
 
-    var maxWidth = numberValue(root.dataset.maxWidth, 305);
-    var maxHeight = numberValue(root.dataset.maxHeight, 155);
-    var basePrice = Math.max(1, numberValue(root.dataset.basePrice, 1295));
+    if (!widthInput || !heightInput || !svg || !shapePath) return;
+
+    var maximumWidth = num(root.dataset.maxWidth, 305);
+    var maximumHeight = num(root.dataset.maxHeight, 155);
+    var basePrice = Math.max(1, num(root.dataset.basePrice, 1000));
 
     var state = {
       shape: 'rectangle',
+      mainMode: 'rectangle',
       view: 'dimensions',
       thickness: 2,
       holes: false,
       cutout: false,
+      cutoutType: 'circle',
       finish: 'gezaagd',
-      quantity: 1,
-      uploadedImage: false
+      quantity: 1
     };
 
     var toastTimer;
 
-    function showToast(message) {
-      var toast = query('[data-pc-toast]');
+    function notify(message) {
+      var toast = one('[data-pc-toast]');
       if (!toast) return;
       window.clearTimeout(toastTimer);
       toast.textContent = message;
       toast.hidden = false;
-      toastTimer = window.setTimeout(function () { toast.hidden = true; }, 2400);
+      toastTimer = window.setTimeout(function () { toast.hidden = true; }, 2200);
     }
 
-    function dimensions() {
-      var width = clamp(numberValue(widthInput.value, 10), 1, maxWidth);
-      var height = clamp(numberValue(heightInput.value, 10), 1, maxHeight);
+    function letters(input) {
+      var value = String(input.value || 'A').replace(/[^a-zA-Z0-9 ]/g, '').slice(0, 8);
+      if (!value) value = 'A';
+      if (input.value !== value) input.value = value;
+      return value.toUpperCase();
+    }
+
+    function values() {
+      var width = clamp(num(widthInput.value, 10), 1, maximumWidth);
+      var height = clamp(num(heightInput.value, 10), 1, maximumHeight);
+      var text = letters(letterInput);
+
       if (state.shape === 'circle') {
-        var diameter = clamp(width, 1, Math.min(maxWidth, maxHeight));
-        width = diameter;
-        height = diameter;
+        width = clamp(width, 1, Math.min(maximumWidth, maximumHeight));
+        height = width;
+        heightInput.value = Number(height.toFixed(1));
+      } else if (state.shape === 'letter') {
+        width = Math.max(height * 0.65, height * text.length * 0.62);
+        if (width > maximumWidth) {
+          height = maximumWidth / Math.max(0.65, text.length * 0.62);
+          width = maximumWidth;
+        }
+        heightInput.value = Number(height.toFixed(1));
       }
+
       widthInput.value = Number(width.toFixed(1));
       heightInput.value = Number(height.toFixed(1));
-      return { width: width, height: height };
+
+      return { width: width, height: height, text: text };
     }
 
-    function shapeName() {
-      return {
-        rectangle: 'Rechthoek',
-        rounded: 'Afgeronde rechthoek',
-        circle: 'Cirkel',
-        triangle: 'Driehoek'
-      }[state.shape] || 'Rechthoek';
+    function setLine(selector, x1, y1, x2, y2) {
+      attrs(one(selector), { x1: x1, y1: y1, x2: x2, y2: y2 });
+    }
+
+    function setDimensionLabel(textSelector, backgroundSelector, x, y, text) {
+      var label = one(textSelector);
+      var background = one(backgroundSelector);
+      if (!label || !background) return;
+      label.textContent = text;
+      attrs(label, { x: x, y: y });
+      var labelWidth = Math.max(58, text.length * 7.6 + 14);
+      attrs(background, { x: x - labelWidth / 2, y: y - 11, width: labelWidth, height: 22 });
+    }
+
+    function updateFieldVisibility() {
+      var pickerPanel = one('[data-pc-picker-panel]');
+      var widthField = one('[data-pc-width-field]');
+      var heightField = one('[data-pc-height-field]');
+      var radiusField = one('[data-pc-radius-field]');
+      var letterField = one('[data-pc-letter-field]');
+      var widthLabel = one('[data-pc-width-label]');
+      var widthMax = one('[data-pc-width-max]');
+
+      if (pickerPanel) pickerPanel.hidden = state.mainMode !== 'picker';
+      widthField.hidden = state.shape === 'letter';
+      heightField.hidden = state.shape === 'circle';
+      radiusField.hidden = state.shape !== 'rounded';
+      letterField.hidden = state.shape !== 'letter';
+
+      if (widthLabel) widthLabel.textContent = state.shape === 'circle' ? 'Diameter' : 'Breedte';
+      if (widthMax) widthMax.textContent = 'Max: ' + (state.shape === 'circle' ? Math.min(maximumWidth, maximumHeight) : maximumWidth) + ' cm';
+
+      var halfShortSide = Math.max(0, Math.min(num(widthInput.value, 10), num(heightInput.value, 10)) / 2);
+      radiusInput.max = Number(halfShortSide.toFixed(1));
+
+      all('[data-pc-main-shape]').forEach(function (button) {
+        button.setAttribute('aria-selected', String(button.dataset.pcMainShape === state.mainMode));
+      });
+      all('[data-pc-shape]').forEach(function (button) {
+        button.setAttribute('aria-pressed', String(button.dataset.pcShape === state.shape));
+      });
     }
 
     function renderView() {
       var imageMode = state.view === 'image';
       svg.hidden = imageMode;
       svg.style.display = imageMode ? 'none' : 'block';
-      if (image) {
-        image.hidden = !imageMode;
-        image.style.display = imageMode ? (image.classList.contains('pc-image--placeholder') ? 'grid' : 'block') : 'none';
+      if (productImage) {
+        productImage.hidden = !imageMode;
+        productImage.style.display = imageMode
+          ? (productImage.classList.contains('pc-product-image--empty') ? 'grid' : 'block')
+          : 'none';
       }
-      if (canvas) canvas.classList.toggle('is-image', imageMode);
-      queryAll('[data-pc-tab]').forEach(function (button) {
-        button.setAttribute('aria-selected', String(button.dataset.pcTab === state.view));
+      canvas.classList.toggle('is-image', imageMode);
+      all('[data-pc-view]').forEach(function (button) {
+        button.setAttribute('aria-selected', String(button.dataset.pcView === state.view));
       });
     }
 
-    function setLine(selector, x1, y1, x2, y2) {
-      var line = query(selector);
-      if (!line) return;
-      setAttributes(line, { x1: x1, y1: y1, x2: x2, y2: y2 });
-    }
-
-    function setLabel(textSelector, backgroundSelector, x, y, text) {
-      var label = query(textSelector);
-      var background = query(backgroundSelector);
-      if (!label || !background) return;
-      label.textContent = text;
-      setAttributes(label, { x: x, y: y });
-      var width = Math.max(60, text.length * 8 + 22);
-      setAttributes(background, { x: x - width / 2, y: y - 13, width: width, height: 26 });
-    }
-
-    function renderDrawing(box, values) {
+    function renderOuterShape(box, currentValues) {
       var x = box.x;
       var y = box.y;
       var width = box.width;
       var height = box.height;
-      var radius = Math.min(24, width * 0.12, height * 0.12);
+
+      shapePath.hidden = state.shape === 'letter';
+      letterShape.hidden = state.shape !== 'letter';
+
+      if (state.shape === 'letter') {
+        letterShape.textContent = currentValues.text;
+        var fontSize = Math.min(height, width / Math.max(0.65, currentValues.text.length * 0.62));
+        attrs(letterShape, { x: 350, y: 225, 'font-size': fontSize });
+        return;
+      }
 
       if (state.shape === 'circle') {
         var circleRadius = Math.min(width, height) / 2;
-        shape.setAttribute('d',
-          'M ' + (360 - circleRadius) + ' 235 ' +
-          'a ' + circleRadius + ' ' + circleRadius + ' 0 1 0 ' + (circleRadius * 2) + ' 0 ' +
-          'a ' + circleRadius + ' ' + circleRadius + ' 0 1 0 -' + (circleRadius * 2) + ' 0'
+        shapePath.setAttribute('d',
+          'M ' + (350 - circleRadius) + ' 225 ' +
+          'a ' + circleRadius + ' ' + circleRadius + ' 0 1 0 ' + circleRadius * 2 + ' 0 ' +
+          'a ' + circleRadius + ' ' + circleRadius + ' 0 1 0 -' + circleRadius * 2 + ' 0'
         );
-      } else if (state.shape === 'rounded') {
-        shape.setAttribute('d',
+        return;
+      }
+
+      if (state.shape === 'rounded') {
+        var radiusCm = clamp(num(radiusInput.value, 2), 0, Math.min(currentValues.width, currentValues.height) / 2);
+        radiusInput.value = Number(radiusCm.toFixed(1));
+        var radius = radiusCm * box.scale;
+        shapePath.setAttribute('d',
           'M ' + (x + radius) + ' ' + y +
           ' H ' + (x + width - radius) +
           ' Q ' + (x + width) + ' ' + y + ' ' + (x + width) + ' ' + (y + radius) +
@@ -158,218 +219,246 @@
           ' V ' + (y + radius) +
           ' Q ' + x + ' ' + y + ' ' + (x + radius) + ' ' + y + ' Z'
         );
-      } else if (state.shape === 'triangle') {
-        shape.setAttribute('d',
-          'M ' + (x + width / 2) + ' ' + y +
-          ' L ' + (x + width) + ' ' + (y + height) +
-          ' L ' + x + ' ' + (y + height) + ' Z'
-        );
-      } else {
-        shape.setAttribute('d',
-          'M ' + x + ' ' + y +
-          ' H ' + (x + width) +
-          ' V ' + (y + height) +
-          ' H ' + x + ' Z'
-        );
+        return;
       }
 
-      var cutoutSize = clamp(Math.min(width, height) * 0.27, 30, 86);
-      cutout.hidden = !state.cutout;
-      if (state.cutout) {
-        setAttributes(cutout, {
-          x: 360 - cutoutSize / 2,
-          y: 235 - cutoutSize / 2,
-          width: cutoutSize,
-          height: cutoutSize,
-          rx: Math.min(8, cutoutSize * 0.12)
+      shapePath.setAttribute('d',
+        'M ' + x + ' ' + y + ' H ' + (x + width) + ' V ' + (y + height) + ' H ' + x + ' Z'
+      );
+    }
+
+    function renderHoles(box) {
+      while (holesLayer.firstChild) holesLayer.removeChild(holesLayer.firstChild);
+      if (!state.holes) return;
+
+      var count = clamp(Math.round(num(holeCountInput.value, 4)), 1, 12);
+      var diameter = clamp(num(holeDiameterInput.value, 8), 3, 50);
+      holeCountInput.value = count;
+      holeDiameterInput.value = Number(diameter.toFixed(1));
+
+      var holeRadius = clamp((diameter / 10) * box.scale / 2, 3.3, 15);
+      var orbitX = box.width * 0.37;
+      var orbitY = box.height * 0.35;
+
+      for (var index = 0; index < count; index += 1) {
+        var angle = index / count * Math.PI * 2 - Math.PI / 2;
+        var hole = document.createElementNS(SVG_NS, 'circle');
+        hole.setAttribute('class', 'pc-hole');
+        attrs(hole, {
+          cx: 350 + Math.cos(angle) * orbitX,
+          cy: 225 + Math.sin(angle) * orbitY,
+          r: holeRadius
         });
+        holesLayer.appendChild(hole);
       }
-
-      while (holesGroup.firstChild) holesGroup.removeChild(holesGroup.firstChild);
-      if (state.holes) {
-        var count = clamp(Math.round(numberValue(holeCountInput.value, 4)), 1, 12);
-        var diameterMm = clamp(numberValue(holeDiameterInput.value, 8), 3, 50);
-        holeCountInput.value = count;
-        holeDiameterInput.value = Number(diameterMm.toFixed(1));
-        var holeRadius = clamp((diameterMm / 10) * box.scale / 2, 3.5, 16);
-        var orbitX = Math.max(10, width * 0.37);
-        var orbitY = Math.max(10, height * 0.34);
-
-        for (var index = 0; index < count; index += 1) {
-          var angle = (index / count) * Math.PI * 2 - Math.PI / 2;
-          var hole = document.createElementNS(SVG_NS, 'circle');
-          hole.setAttribute('class', 'pc-hole');
-          setAttributes(hole, {
-            cx: 360 + Math.cos(angle) * orbitX,
-            cy: 235 + Math.sin(angle) * orbitY,
-            r: holeRadius
-          });
-          holesGroup.appendChild(hole);
-        }
-      }
-
-      var horizontalY = y + height + 48;
-      var verticalX = x - 54;
-      setLine('.pc-w-ext-a', x, y + height + 5, x, horizontalY + 8);
-      setLine('.pc-w-ext-b', x + width, y + height + 5, x + width, horizontalY + 8);
-      setLine('.pc-dim-w', x, horizontalY, x + width, horizontalY);
-      setLabel('.pc-label-w', '.pc-label-w-bg', 360, horizontalY + 28, formatMeasure(values.width) + ' cm');
-
-      setLine('.pc-h-ext-a', x - 5, y, verticalX - 8, y);
-      setLine('.pc-h-ext-b', x - 5, y + height, verticalX - 8, y + height);
-      setLine('.pc-dim-h', verticalX, y, verticalX, y + height);
-      setLabel('.pc-label-h', '.pc-label-h-bg', verticalX - 3, 235, formatMeasure(values.height) + ' cm');
     }
 
-    function calculatePrice(values) {
-      var areaFactor = (values.width * values.height) / (305 * 155);
-      var thicknessFactor = 0.82 + state.thickness * 0.09;
-      var shapeFactor = state.shape === 'circle' ? 1.08 : state.shape === 'triangle' ? 1.12 : state.shape === 'rounded' ? 1.06 : 1;
-      var extras = (state.holes ? Math.round(numberValue(holeCountInput.value, 4)) * 65 : 0) +
+    function renderCutout(box, currentValues) {
+      cutoutLayer.hidden = !state.cutout;
+      if (!state.cutout) return;
+
+      var maximumSize = Math.max(1, Math.min(currentValues.width, currentValues.height) * 0.7);
+      var sizeCm = clamp(num(cutoutSizeInput.value, 3), 1, maximumSize);
+      cutoutSizeInput.value = Number(sizeCm.toFixed(1));
+      var size = sizeCm * box.scale;
+
+      cutoutCircle.hidden = state.cutoutType !== 'circle';
+      cutoutRect.hidden = state.cutoutType !== 'rounded';
+      cutoutText.hidden = state.cutoutType !== 'text';
+
+      if (state.cutoutType === 'circle') {
+        attrs(cutoutCircle, { cx: 350, cy: 225, r: size / 2 });
+      } else if (state.cutoutType === 'rounded') {
+        var radiusCm = clamp(num(cutoutRadiusInput.value, 0.5), 0, sizeCm / 2);
+        cutoutRadiusInput.value = Number(radiusCm.toFixed(1));
+        attrs(cutoutRect, {
+          x: 350 - size / 2,
+          y: 225 - size / 2,
+          width: size,
+          height: size,
+          rx: radiusCm * box.scale
+        });
+      } else {
+        var text = letters(cutoutTextInput);
+        cutoutText.textContent = text;
+        attrs(cutoutText, { x: 350, y: 225, 'font-size': size });
+      }
+    }
+
+    function renderDimensions(box, currentValues) {
+      var horizontalY = box.y + box.height + 48;
+      var verticalX = box.x - 50;
+
+      setLine('.pc-w-ext-a', box.x, box.y + box.height + 4, box.x, horizontalY + 7);
+      setLine('.pc-w-ext-b', box.x + box.width, box.y + box.height + 4, box.x + box.width, horizontalY + 7);
+      setLine('.pc-dim-w', box.x, horizontalY, box.x + box.width, horizontalY);
+      setDimensionLabel('.pc-label-w', '.pc-label-w-bg', 350, horizontalY, measure(currentValues.width) + ' cm');
+
+      setLine('.pc-h-ext-a', box.x - 4, box.y, verticalX - 7, box.y);
+      setLine('.pc-h-ext-b', box.x - 4, box.y + box.height, verticalX - 7, box.y + box.height);
+      setLine('.pc-dim-h', verticalX, box.y, verticalX, box.y + box.height);
+      setDimensionLabel('.pc-label-h', '.pc-label-h-bg', verticalX, 225, measure(currentValues.height) + ' cm');
+    }
+
+    function shapeLabel(currentValues) {
+      if (state.shape === 'circle') return 'Cirkel · Ø ' + measure(currentValues.width) + ' cm';
+      if (state.shape === 'rounded') return 'Vierkant met radius · ' + measure(currentValues.width) + ' × ' + measure(currentValues.height) + ' cm';
+      if (state.shape === 'letter') return 'Letters “' + currentValues.text + '” · ' + measure(currentValues.height) + ' cm hoog';
+      return 'Rechthoek · ' + measure(currentValues.width) + ' × ' + measure(currentValues.height) + ' cm';
+    }
+
+    function price(currentValues) {
+      var areaPart = currentValues.width * currentValues.height / (305 * 155);
+      var thicknessPart = 0.82 + state.thickness * 0.09;
+      var shapePart = state.shape === 'rectangle' ? 1 : state.shape === 'rounded' ? 1.08 : 1.12;
+      var extras = (state.holes ? clamp(Math.round(num(holeCountInput.value, 4)), 1, 12) * 65 : 0) +
         (state.cutout ? 425 : 0) +
-        (state.finish === 'gefreesd' ? 595 : 0);
-      return Math.max(basePrice, Math.round((basePrice + areaFactor * 6200) * thicknessFactor * shapeFactor + extras));
+        (state.finish === 'gefreesd' ? 550 : 0);
+      return Math.max(basePrice, Math.round((basePrice + areaPart * 6100) * thicknessPart * shapePart + extras));
     }
 
-    function updateSummaries(values, totalPrice) {
-      var measurement = formatMeasure(values.width) + ' × ' + formatMeasure(values.height) + ' cm';
-      var dimensionText = state.shape === 'circle'
-        ? 'Cirkel · Ø ' + formatMeasure(values.width) + ' cm'
-        : shapeName() + ' · ' + measurement;
-      var holesCount = state.holes ? clamp(Math.round(numberValue(holeCountInput.value, 4)), 1, 12) : 0;
-      var holeDiameter = clamp(numberValue(holeDiameterInput.value, 8), 3, 50);
-      var compact = measurement + ' · ' + state.thickness + ' mm' +
-        (state.holes ? ' · ' + holesCount + ' gaten Ø ' + formatMeasure(holeDiameter) + ' mm' : '') +
+    function updateSummary(currentValues, unitPrice) {
+      var dimensionsText = state.shape === 'circle'
+        ? 'Ø ' + measure(currentValues.width) + ' cm'
+        : state.shape === 'letter'
+          ? currentValues.text + ' · ' + measure(currentValues.height) + ' cm hoog'
+          : measure(currentValues.width) + ' × ' + measure(currentValues.height) + ' cm';
+
+      var holeCount = clamp(Math.round(num(holeCountInput.value, 4)), 1, 12);
+      var holeDiameter = clamp(num(holeDiameterInput.value, 8), 3, 50);
+      var compact = dimensionsText + ' · ' + state.thickness + ' mm' +
+        (state.holes ? ' · ' + holeCount + ' gaten Ø ' + measure(holeDiameter) + ' mm' : '') +
         (state.cutout ? ' · uitsnede' : '');
 
-      var dimensionSummary = query('[data-pc-dimension-summary]');
-      var thicknessSummary = query('[data-pc-thickness-summary]');
-      var holesSummary = query('[data-pc-holes-summary]');
-      var cutoutSummary = query('[data-pc-cutout-summary]');
-      var finishSummary = query('[data-pc-finish-summary]');
+      var shapeSummary = one('[data-pc-shape-summary]');
+      var thicknessSummary = one('[data-pc-thickness-summary]');
+      var holesSummary = one('[data-pc-holes-summary]');
+      var cutoutSummary = one('[data-pc-cutout-summary]');
+      var finishSummary = one('[data-pc-finish-summary]');
 
-      if (dimensionSummary) dimensionSummary.textContent = dimensionText;
+      if (shapeSummary) shapeSummary.textContent = shapeLabel(currentValues);
       if (thicknessSummary) thicknessSummary.textContent = state.thickness + ' mm';
-      if (holesSummary) holesSummary.textContent = state.holes ? holesCount + ' stuks · Ø ' + formatMeasure(holeDiameter) + ' mm' : 'Geen boorgaten';
-      if (cutoutSummary) cutoutSummary.textContent = state.cutout ? 'Centrale uitsnede' : 'Geen uitsnede';
-      if (finishSummary) finishSummary.textContent = state.finish === 'gefreesd' ? 'Glad gefreesd' : 'Gezaagd';
+      if (holesSummary) holesSummary.textContent = state.holes ? holeCount + ' st. · Ø ' + measure(holeDiameter) + ' mm' : 'Geen';
+      if (cutoutSummary) cutoutSummary.textContent = state.cutout
+        ? ({ circle: 'Rond', rounded: 'Vierkant + radius', text: 'Letters' }[state.cutoutType])
+        : 'Geen';
+      if (finishSummary) finishSummary.textContent = state.finish === 'gefreesd' ? 'Gefreesd' : 'Gezaagd';
 
-      queryAll('[data-pc-summary]').forEach(function (element) { element.textContent = compact; });
-      queryAll('[data-pc-price]').forEach(function (element) {
-        element.textContent = formatMoney(totalPrice * state.quantity, root.dataset.locale, root.dataset.currency);
+      all('[data-pc-summary]').forEach(function (element) { element.textContent = compact; });
+      all('[data-pc-price]').forEach(function (element) {
+        element.textContent = money(unitPrice * state.quantity, root.dataset.locale, root.dataset.currency);
       });
 
-      var holesStatus = query('[data-pc-holes-status]');
-      var cutoutStatus = query('[data-pc-cutout-status]');
+      var holesStatus = one('[data-pc-holes-status]');
+      var cutoutStatus = one('[data-pc-cutout-status]');
       if (holesStatus) {
-        holesStatus.textContent = state.holes ? '✓' : '3';
-        holesStatus.classList.toggle('pc-step-number--done', state.holes);
+        holesStatus.textContent = state.holes ? '✓' : '';
+        holesStatus.classList.toggle('pc-status--done', state.holes);
       }
       if (cutoutStatus) {
-        cutoutStatus.textContent = state.cutout ? '✓' : '4';
-        cutoutStatus.classList.toggle('pc-step-number--done', state.cutout);
+        cutoutStatus.textContent = state.cutout ? '✓' : '';
+        cutoutStatus.classList.toggle('pc-status--done', state.cutout);
       }
     }
 
     function render() {
-      var values = dimensions();
-      var scale = Math.min(430 / values.width, 255 / values.height);
-      var renderedWidth = values.width * scale;
-      var renderedHeight = values.height * scale;
+      updateFieldVisibility();
+      renderView();
+
+      var currentValues = values();
+      var scale = Math.min(430 / currentValues.width, 260 / currentValues.height);
+      var renderedWidth = currentValues.width * scale;
+      var renderedHeight = currentValues.height * scale;
       var box = {
-        x: 360 - renderedWidth / 2,
-        y: 235 - renderedHeight / 2,
+        x: 350 - renderedWidth / 2,
+        y: 225 - renderedHeight / 2,
         width: renderedWidth,
         height: renderedHeight,
         scale: scale
       };
 
-      renderView();
-      renderDrawing(box, values);
-      updateSummaries(values, calculatePrice(values));
+      renderOuterShape(box, currentValues);
+      renderHoles(box);
+      renderCutout(box, currentValues);
+      renderDimensions(box, currentValues);
+      updateSummary(currentValues, price(currentValues));
     }
 
-    function selectShape(nextShape, button) {
-      state.shape = nextShape;
-      if (state.shape === 'circle') {
-        var diameter = clamp(numberValue(widthInput.value, 10), 1, Math.min(maxWidth, maxHeight));
+    function chooseShape(shape) {
+      state.shape = shape;
+      state.mainMode = shape === 'rectangle' ? 'rectangle' : 'picker';
+      state.view = 'dimensions';
+      if (shape === 'circle') {
+        var diameter = clamp(num(widthInput.value, 10), 1, Math.min(maximumWidth, maximumHeight));
         widthInput.value = diameter;
         heightInput.value = diameter;
       }
-      queryAll('[data-shape],[data-pc-shape-choice]').forEach(function (item) {
-        var itemShape = item.dataset.shape || item.dataset.pcShapeChoice;
-        item.setAttribute('aria-pressed', String(itemShape === nextShape));
-      });
-      var rectangleButton = query('[data-shape="rectangle"]');
-      if (rectangleButton) rectangleButton.setAttribute('aria-pressed', String(nextShape === 'rectangle'));
-      if (shapePicker) shapePicker.hidden = true;
-      var opener = query('[data-pc-open-shapes]');
-      if (opener) opener.setAttribute('aria-expanded', 'false');
-      state.view = 'dimensions';
       render();
     }
 
-    queryAll('[data-shape]').forEach(function (button) {
-      button.addEventListener('click', function () { selectShape(button.dataset.shape, button); });
-    });
-
-    var shapeOpener = query('[data-pc-open-shapes]');
-    if (shapeOpener && shapePicker) {
-      shapeOpener.addEventListener('click', function () {
-        shapePicker.hidden = !shapePicker.hidden;
-        shapeOpener.setAttribute('aria-expanded', String(!shapePicker.hidden));
-      });
-    }
-
-    queryAll('[data-pc-shape-choice]').forEach(function (button) {
-      button.addEventListener('click', function () { selectShape(button.dataset.pcShapeChoice, button); });
-    });
-
-    var uploadTrigger = query('[data-pc-upload-trigger]');
-    if (uploadTrigger && uploadInput) {
-      uploadTrigger.addEventListener('click', function () { uploadInput.click(); });
-      uploadInput.addEventListener('change', function (event) {
-        var file = event.target.files && event.target.files[0];
-        if (!file) return;
-        var reader = new FileReader();
-        reader.onload = function () {
-          if (image && !image.classList.contains('pc-image--placeholder')) image.src = reader.result;
-          state.uploadedImage = true;
-          state.view = 'image';
-          var note = query('[data-pc-upload-note]');
-          if (note) {
-            note.textContent = file.name + ' is gekozen en wordt als voorbeeld getoond.';
-            note.hidden = false;
-          }
-          render();
-        };
-        reader.readAsDataURL(file);
-      });
-    }
-
-    queryAll('[data-pc-tab]').forEach(function (button) {
+    all('[data-pc-main-shape]').forEach(function (button) {
       button.addEventListener('click', function () {
-        state.view = button.dataset.pcTab;
+        var mode = button.dataset.pcMainShape;
+        if (mode === 'rectangle') {
+          chooseShape('rectangle');
+        } else if (mode === 'picker') {
+          state.mainMode = 'picker';
+          render();
+        } else if (mode === 'upload') {
+          state.mainMode = 'upload';
+          all('[data-pc-main-shape]').forEach(function (item) {
+            item.setAttribute('aria-selected', String(item.dataset.pcMainShape === 'upload'));
+          });
+          uploadInput.click();
+        }
+      });
+    });
+
+    all('[data-pc-shape]').forEach(function (button) {
+      button.addEventListener('click', function () { chooseShape(button.dataset.pcShape); });
+    });
+
+    uploadInput.addEventListener('change', function (event) {
+      var file = event.target.files && event.target.files[0];
+      if (!file) {
+        state.mainMode = state.shape === 'rectangle' ? 'rectangle' : 'picker';
+        render();
+        return;
+      }
+      var reader = new FileReader();
+      reader.onload = function () {
+        if (productImage && !productImage.classList.contains('pc-product-image--empty')) productImage.src = reader.result;
+        var result = one('[data-pc-upload-result]');
+        if (result) {
+          result.textContent = '✓ ' + file.name + ' gekozen als voorbeeld';
+          result.hidden = false;
+        }
+        state.mainMode = 'upload';
+        state.view = 'image';
+        render();
+      };
+      reader.readAsDataURL(file);
+    });
+
+    all('[data-pc-view]').forEach(function (button) {
+      button.addEventListener('click', function () {
+        state.view = button.dataset.pcView;
         render();
       });
     });
 
-    widthInput.addEventListener('input', function () {
-      if (state.shape === 'circle') heightInput.value = widthInput.value;
-      state.view = 'dimensions';
-      render();
-    });
-    heightInput.addEventListener('input', function () {
-      if (state.shape === 'circle') widthInput.value = heightInput.value;
-      state.view = 'dimensions';
-      render();
+    [widthInput, heightInput, radiusInput, letterInput].forEach(function (input) {
+      input.addEventListener('input', function () {
+        if (state.shape === 'circle') heightInput.value = widthInput.value;
+        state.view = 'dimensions';
+        render();
+      });
     });
 
-    queryAll('[data-pc-thickness-choice]').forEach(function (button) {
+    all('[data-pc-thickness]').forEach(function (button) {
       button.addEventListener('click', function () {
-        state.thickness = numberValue(button.dataset.pcThicknessChoice, 2);
-        thicknessInput.value = state.thickness;
-        queryAll('[data-pc-thickness-choice]').forEach(function (item) {
+        state.thickness = num(button.dataset.pcThickness, 2);
+        all('[data-pc-thickness]').forEach(function (item) {
           item.setAttribute('aria-pressed', String(item === button));
         });
         render();
@@ -378,8 +467,7 @@
 
     holesToggle.addEventListener('change', function () {
       state.holes = holesToggle.checked;
-      var extra = query('[data-pc-holes-extra]');
-      if (extra) extra.hidden = !state.holes;
+      one('[data-pc-holes-fields]').hidden = !state.holes;
       state.view = 'dimensions';
       render();
     });
@@ -388,56 +476,69 @@
 
     cutoutToggle.addEventListener('change', function () {
       state.cutout = cutoutToggle.checked;
+      one('[data-pc-cutout-fields]').hidden = !state.cutout;
       state.view = 'dimensions';
       render();
     });
 
-    queryAll('[data-finish]').forEach(function (button) {
+    all('[data-pc-cutout-type]').forEach(function (button) {
       button.addEventListener('click', function () {
-        state.finish = button.dataset.finish;
-        queryAll('[data-finish]').forEach(function (item) {
+        state.cutoutType = button.dataset.pcCutoutType;
+        all('[data-pc-cutout-type]').forEach(function (item) {
+          item.setAttribute('aria-pressed', String(item === button));
+        });
+        one('[data-pc-cutout-radius-field]').hidden = state.cutoutType !== 'rounded';
+        one('[data-pc-cutout-text-field]').hidden = state.cutoutType !== 'text';
+        one('[data-pc-cutout-size-field]').hidden = false;
+        state.view = 'dimensions';
+        render();
+      });
+    });
+
+    [cutoutSizeInput, cutoutRadiusInput, cutoutTextInput].forEach(function (input) {
+      input.addEventListener('input', function () { state.view = 'dimensions'; render(); });
+    });
+
+    all('[data-pc-finish]').forEach(function (button) {
+      button.addEventListener('click', function () {
+        state.finish = button.dataset.pcFinish;
+        all('[data-pc-finish]').forEach(function (item) {
           item.setAttribute('aria-pressed', String(item === button));
         });
         render();
       });
     });
 
-    queryAll('.pc-accord').forEach(function (details) {
+    all('.pc-accordion').forEach(function (details) {
       details.addEventListener('toggle', function () {
         if (!details.open) return;
-        queryAll('.pc-accord').forEach(function (other) {
+        all('.pc-accordion').forEach(function (other) {
           if (other !== details) other.open = false;
         });
       });
     });
 
-    var quantityLabel = query('[data-pc-quantity]');
-    function setQuantity(next) {
-      state.quantity = clamp(next, 1, 99);
-      if (quantityLabel) quantityLabel.textContent = state.quantity;
+    var quantityDisplay = one('[data-pc-quantity]');
+    function setQuantity(quantity) {
+      state.quantity = clamp(quantity, 1, 99);
+      quantityDisplay.textContent = state.quantity;
       render();
     }
-    var minus = query('[data-pc-qty-minus]');
-    var plus = query('[data-pc-qty-plus]');
-    if (minus) minus.addEventListener('click', function () { setQuantity(state.quantity - 1); });
-    if (plus) plus.addEventListener('click', function () { setQuantity(state.quantity + 1); });
+    one('[data-pc-minus]').addEventListener('click', function () { setQuantity(state.quantity - 1); });
+    one('[data-pc-plus]').addEventListener('click', function () { setQuantity(state.quantity + 1); });
 
-    queryAll('[data-pc-cart]').forEach(function (button) {
-      button.addEventListener('click', function () {
-        showToast('Concept: ' + state.quantity + ' geconfigureerde plaat' + (state.quantity === 1 ? '' : 'en') + ' klaar voor de winkelmand.');
-      });
+    one('[data-pc-cart]').addEventListener('click', function () {
+      notify('Conceptconfiguratie staat klaar voor de winkelmand.');
     });
-
-    var sample = query('[data-pc-sample]');
-    if (sample) sample.addEventListener('click', function () {
-      showToast('Sample-aanvraag geopend — in deze conceptversie wordt nog niets besteld.');
+    one('[data-pc-sample]').addEventListener('click', function () {
+      notify('Sample-aanvraag is in deze conceptversie nog niet gekoppeld.');
     });
 
     render();
   }
 
   function boot(scope) {
-    (scope || document).querySelectorAll('[data-plate-configurator]').forEach(init);
+    (scope || document).querySelectorAll('[data-plate-configurator]').forEach(initialise);
   }
 
   if (document.readyState === 'loading') {
