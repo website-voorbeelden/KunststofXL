@@ -944,3 +944,18 @@
 @media(max-width:680px){
   .pc-product-content>.pc-description-card:last-child{padding-top:24px}
 }
+
+
+/* Keep the two machining verdicts side by side */
+.pc-machining-columns{grid-template-columns:1fr 1fr}
+.pc-machining-group+ .pc-machining-group{
+  border-top:0;
+  border-left:1px solid #e4ecee;
+}
+@media(max-width:680px){
+  .pc-machining-columns{grid-template-columns:1fr}
+  .pc-machining-group+ .pc-machining-group{
+    border-top:1px solid #e4ecee;
+    border-left:0;
+  }
+}
