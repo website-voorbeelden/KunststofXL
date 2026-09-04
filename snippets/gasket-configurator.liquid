@@ -13,6 +13,8 @@
   class="plate-configurator pc-page"
   data-plate-configurator
   data-base-price="{{ pc_base_price }}"
+  data-min-width="2"
+  data-min-height="2"
   data-max-width="305"
   data-max-height="155"
   data-locale="{{ request.locale.iso_code | default: 'nl-NL' }}"
@@ -105,10 +107,6 @@
             <div class="pc-picker-panel" data-pc-picker-panel hidden>
               <p>Kies een eenvoudige vorm</p>
               <div class="pc-picker-options">
-                <button type="button" data-pc-shape="rounded" aria-pressed="false">
-                  <svg viewBox="0 0 48 38" aria-hidden="true"><rect x="6" y="7" width="36" height="24" rx="8"/></svg>
-                  <span>Vierkant met radius</span>
-                </button>
                 <button type="button" data-pc-shape="circle" aria-pressed="false">
                   <svg viewBox="0 0 48 38" aria-hidden="true"><circle cx="24" cy="19" r="13"/></svg>
                   <span>Cirkel</span>
@@ -122,21 +120,32 @@
 
             <p class="pc-upload-result" data-pc-upload-result hidden></p>
 
+            <label class="pc-corner-option" data-pc-rounded-option>
+              <input type="checkbox" data-pc-rounded>
+              <span class="pc-corner-option__box" aria-hidden="true">✓</span>
+              <span class="pc-corner-option__copy">
+                <strong>Afgeronde hoeken</strong>
+                <small>Voeg een instelbare hoekradius toe</small>
+              </span>
+            </label>
+
             <div class="pc-dimension-fields">
               <label data-pc-width-field>
                 <span data-pc-width-label>Breedte</span>
-                <small data-pc-width-max>Max: 305 cm</small>
-                <div><input data-pc-width type="number" value="10" min="1" max="305" step="0.1" inputmode="decimal"><b>cm</b></div>
+                <small data-pc-width-max id="{{ pc_id }}-width-help">Min. 2 cm · max. 305 cm</small>
+                <div><input data-pc-width type="number" value="10" min="2" max="305" step="0.1" inputmode="decimal" aria-describedby="{{ pc_id }}-width-help {{ pc_id }}-width-error" aria-invalid="false"><b>cm</b></div>
+                <small class="pc-field-error" id="{{ pc_id }}-width-error" data-pc-width-error role="alert" hidden></small>
               </label>
               <label data-pc-height-field>
                 <span data-pc-height-label>Hoogte</span>
-                <small>Max: 155 cm</small>
-                <div><input data-pc-height type="number" value="10" min="1" max="155" step="0.1" inputmode="decimal"><b>cm</b></div>
+                <small id="{{ pc_id }}-height-help">Min. 2 cm · max. 155 cm</small>
+                <div><input data-pc-height type="number" value="10" min="2" max="155" step="0.1" inputmode="decimal" aria-describedby="{{ pc_id }}-height-help {{ pc_id }}-height-error" aria-invalid="false"><b>cm</b></div>
+                <small class="pc-field-error" id="{{ pc_id }}-height-error" data-pc-height-error role="alert" hidden></small>
               </label>
               <label data-pc-radius-field hidden>
                 <span>Hoekradius</span>
-                <small>Max: halve korte zijde</small>
-                <div><input data-pc-radius type="number" value="2" min="0" max="5" step="0.1" inputmode="decimal"><b>cm</b></div>
+                <small data-pc-radius-max>Max. 5 cm</small>
+                <div><input data-pc-radius type="number" value="1" min="0.1" max="5" step="0.1" inputmode="decimal"><b>cm</b></div>
               </label>
               <label data-pc-letter-field hidden>
                 <span>Letters</span>
