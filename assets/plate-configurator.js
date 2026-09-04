@@ -58,6 +58,7 @@
     var cutoutToggle = one('[data-pc-cutout]');
     var cutoutSizeInput = one('[data-pc-cutout-size]');
     var uploadInput = one('[data-pc-upload]');
+    var uploadTrigger = one('[data-pc-upload-trigger]');
 
     var svg = one('.pc-svg');
     var canvas = one('.pc-canvas');
@@ -220,6 +221,7 @@
 
     function updateFieldVisibility() {
       var pickerPanel = one('[data-pc-picker-panel]');
+      var uploadPanel = one('[data-pc-upload-panel]');
       var widthField = one('[data-pc-width-field]');
       var heightField = one('[data-pc-height-field]');
       var radiusField = one('[data-pc-radius-field]');
@@ -230,6 +232,7 @@
       var radiusMax = one('[data-pc-radius-max]');
 
       if (pickerPanel) pickerPanel.hidden = state.mainMode !== 'picker';
+      if (uploadPanel) uploadPanel.hidden = state.mainMode !== 'upload';
       widthField.hidden = state.shape === 'letter';
       heightField.hidden = state.shape === 'circle';
       if (roundedOption) roundedOption.hidden = state.shape !== 'rectangle';
@@ -249,10 +252,16 @@
       if (radiusMax) radiusMax.textContent = 'Max. ' + measure(halfShortSide) + ' cm';
 
       all('[data-pc-main-shape]').forEach(function (button) {
-        button.setAttribute('aria-selected', String(button.dataset.pcMainShape === state.mainMode));
+        var selected = button.dataset.pcMainShape === state.mainMode;
+        button.setAttribute('aria-selected', String(selected));
+        if (button.hasAttribute('aria-expanded')) button.setAttribute('aria-expanded', String(selected));
       });
       all('[data-pc-shape]').forEach(function (button) {
-        button.setAttribute('aria-pressed', String(button.dataset.pcShape === state.shape));
+        var selectedShape = button.dataset.pcShape === state.shape;
+        if (button.dataset.pcShape === 'rounded') {
+          selectedShape = state.shape === 'rectangle' && state.rounded && state.mainMode === 'picker';
+        }
+        button.setAttribute('aria-pressed', String(selectedShape));
       });
     }
 
@@ -508,12 +517,13 @@
     }
 
     function chooseShape(shape) {
-      if (shape === 'rounded') {
+      var pickedRoundedRectangle = shape === 'rounded';
+      if (pickedRoundedRectangle) {
         shape = 'rectangle';
         state.rounded = true;
       }
       state.shape = shape;
-      state.mainMode = shape === 'rectangle' ? 'rectangle' : 'picker';
+      state.mainMode = pickedRoundedRectangle ? 'picker' : shape === 'rectangle' ? 'rectangle' : 'picker';
       state.view = 'dimensions';
       if (shape === 'circle') {
         var diameter = clamp(num(widthInput.value, 10), Math.max(minimumWidth, minimumHeight), Math.min(maximumWidth, maximumHeight));
@@ -533,10 +543,7 @@
           render();
         } else if (mode === 'upload') {
           state.mainMode = 'upload';
-          all('[data-pc-main-shape]').forEach(function (item) {
-            item.setAttribute('aria-selected', String(item.dataset.pcMainShape === 'upload'));
-          });
-          uploadInput.click();
+          render();
         }
       });
     });
@@ -544,6 +551,18 @@
     all('[data-pc-shape]').forEach(function (button) {
       button.addEventListener('click', function () { chooseShape(button.dataset.pcShape); });
     });
+
+    all('[data-pc-open-upload]').forEach(function (button) {
+      button.addEventListener('click', function () {
+        state.mainMode = 'upload';
+        state.view = 'dimensions';
+        render();
+      });
+    });
+
+    if (uploadTrigger) {
+      uploadTrigger.addEventListener('click', function () { uploadInput.click(); });
+    }
 
     uploadInput.addEventListener('change', function (event) {
       var file = event.target.files && event.target.files[0];
