@@ -51,6 +51,7 @@
     var radiusInput = one('[data-pc-radius]');
     var roundedToggle = one('[data-pc-rounded]');
     var letterInput = one('[data-pc-letter]');
+    var letterFontSelect = one('[data-pc-letter-font]');
     var widthError = one('[data-pc-width-error]');
     var heightError = one('[data-pc-height-error]');
     var holesToggle = one('[data-pc-holes]');
@@ -89,6 +90,8 @@
       holes: false,
       cutout: false,
       rounded: false,
+      letterSizeMode: 'height',
+      letterFont: 'Arial, sans-serif',
       finish: 'gezaagd',
       quantity: 1,
       validWidth: 10,
@@ -112,6 +115,14 @@
       if (!value) value = 'A';
       if (input.value !== value) input.value = value;
       return value.toUpperCase();
+    }
+
+    function letterMetric(text) {
+      var factor = 0.62;
+      if (state.letterFont.indexOf('Trebuchet') !== -1) factor = 0.64;
+      if (state.letterFont.indexOf('Georgia') !== -1) factor = 0.66;
+      if (state.letterFont.indexOf('Impact') !== -1) factor = 0.56;
+      return Math.max(0.65, text.length * factor);
     }
 
     function clearDimensionError(input, error) {
@@ -178,19 +189,29 @@
         heightInput.value = Number(height.toFixed(1));
         state.dimensionsValid = widthResult.valid;
       } else if (state.shape === 'letter') {
-        clearDimensionError(widthInput, widthError);
-        heightResult = readDimension(heightInput, heightError, 'Hoogte', minimumHeight, maximumHeight, state.validHeight);
-        if (heightResult.valid) state.validHeight = heightResult.value;
-        height = state.validHeight;
-        width = Math.max(height * 0.65, height * text.length * 0.62);
-        if (width > maximumWidth) {
-          height = maximumWidth / Math.max(0.65, text.length * 0.62);
-          width = maximumWidth;
+        var metric = letterMetric(text);
+        var letterMaximumWidth = Math.min(maximumWidth, maximumHeight * metric);
+        var letterMaximumHeight = Math.min(maximumHeight, maximumWidth / metric);
+
+        if (state.letterSizeMode === 'width') {
+          clearDimensionError(heightInput, heightError);
+          widthResult = readDimension(widthInput, widthError, 'Breedte', minimumWidth, letterMaximumWidth, state.validWidth);
+          if (widthResult.valid) state.validWidth = widthResult.value;
+          width = state.validWidth;
+          height = width / metric;
           state.validHeight = height;
+          heightInput.value = Number(height.toFixed(1));
+          state.dimensionsValid = widthResult.valid;
+        } else {
+          clearDimensionError(widthInput, widthError);
+          heightResult = readDimension(heightInput, heightError, 'Hoogte', minimumHeight, letterMaximumHeight, state.validHeight);
+          if (heightResult.valid) state.validHeight = heightResult.value;
+          height = state.validHeight;
+          width = height * metric;
+          state.validWidth = width;
+          widthInput.value = Number(width.toFixed(1));
+          state.dimensionsValid = heightResult.valid;
         }
-        heightInput.value = Number(height.toFixed(1));
-        state.validWidth = width;
-        state.dimensionsValid = heightResult.valid;
       } else {
         widthResult = readDimension(widthInput, widthError, 'Breedte', minimumWidth, maximumWidth, state.validWidth);
         heightResult = readDimension(heightInput, heightError, 'Hoogte', minimumHeight, maximumHeight, state.validHeight);
@@ -226,26 +247,45 @@
       var heightField = one('[data-pc-height-field]');
       var radiusField = one('[data-pc-radius-field]');
       var roundedOption = one('[data-pc-rounded-option]');
+      var letterSettings = one('[data-pc-letter-settings]');
       var letterField = one('[data-pc-letter-field]');
       var widthLabel = one('[data-pc-width-label]');
+      var heightLabel = one('[data-pc-height-label]');
       var widthMax = one('[data-pc-width-max]');
+      var heightLimits = one('[data-pc-height-limits]');
       var radiusMax = one('[data-pc-radius-max]');
 
       if (pickerPanel) pickerPanel.hidden = state.mainMode !== 'picker';
       if (uploadPanel) uploadPanel.hidden = state.mainMode !== 'upload';
-      widthField.hidden = state.shape === 'letter';
-      heightField.hidden = state.shape === 'circle';
+      widthField.hidden = state.shape === 'letter' && state.letterSizeMode !== 'width';
+      heightField.hidden = state.shape === 'circle' || (state.shape === 'letter' && state.letterSizeMode === 'width');
       if (roundedOption) roundedOption.hidden = state.shape !== 'rectangle';
       if (radiusField) radiusField.hidden = state.shape !== 'rectangle' || !state.rounded;
+      if (letterSettings) letterSettings.hidden = state.shape !== 'letter';
       letterField.hidden = state.shape !== 'letter';
       if (roundedToggle) roundedToggle.checked = state.rounded;
 
-      if (widthLabel) widthLabel.textContent = state.shape === 'circle' ? 'Diameter' : 'Breedte';
+      if (widthLabel) widthLabel.textContent = state.shape === 'circle' ? 'Diameter' : state.shape === 'letter' ? 'Letterbreedte' : 'Breedte';
+      if (heightLabel) heightLabel.textContent = state.shape === 'letter' ? 'Letterhoogte' : 'Hoogte';
       if (widthMax) {
         var shownMinimum = state.shape === 'circle' ? Math.max(minimumWidth, minimumHeight) : minimumWidth;
-        var shownMaximum = state.shape === 'circle' ? Math.min(maximumWidth, maximumHeight) : maximumWidth;
+        var shownMaximum = state.shape === 'circle'
+          ? Math.min(maximumWidth, maximumHeight)
+          : state.shape === 'letter'
+            ? Math.min(maximumWidth, maximumHeight * letterMetric(letters(letterInput)))
+            : maximumWidth;
         widthMax.textContent = 'Min. ' + measure(shownMinimum) + ' cm · max. ' + measure(shownMaximum) + ' cm';
       }
+      if (heightLimits) {
+        var shownHeightMaximum = state.shape === 'letter'
+          ? Math.min(maximumHeight, maximumWidth / letterMetric(letters(letterInput)))
+          : maximumHeight;
+        heightLimits.textContent = 'Min. ' + measure(minimumHeight) + ' cm · max. ' + measure(shownHeightMaximum) + ' cm';
+      }
+      all('[data-pc-letter-size-mode]').forEach(function (button) {
+        button.setAttribute('aria-pressed', String(button.dataset.pcLetterSizeMode === state.letterSizeMode));
+      });
+      if (letterFontSelect && letterFontSelect.value !== state.letterFont) letterFontSelect.value = state.letterFont;
 
       var halfShortSide = Math.max(0.1, Math.min(state.validWidth, state.validHeight) / 2);
       radiusInput.max = Number(halfShortSide.toFixed(1));
@@ -292,8 +332,8 @@
 
       if (state.shape === 'letter') {
         letterShape.textContent = currentValues.text;
-        var fontSize = Math.min(height, width / Math.max(0.65, currentValues.text.length * 0.62));
-        attrs(letterShape, { x: 350, y: 225, 'font-size': fontSize });
+        var fontSize = Math.min(height, width / letterMetric(currentValues.text));
+        attrs(letterShape, { x: 350, y: 225, 'font-size': fontSize, 'font-family': state.letterFont });
         return;
       }
 
@@ -414,7 +454,13 @@
 
     function shapeLabel(currentValues) {
       if (state.shape === 'circle') return 'Cirkel · Ø ' + measure(currentValues.width) + ' cm';
-      if (state.shape === 'letter') return 'Letters “' + currentValues.text + '” · ' + measure(currentValues.height) + ' cm hoog';
+      if (state.shape === 'letter') {
+        var letterMeasure = state.letterSizeMode === 'width'
+          ? measure(currentValues.width) + ' cm breed'
+          : measure(currentValues.height) + ' cm hoog';
+        var fontName = state.letterFont.split(',')[0].replace(/'/g, '');
+        return 'Letters “' + currentValues.text + '” · ' + letterMeasure + ' · ' + fontName;
+      }
       if (state.rounded) {
         return 'Rechthoek · ' + measure(currentValues.width) + ' × ' + measure(currentValues.height) + ' cm · R ' + measure(num(radiusInput.value, 1)) + ' cm';
       }
@@ -442,7 +488,9 @@
       var dimensionsText = state.shape === 'circle'
         ? 'Ø ' + measure(currentValues.width) + ' cm'
         : state.shape === 'letter'
-          ? currentValues.text + ' · ' + measure(currentValues.height) + ' cm hoog'
+          ? currentValues.text + ' · ' + (state.letterSizeMode === 'width'
+            ? measure(currentValues.width) + ' cm breed'
+            : measure(currentValues.height) + ' cm hoog')
           : measure(currentValues.width) + ' × ' + measure(currentValues.height) + ' cm';
 
       var holeDiameter = clamp(num(holeDiameterInput.value, 8), 3, 30);
@@ -596,6 +644,22 @@
     if (roundedToggle) {
       roundedToggle.addEventListener('change', function () {
         state.rounded = roundedToggle.checked;
+        state.view = 'dimensions';
+        render();
+      });
+    }
+
+    all('[data-pc-letter-size-mode]').forEach(function (button) {
+      button.addEventListener('click', function () {
+        state.letterSizeMode = button.dataset.pcLetterSizeMode;
+        state.view = 'dimensions';
+        render();
+      });
+    });
+
+    if (letterFontSelect) {
+      letterFontSelect.addEventListener('change', function () {
+        state.letterFont = letterFontSelect.value;
         state.view = 'dimensions';
         render();
       });
