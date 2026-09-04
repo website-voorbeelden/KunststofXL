@@ -49,7 +49,10 @@
     var widthInput = one('[data-pc-width]');
     var heightInput = one('[data-pc-height]');
     var radiusInput = one('[data-pc-radius]');
+    var roundedToggle = one('[data-pc-rounded]');
     var letterInput = one('[data-pc-letter]');
+    var widthError = one('[data-pc-width-error]');
+    var heightError = one('[data-pc-height-error]');
     var holesToggle = one('[data-pc-holes]');
     var holeDiameterInput = one('[data-pc-hole-diameter]');
     var cutoutToggle = one('[data-pc-cutout]');
@@ -69,7 +72,10 @@
 
     holesToggle.checked = false;
     cutoutToggle.checked = false;
+    if (roundedToggle) roundedToggle.checked = false;
 
+    var minimumWidth = num(root.dataset.minWidth, 2);
+    var minimumHeight = num(root.dataset.minHeight, 2);
     var maximumWidth = num(root.dataset.maxWidth, 305);
     var maximumHeight = num(root.dataset.maxHeight, 155);
     var basePrice = Math.max(1, num(root.dataset.basePrice, 1000));
@@ -81,8 +87,12 @@
       thickness: 2,
       holes: false,
       cutout: false,
+      rounded: false,
       finish: 'gezaagd',
-      quantity: 1
+      quantity: 1,
+      validWidth: 10,
+      validHeight: 10,
+      dimensionsValid: true
     };
 
     var toastTimer;
@@ -103,28 +113,95 @@
       return value.toUpperCase();
     }
 
-    function values() {
-      var width = clamp(num(widthInput.value, 10), 1, maximumWidth);
-      var height = clamp(num(heightInput.value, 10), 1, maximumHeight);
-      var text = letters(letterInput);
+    function clearDimensionError(input, error) {
+      input.setAttribute('aria-invalid', 'false');
+      if (error) {
+        error.textContent = '';
+        error.hidden = true;
+      }
+    }
 
-      if (state.shape === 'circle' || state.shape === 'rounded') {
-        width = clamp(width, 1, Math.min(maximumWidth, maximumHeight));
+    function readDimension(input, error, label, minimum, maximum, fallback) {
+      var raw = String(input.value == null ? '' : input.value).trim();
+      var value = num(raw, NaN);
+      var message = '';
+
+      if (!raw || !Number.isFinite(value)) {
+        message = 'Vul een geldige ' + label.toLowerCase() + ' in.';
+      } else if (value < minimum) {
+        message = label + ' is te klein. Kies minimaal ' + measure(minimum) + ' cm.';
+      } else if (value > maximum) {
+        message = label + ' is te groot. Kies maximaal ' + measure(maximum) + ' cm.';
+      }
+
+      input.setAttribute('aria-invalid', String(Boolean(message)));
+      if (error) {
+        error.textContent = message;
+        error.hidden = !message;
+      }
+
+      return {
+        valid: !message,
+        value: message ? fallback : value
+      };
+    }
+
+    function setOrderAvailability(valid) {
+      all('[data-pc-cart]').forEach(function (button) {
+        button.disabled = !valid;
+        button.setAttribute('aria-disabled', String(!valid));
+      });
+    }
+
+    function values() {
+      var width = state.validWidth;
+      var height = state.validHeight;
+      var text = letters(letterInput);
+      var widthResult;
+      var heightResult;
+
+      if (state.shape === 'circle') {
+        widthResult = readDimension(
+          widthInput,
+          widthError,
+          'Diameter',
+          Math.max(minimumWidth, minimumHeight),
+          Math.min(maximumWidth, maximumHeight),
+          state.validWidth
+        );
+        clearDimensionError(heightInput, heightError);
+        if (widthResult.valid) state.validWidth = widthResult.value;
+        width = state.validWidth;
         height = width;
+        state.validHeight = height;
         heightInput.value = Number(height.toFixed(1));
+        state.dimensionsValid = widthResult.valid;
       } else if (state.shape === 'letter') {
+        clearDimensionError(widthInput, widthError);
+        heightResult = readDimension(heightInput, heightError, 'Hoogte', minimumHeight, maximumHeight, state.validHeight);
+        if (heightResult.valid) state.validHeight = heightResult.value;
+        height = state.validHeight;
         width = Math.max(height * 0.65, height * text.length * 0.62);
         if (width > maximumWidth) {
           height = maximumWidth / Math.max(0.65, text.length * 0.62);
           width = maximumWidth;
+          state.validHeight = height;
         }
         heightInput.value = Number(height.toFixed(1));
+        state.validWidth = width;
+        state.dimensionsValid = heightResult.valid;
+      } else {
+        widthResult = readDimension(widthInput, widthError, 'Breedte', minimumWidth, maximumWidth, state.validWidth);
+        heightResult = readDimension(heightInput, heightError, 'Hoogte', minimumHeight, maximumHeight, state.validHeight);
+        if (widthResult.valid) state.validWidth = widthResult.value;
+        if (heightResult.valid) state.validHeight = heightResult.value;
+        width = state.validWidth;
+        height = state.validHeight;
+        state.dimensionsValid = widthResult.valid && heightResult.valid;
       }
 
-      widthInput.value = Number(width.toFixed(1));
-      heightInput.value = Number(height.toFixed(1));
-
-      return { width: width, height: height, text: text };
+      setOrderAvailability(state.dimensionsValid);
+      return { width: width, height: height, text: text, valid: state.dimensionsValid };
     }
 
     function setLine(selector, x1, y1, x2, y2) {
@@ -146,21 +223,30 @@
       var widthField = one('[data-pc-width-field]');
       var heightField = one('[data-pc-height-field]');
       var radiusField = one('[data-pc-radius-field]');
+      var roundedOption = one('[data-pc-rounded-option]');
       var letterField = one('[data-pc-letter-field]');
       var widthLabel = one('[data-pc-width-label]');
       var widthMax = one('[data-pc-width-max]');
+      var radiusMax = one('[data-pc-radius-max]');
 
       if (pickerPanel) pickerPanel.hidden = state.mainMode !== 'picker';
       widthField.hidden = state.shape === 'letter';
-      heightField.hidden = state.shape === 'circle' || state.shape === 'rounded';
-      radiusField.hidden = state.shape !== 'rounded';
+      heightField.hidden = state.shape === 'circle';
+      if (roundedOption) roundedOption.hidden = state.shape !== 'rectangle';
+      if (radiusField) radiusField.hidden = state.shape !== 'rectangle' || !state.rounded;
       letterField.hidden = state.shape !== 'letter';
+      if (roundedToggle) roundedToggle.checked = state.rounded;
 
-      if (widthLabel) widthLabel.textContent = state.shape === 'circle' ? 'Diameter' : state.shape === 'rounded' ? 'Zijde' : 'Breedte';
-      if (widthMax) widthMax.textContent = 'Max: ' + ((state.shape === 'circle' || state.shape === 'rounded') ? Math.min(maximumWidth, maximumHeight) : maximumWidth) + ' cm';
+      if (widthLabel) widthLabel.textContent = state.shape === 'circle' ? 'Diameter' : 'Breedte';
+      if (widthMax) {
+        var shownMinimum = state.shape === 'circle' ? Math.max(minimumWidth, minimumHeight) : minimumWidth;
+        var shownMaximum = state.shape === 'circle' ? Math.min(maximumWidth, maximumHeight) : maximumWidth;
+        widthMax.textContent = 'Min. ' + measure(shownMinimum) + ' cm · max. ' + measure(shownMaximum) + ' cm';
+      }
 
-      var halfShortSide = Math.max(0, Math.min(num(widthInput.value, 10), num(heightInput.value, 10)) / 2);
+      var halfShortSide = Math.max(0.1, Math.min(state.validWidth, state.validHeight) / 2);
       radiusInput.max = Number(halfShortSide.toFixed(1));
+      if (radiusMax) radiusMax.textContent = 'Max. ' + measure(halfShortSide) + ' cm';
 
       all('[data-pc-main-shape]').forEach(function (button) {
         button.setAttribute('aria-selected', String(button.dataset.pcMainShape === state.mainMode));
@@ -212,8 +298,8 @@
         return;
       }
 
-      if (state.shape === 'rounded') {
-        var radiusCm = clamp(num(radiusInput.value, 2), 0, Math.min(currentValues.width, currentValues.height) / 2);
+      if (state.shape === 'rectangle' && state.rounded) {
+        var radiusCm = clamp(num(radiusInput.value, 1), 0.1, Math.min(currentValues.width, currentValues.height) / 2);
         radiusInput.value = Number(radiusCm.toFixed(1));
         var radius = radiusCm * box.scale;
         shapePath.setAttribute('d',
@@ -294,7 +380,7 @@
 
       var horizontalY = box.y + box.height + 48;
       var verticalX = box.x - 50;
-      var curvedShape = isCircle || state.shape === 'rounded';
+      var curvedShape = isCircle || (state.shape === 'rectangle' && state.rounded);
       var widthGuideStartY = curvedShape ? 225 : box.y + box.height + 4;
       var heightGuideStartX = curvedShape ? 350 : box.x - 4;
 
@@ -319,15 +405,17 @@
 
     function shapeLabel(currentValues) {
       if (state.shape === 'circle') return 'Cirkel · Ø ' + measure(currentValues.width) + ' cm';
-      if (state.shape === 'rounded') return 'Vierkant met radius · ' + measure(currentValues.width) + ' cm';
       if (state.shape === 'letter') return 'Letters “' + currentValues.text + '” · ' + measure(currentValues.height) + ' cm hoog';
+      if (state.rounded) {
+        return 'Rechthoek · ' + measure(currentValues.width) + ' × ' + measure(currentValues.height) + ' cm · R ' + measure(num(radiusInput.value, 1)) + ' cm';
+      }
       return 'Rechthoek · ' + measure(currentValues.width) + ' × ' + measure(currentValues.height) + ' cm';
     }
 
     function priceParts(currentValues) {
       var areaPart = currentValues.width * currentValues.height / (305 * 155);
       var thicknessPart = 0.82 + state.thickness * 0.09;
-      var shapePart = state.shape === 'rectangle' ? 1 : state.shape === 'rounded' ? 1.08 : 1.12;
+      var shapePart = state.shape === 'rectangle' ? (state.rounded ? 1.08 : 1) : 1.12;
       var material = Math.max(basePrice, Math.round((basePrice + areaPart * 6100) * thicknessPart));
       var shape = Math.max(0, Math.round(material * (shapePart - 1)));
       var extras = (state.holes ? 4 * 65 : 0) +
@@ -350,6 +438,9 @@
 
       var holeDiameter = clamp(num(holeDiameterInput.value, 8), 3, 30);
       var cutoutDiameter = clamp(num(cutoutSizeInput.value, 3), 1, Math.min(currentValues.width, currentValues.height) * 0.7);
+      if (state.shape === 'rectangle' && state.rounded) {
+        dimensionsText += ' · R ' + measure(num(radiusInput.value, 1)) + ' cm';
+      }
       var compact = dimensionsText + ' · ' + state.thickness + ' mm' +
         (state.holes ? ' · 4 hoekgaten Ø ' + measure(holeDiameter) + ' mm' : '') +
         (state.cutout ? ' · ronde uitsnede Ø ' + measure(cutoutDiameter) + ' cm' : '');
@@ -395,10 +486,9 @@
     }
 
     function render() {
+      var currentValues = values();
       updateFieldVisibility();
       renderView();
-
-      var currentValues = values();
       var scale = Math.min(430 / currentValues.width, 260 / currentValues.height);
       var renderedWidth = currentValues.width * scale;
       var renderedHeight = currentValues.height * scale;
@@ -418,11 +508,15 @@
     }
 
     function chooseShape(shape) {
+      if (shape === 'rounded') {
+        shape = 'rectangle';
+        state.rounded = true;
+      }
       state.shape = shape;
       state.mainMode = shape === 'rectangle' ? 'rectangle' : 'picker';
       state.view = 'dimensions';
-      if (shape === 'circle' || shape === 'rounded') {
-        var diameter = clamp(num(widthInput.value, 10), 1, Math.min(maximumWidth, maximumHeight));
+      if (shape === 'circle') {
+        var diameter = clamp(num(widthInput.value, 10), Math.max(minimumWidth, minimumHeight), Math.min(maximumWidth, maximumHeight));
         widthInput.value = diameter;
         heightInput.value = diameter;
       }
@@ -480,9 +574,17 @@
       });
     });
 
+    if (roundedToggle) {
+      roundedToggle.addEventListener('change', function () {
+        state.rounded = roundedToggle.checked;
+        state.view = 'dimensions';
+        render();
+      });
+    }
+
     [widthInput, heightInput, radiusInput, letterInput].forEach(function (input) {
       input.addEventListener('input', function () {
-        if (state.shape === 'circle' || state.shape === 'rounded') heightInput.value = widthInput.value;
+        if (state.shape === 'circle') heightInput.value = widthInput.value;
         state.view = 'dimensions';
         render();
       });
