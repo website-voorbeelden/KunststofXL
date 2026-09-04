@@ -1405,3 +1405,15 @@
   font-weight:700;
 }
 @media(max-width:560px){.pc-letter-settings{grid-template-columns:1fr}}
+
+
+/* Rounded corners as an on/off option below the dimensions */
+.pc-rounded-toggle{
+  margin-top:10px;
+  padding:11px 12px;
+  border:1px solid #d9e8ec;
+  border-radius:5px;
+  background:#fff;
+}
+.pc-rounded-toggle[hidden],.pc-radius-panel[hidden]{display:none}
+.pc-radius-panel{margin-top:9px;margin-bottom:0}
