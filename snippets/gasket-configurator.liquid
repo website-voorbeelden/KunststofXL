@@ -93,20 +93,23 @@
                 <svg viewBox="0 0 42 34" aria-hidden="true"><rect x="8" y="8" width="26" height="18"/></svg>
                 Rechthoek
               </button>
-              <button type="button" data-pc-main-shape="picker" role="tab" aria-selected="false">
+              <button type="button" data-pc-main-shape="picker" role="tab" aria-selected="false" aria-controls="{{ pc_id }}-picker-panel" aria-expanded="false">
                 <svg viewBox="0 0 42 34" aria-hidden="true"><circle cx="13" cy="20" r="6"/><rect x="22" y="7" width="12" height="12" rx="4"/></svg>
                 Vormkiezer
               </button>
-              <button type="button" data-pc-main-shape="upload" role="tab" aria-selected="false">
+              <button type="button" data-pc-main-shape="upload" role="tab" aria-selected="false" aria-controls="{{ pc_id }}-upload-panel" aria-expanded="false">
                 <svg viewBox="0 0 42 34" aria-hidden="true"><path d="M9 26V8h16l8 8v10z"/><path d="M25 8v8h8M16 21h10M21 16v10"/></svg>
                 Vorm upload
               </button>
-              <input data-pc-upload type="file" accept="image/*" hidden>
             </div>
 
-            <div class="pc-picker-panel" data-pc-picker-panel hidden>
+            <div class="pc-picker-panel" id="{{ pc_id }}-picker-panel" data-pc-picker-panel role="tabpanel" hidden>
               <p>Kies een eenvoudige vorm</p>
               <div class="pc-picker-options">
+                <button type="button" data-pc-shape="rounded" aria-pressed="false">
+                  <svg viewBox="0 0 48 38" aria-hidden="true"><rect x="5" y="9" width="38" height="20" rx="6"/></svg>
+                  <span>Rechthoek met radius</span>
+                </button>
                 <button type="button" data-pc-shape="circle" aria-pressed="false">
                   <svg viewBox="0 0 48 38" aria-hidden="true"><circle cx="24" cy="19" r="13"/></svg>
                   <span>Cirkel</span>
@@ -115,10 +118,25 @@
                   <svg viewBox="0 0 48 38" aria-hidden="true"><text x="24" y="28" text-anchor="middle">A</text></svg>
                   <span>Letters</span>
                 </button>
+                <button type="button" data-pc-open-upload aria-pressed="false">
+                  <svg class="pc-custom-star" viewBox="0 0 48 38" aria-hidden="true"><path d="m24 5 4.2 8.6 9.5 1.4-6.9 6.7 1.6 9.4-8.4-4.4-8.4 4.4 1.6-9.4-6.9-6.7 9.5-1.4z"/></svg>
+                  <span>Custom vorm</span>
+                </button>
               </div>
             </div>
 
-            <p class="pc-upload-result" data-pc-upload-result hidden></p>
+            <div class="pc-upload-panel" id="{{ pc_id }}-upload-panel" data-pc-upload-panel role="tabpanel" hidden>
+              <div class="pc-upload-panel__icon" aria-hidden="true">
+                <svg viewBox="0 0 32 32"><path d="M6 26V6h13l7 7v13z"/><path d="M19 6v7h7M16 22V14M12.5 17.5 16 14l3.5 3.5"/></svg>
+              </div>
+              <div class="pc-upload-panel__copy">
+                <strong>Upload je eigen vorm</strong>
+                <p>Voeg een afbeelding of schets toe. Voor deze conceptversie gebruiken we het bestand als visueel voorbeeld.</p>
+              </div>
+              <button type="button" class="pc-upload-button" data-pc-upload-trigger>Bestand uploaden</button>
+              <input data-pc-upload type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" hidden>
+              <p class="pc-upload-result" data-pc-upload-result hidden></p>
+            </div>
 
             <label class="pc-corner-option" data-pc-rounded-option>
               <input type="checkbox" data-pc-rounded>
