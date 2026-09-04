@@ -1355,3 +1355,53 @@
   .pc-upload-button{grid-column:1/-1;width:100%}
   .pc-upload-panel .pc-upload-result{grid-column:1/-1}
 }
+
+
+/* Letter configuration */
+.pc-letter-settings{
+  display:grid;
+  grid-template-columns:minmax(0,1.2fr) minmax(135px,.8fr);
+  gap:10px;
+  margin:0 0 10px;
+  padding:12px;
+  border:1px solid #d6e8ed;
+  border-radius:5px;
+  background:#f7fbfc;
+}
+.pc-letter-settings[hidden]{display:none}
+.pc-letter-settings__mode,.pc-letter-settings>label{display:grid;gap:6px}
+.pc-letter-settings__mode>span,.pc-letter-settings>label>span{
+  color:#4c6b77;
+  font-size:9px;
+  font-weight:800;
+}
+.pc-letter-settings__mode>div{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  overflow:hidden;
+  border:1px solid #b9d7df;
+  border-radius:4px;
+}
+.pc-letter-settings__mode button{
+  min-height:37px;
+  border:0;
+  background:#fff;
+  color:#43829a;
+  font-size:10px;
+  font-weight:750;
+  cursor:pointer;
+}
+.pc-letter-settings__mode button+button{border-left:1px solid #b9d7df}
+.pc-letter-settings__mode button[aria-pressed="true"]{background:var(--pc-blue);color:#fff}
+.pc-letter-settings select{
+  width:100%;
+  min-height:39px;
+  padding:0 30px 0 10px;
+  border:1px solid #b9d7df;
+  border-radius:4px;
+  background:#fff;
+  color:#34758e;
+  font-size:10px;
+  font-weight:700;
+}
+@media(max-width:560px){.pc-letter-settings{grid-template-columns:1fr}}
