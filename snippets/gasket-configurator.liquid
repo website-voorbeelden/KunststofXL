@@ -138,15 +138,6 @@
               <p class="pc-upload-result" data-pc-upload-result hidden></p>
             </div>
 
-            <label class="pc-corner-option" data-pc-rounded-option>
-              <input type="checkbox" data-pc-rounded>
-              <span class="pc-corner-option__box" aria-hidden="true">✓</span>
-              <span class="pc-corner-option__copy">
-                <strong>Afgeronde hoeken</strong>
-                <small>Voeg een instelbare hoekradius toe</small>
-              </span>
-            </label>
-
             <div class="pc-letter-settings" data-pc-letter-settings hidden>
               <div class="pc-letter-settings__mode">
                 <span>Maat bepalen op</span>
@@ -179,15 +170,24 @@
                 <div><input data-pc-height type="number" value="10" min="2" max="155" step="0.1" inputmode="decimal" aria-describedby="{{ pc_id }}-height-help {{ pc_id }}-height-error" aria-invalid="false"><b>cm</b></div>
                 <small class="pc-field-error" id="{{ pc_id }}-height-error" data-pc-height-error role="alert" hidden></small>
               </label>
-              <label data-pc-radius-field hidden>
-                <span>Hoekradius</span>
-                <small data-pc-radius-max>Max. 5 cm</small>
-                <div><input data-pc-radius type="number" value="1" min="0.1" max="5" step="0.1" inputmode="decimal"><b>cm</b></div>
-              </label>
               <label data-pc-letter-field hidden>
                 <span>Letters</span>
                 <small>Vast lettertype</small>
                 <div><input data-pc-letter type="text" value="A" maxlength="8" aria-label="Letters"><b>ABC</b></div>
+              </label>
+            </div>
+
+            <label class="pc-toggle pc-rounded-toggle" data-pc-rounded-option>
+              <input type="checkbox" data-pc-rounded>
+              <span aria-hidden="true"></span>
+              Afgeronde hoeken
+            </label>
+
+            <div class="pc-inline-fields pc-inline-fields--single pc-radius-panel" data-pc-radius-field hidden>
+              <label>
+                <span>Hoekradius</span>
+                <small data-pc-radius-max>Max. 5 cm</small>
+                <div><input data-pc-radius type="number" value="1" min="0.1" max="5" step="0.1" inputmode="decimal"><b>cm</b></div>
               </label>
             </div>
           </div>
