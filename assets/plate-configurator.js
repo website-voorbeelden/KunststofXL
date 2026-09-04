@@ -268,19 +268,18 @@
       if (widthLabel) widthLabel.textContent = state.shape === 'circle' ? 'Diameter' : state.shape === 'letter' ? 'Letterbreedte' : 'Breedte';
       if (heightLabel) heightLabel.textContent = state.shape === 'letter' ? 'Letterhoogte' : 'Hoogte';
       if (widthMax) {
-        var shownMinimum = state.shape === 'circle' ? Math.max(minimumWidth, minimumHeight) : minimumWidth;
         var shownMaximum = state.shape === 'circle'
           ? Math.min(maximumWidth, maximumHeight)
           : state.shape === 'letter'
             ? Math.min(maximumWidth, maximumHeight * letterMetric(letters(letterInput)))
             : maximumWidth;
-        widthMax.textContent = 'Min. ' + measure(shownMinimum) + ' cm · max. ' + measure(shownMaximum) + ' cm';
+        widthMax.textContent = 'Max. ' + measure(shownMaximum) + ' cm';
       }
       if (heightLimits) {
         var shownHeightMaximum = state.shape === 'letter'
           ? Math.min(maximumHeight, maximumWidth / letterMetric(letters(letterInput)))
           : maximumHeight;
-        heightLimits.textContent = 'Min. ' + measure(minimumHeight) + ' cm · max. ' + measure(shownHeightMaximum) + ' cm';
+        heightLimits.textContent = 'Max. ' + measure(shownHeightMaximum) + ' cm';
       }
       all('[data-pc-letter-size-mode]').forEach(function (button) {
         button.setAttribute('aria-pressed', String(button.dataset.pcLetterSizeMode === state.letterSizeMode));
