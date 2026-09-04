@@ -147,6 +147,25 @@
               </span>
             </label>
 
+            <div class="pc-letter-settings" data-pc-letter-settings hidden>
+              <div class="pc-letter-settings__mode">
+                <span>Maat bepalen op</span>
+                <div role="radiogroup" aria-label="Maat van de letters bepalen op">
+                  <button type="button" data-pc-letter-size-mode="height" aria-pressed="true">Hoogte</button>
+                  <button type="button" data-pc-letter-size-mode="width" aria-pressed="false">Breedte</button>
+                </div>
+              </div>
+              <label>
+                <span>Lettertype</span>
+                <select data-pc-letter-font aria-label="Lettertype">
+                  <option value="Arial, sans-serif">Arial</option>
+                  <option value="'Trebuchet MS', sans-serif">Trebuchet</option>
+                  <option value="Georgia, serif">Georgia</option>
+                  <option value="Impact, sans-serif">Impact</option>
+                </select>
+              </label>
+            </div>
+
             <div class="pc-dimension-fields">
               <label data-pc-width-field>
                 <span data-pc-width-label>Breedte</span>
@@ -156,7 +175,7 @@
               </label>
               <label data-pc-height-field>
                 <span data-pc-height-label>Hoogte</span>
-                <small id="{{ pc_id }}-height-help">Min. 2 cm · max. 155 cm</small>
+                <small id="{{ pc_id }}-height-help" data-pc-height-limits>Min. 2 cm · max. 155 cm</small>
                 <div><input data-pc-height type="number" value="10" min="2" max="155" step="0.1" inputmode="decimal" aria-describedby="{{ pc_id }}-height-help {{ pc_id }}-height-error" aria-invalid="false"><b>cm</b></div>
                 <small class="pc-field-error" id="{{ pc_id }}-height-error" data-pc-height-error role="alert" hidden></small>
               </label>
